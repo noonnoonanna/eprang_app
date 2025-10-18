@@ -6,17 +6,13 @@
   <meta name="theme-color" content="#ffffff" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="stylesheet" href="style.css" />
-  <title>IpiCare PWA</title>
+  <title>eprang</title>
 </head>
 <body>
   <div class="app">
     <header>
-      <div class="bar">
-        <span id="offlineBadge" class="pill" hidden>오프라인</span>
-        <h1>IpiCare</h1>
-        <div class="grow"></div>
-        <button id="installBtn" class="btn acc" hidden>설치</button>
-        <button id="refreshBtn" class="btn ghost" hidden>업데이트</button>
+      <div class="bar">        
+        <h1>eprang</h1>
       </div>
     </header>
 
@@ -80,7 +76,7 @@
               <label>비밀번호 확인<input name="pw2" type="password" required onblur="checkPwMatch()" oninput="clearPwHint()"><span id="pwHint" class="hint"></span></label>
               <label>닉네임<input name="nick" required></label>
               <label>연락처<input name="phone" required placeholder="010-1234-5678"></label>
-              <label>성별<select name="gender" required><option value="">선택</option><option>여성</option><option>남성</option><option>선택 안함</option></select></label>
+              <label>성별<select name="gender" required><option value="">선택</option><option>여성</option><option>남성</option></select></label>
               <label>생년월일<input name="birth" type="date" required></label>
               <div class="cols two">
                 <label>키(cm)<input type="number" name="height" min="50" max="250" step="0.1" required></label>
@@ -98,32 +94,48 @@
       </section>
 
       <!-- 3) 온보딩 설문 -->
-      <section id="view-survey" class="view">
-        <div class="grid">
-          <div class="card pad">
-            <div class="title-strong">온보딩 설문</div>
-            <form id="form-survey">
-              <label>건강 목표 (복수 선택)
-                <div class="list list-inline">
-                  <label><input type="checkbox" name="goals" value="sleep"> 수면</label>
-                  <label><input type="checkbox" name="goals" value="stress"> 스트레스</label>
-                  <label><input type="checkbox" name="goals" value="digestion"> 소화</label>
-                  <label><input type="checkbox" name="goals" value="focus"> 집중</label>
-                </div>
-              </label>
-              <label>생활습관/메모<textarea name="habit" placeholder="예: 야근 잦음, 카페인 민감"></textarea></label>
-              <label>식품 알레르기/금기 (쉼표 구분)<input name="allergies" placeholder="예: 견과류, 카페인"></label>
-              <label>복용 중인 성분(있는 경우)<input name="intakes" placeholder="예: 멜라토닌, 유산균"></label>
-            </form>
-          </div>
-          <div class="card pad">
-            <div class="cols two">
-              <button class="btn ghost" onclick="navigate('basic')">이전</button>
-              <button class="btn acc" onclick="saveSurvey()">저장하고 추천 작물 보기</button>
-            </div>
-          </div>
+<section id="view-survey" class="view">
+  <div class="grid">
+    <div class="card pad">
+      <div class="title-strong">건강 목표</div>
+      <form id="form-survey">
+        <div class="goal-buttons">
+          <input type="checkbox" id="goal-sleep" name="goals" value="sleep">
+          <label for="goal-sleep">수면</label>
+
+          <input type="checkbox" id="goal-stress" name="goals" value="stress">
+          <label for="goal-stress">스트레스</label>
+
+          <input type="checkbox" id="goal-digestion" name="goals" value="digestion">
+          <label for="goal-digestion">소화</label>
+
+          <input type="checkbox" id="goal-focus" name="goals" value="focus">
+          <label for="goal-focus">집중</label>
         </div>
-      </section>
+        
+        <label>생활습관/메모
+          <textarea name="habit" placeholder="예: 야근 잦음, 카페인 민감"></textarea>
+        </label>
+
+        <label>식품 알레르기/금기 (쉼표 구분)
+          <input name="allergies" placeholder="예: 견과류, 카페인">
+        </label>
+
+        <label>복용 중인 성분(있는 경우)
+          <input name="intakes" placeholder="예: 멜라토닌, 유산균">
+        </label>
+      </form>
+    </div>
+
+    <div class="card pad">
+      <div class="cols two">
+        <button class="btn ghost" onclick="navigate('basic')">이전</button>
+        <button class="btn acc" onclick="saveSurvey()">저장하고 추천 작물 보기</button>
+      </div>
+    </div>
+  </div>
+</section>
+
 
       <!-- 4) 추천 작물 소개 -->
       <section id="view-reco-intro" class="view">
