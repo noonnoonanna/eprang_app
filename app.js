@@ -7,17 +7,33 @@ const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
 // ===== 탭 표시/숨김 =====
 function setTabsVisible(v){document.querySelector('nav.tabs')?.classList.toggle('hidden',!v)}
 
+function handleLogin(e){
+  e.preventDefault();
+  const id = e.target.userid.value.trim();
+  const pw = e.target.password.value.trim();
+  if(!id || !pw){ toast('아이디/비밀번호를 입력하세요'); return; }
+
+  const basic = read(K.BASIC, null);
+  // 간단 매칭 (가입 시 저장한 아이디/비번과 비교)
+  if(basic && basic.userid === id && basic.pw === pw){
+    toast(`${basic.nick || id}님 환영합니다!`);
+    navigate('home');
+  }else{
+    toast('아이디 또는 비밀번호가 올바르지 않습니다');
+  }
+}
+
 // ===== 내비게이션 =====
 function navigate(name){
   $$('.view').forEach(v=>v.classList.remove('active')); $('#view-'+name).classList.add('active');
   $$('.tabs button').forEach(b=>b.classList.remove('active')); $('#tab-'+name)?.classList.add('active');
-  setTabsVisible(!(name==='intro'||name==='terms'||name==='basic'||name==='survey'||name==='reco-intro'));
+  setTabsVisible(!(name==='intro'||name==='terms'||name==='basic'||name==='survey'||name==='reco-intro'||name==='login'));
   if(name==='home'){renderHome()} if(name==='records'){renderCalendar()} if(name==='reco'){renderReco()} if(name==='plants'){renderPlants()} if(name==='grow'){renderGrow()} if(name==='my'){renderMy()}
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
 // ===== 약관 =====
-const TERMS={service:`(샘플) 서비스 이용약관 전문을 여기에 넣으세요.`, privacy:`(샘플) 개인정보 수집·이용 동의 전문을 여기에 넣으세요.`};
+const TERMS={service:`서비스 이용약관 전문을 여기에 넣으세요.`, privacy:`개인정보 수집·이용 동의 전문을 여기에 넣으세요.`};
 function openTerms(title,content){$('#overlay').classList.add('show'); const m=$('#modal'); m.style.display='block'; m.innerHTML=`<div class='title'>${title}</div><div class='hint' style='white-space:pre-wrap'>${content}</div><div class='right'><button class='btn acc' onclick='closeModal()'>확인</button></div>`}
 function closeModal(){ $('#overlay').classList.remove('show'); $('#modal').style.display='none'; }
 function toggleAllAgreements(checked){ $('#agreeService').checked=checked; $('#agreePrivacy').checked=checked; updateTermsNext(); }
@@ -25,19 +41,135 @@ function syncAllAgree(){ const all=$('#agreeService').checked && $('#agreePrivac
 function updateTermsNext(){ $('#btnTermsNext').disabled=!( $('#agreeService').checked && $('#agreePrivacy').checked ); }
 
 // ===== 기본 정보 저장 & 검증 =====
-function checkIdDup(){ const id=$('[name="userid"]').value.trim(); const hint=$('#idHint'); if(!id){hint.textContent='아이디를 입력하세요.';return;} const taken=['taken','admin']; if(taken.includes(id.toLowerCase())){hint.textContent='이미 사용 중인 아이디입니다.'; hint.style.color='#dc2626';} else {hint.textContent='사용 가능한 아이디입니다.'; hint.style.color='#16a34a';}}
-function clearPwHint(){ $('#pwHint').textContent=''; }
-function checkPwMatch(){ const pw=$('[name="pw"]').value; const pw2=$('[name="pw2"]').value; const hint=$('#pwHint'); if(!pw2){hint.textContent='';return;} if(pw===pw2){hint.textContent='비밀번호가 일치합니다.'; hint.style.color='#16a34a';} else {hint.textContent='비밀번호가 일치하지 않습니다.'; hint.style.color='#dc2626';} }
+function checkIdDup() {
+  const useridInput = document.getElementById('userid');
+  if (!useridInput) return; // 입력창 없으면 그냥 종료
+
+  const id = useridInput.value.trim();
+  const hint = document.getElementById('idHint');
+
+  if (!id) {
+    hint.textContent = '아이디를 입력하세요.';
+    hint.style.color = '#dc2626';
+    return;
+  }
+
+  const taken = ['taken', 'admin']; // 데모용 중복 아이디
+  if (taken.includes(id.toLowerCase())) {
+    hint.textContent = '이미 사용 중인 아이디입니다.';
+    hint.style.color = '#dc2626';
+  } else {
+    hint.textContent = '사용 가능한 아이디입니다.';
+    hint.style.color = '#16a34a';
+  }
+}
+
+function validatePwSeq(){
+  const pw   = document.getElementById('pw');
+  const pw2  = document.getElementById('pw2');
+  const hint = document.getElementById('pwHint');
+
+  const val1 = pw.value || '';
+  const val2 = pw2.value || '';
+  const hasMinLen1 = val1.length >= 8;
+  const hasMinLen2 = val2.length >= 8;
+  const hasSpecial = s => /[!@#$%^&*]/.test(s);
+
+  // 기본 상태 초기화
+  pw.setCustomValidity('');
+  pw2.setCustomValidity('');
+  hint.textContent = '';
+  hint.style.color = '#dc2626';
+
+  // 1) 길이부터 체크 (둘 중 하나라도 8자 미만이면)
+  if (!hasMinLen1 || !hasMinLen2) {
+    hint.textContent = '비밀번호는 8자 이상으로 입력하세요.';
+    // 폼 제출 막기용으로 pw2에 오류를 잡아두면 UX가 깔끔함
+    pw2.setCustomValidity('비밀번호는 8자 이상이어야 합니다.');
+    return;
+  }
+
+  // 2) 특수기호 체크 (둘 중 하나라도 특수기호 없으면)
+  if (!hasSpecial(val1) || !hasSpecial(val2)) {
+    hint.textContent = '특수기호를 최소 1개 포함해 주세요. (!@#$%^&*)';
+    pw2.setCustomValidity('특수기호 최소 1개 필요');
+    return;
+  }
+
+  // 3) 일치 여부 체크
+  if (val1 !== val2) {
+    hint.textContent = '비밀번호가 일치하지 않습니다.';
+    pw2.setCustomValidity('비밀번호가 일치하지 않습니다.');
+    return;
+  }
+
+  // ✅ 모두 통과
+  hint.style.color = '#16a34a';
+  hint.textContent = '비밀번호가 일치합니다.';
+  pw2.setCustomValidity('');
+}
+function filterPhone(el) {
+  const before = el.value;
+  // 숫자 외 모든 문자 제거
+  const after = before.replace(/[^0-9]/g, '');
+  if (before !== after) {
+    el.value = after;
+    toast('숫자만 입력할 수 있습니다.');
+  }
+}
 function saveBasic(){ const f=new FormData($('#form-basic')); const req=['userid','pw','pw2','nick','phone','gender','birth','height','weight']; for(const k of req){ if(!(f.get(k)&&String(f.get(k)).trim())){ toast('모든 필수 항목을 입력해주세요'); return; } } if(f.get('pw')!==f.get('pw2')){ toast('비밀번호가 일치하지 않습니다'); return; } save(K.BASIC,Object.fromEntries(f.entries())); toast('기본 정보 저장됨'); navigate('survey'); }
 
 // ===== 설문 저장 → 추천 소개 =====
-function saveSurvey(){ const f=new FormData($('#form-survey')); const data={ goals:f.getAll('goals'), habit:f.get('habit')||'', allergies:(f.get('allergies')||'').split(',').map(s=>s.trim()).filter(Boolean), intakes:(f.get('intakes')||'').split(',').map(s=>s.trim()).filter(Boolean) }; save(K.GOALS,data);
-  const r=computeReco(); const first=(r.set&&r.set[0])||'basil'; const p=PLANTS[first]; save(K.RECO,{...r,set:[first]});
-  $('#recoIntroCard').innerHTML=`<div style='display:flex;gap:12px;align-items:center'><div style='width:72px;height:72px;border-radius:16px;background:#d1fae5;border:1px solid var(--line);'></div><div><div class='badge'>추천 작물</div><div style='font-weight:900;font-size:20px;margin-top:4px'>${p.name}</div><div class='hint'>${p.tips[0]} · ${p.tips[1]}</div></div></div><div class='card pad' style='margin-top:12px'><div class='title-strong'>왜 ${p.name}인가요?</div><div class='hint'>초기 설문 결과를 바탕으로 가장 무난하고 키우기 쉬운 작물을 제안했어요. (데모: 데이터 없으면 바질 기본 추천)</div></div>`;
-  navigate('reco-intro'); }
+function saveSurvey(){
+  const f = new FormData($('#form-survey'));
+  const data = {
+    goals: f.getAll('goals'),
+    habit: f.get('habit') || '',
+    allergies: (f.get('allergies') || '').split(',').map(s=>s.trim()).filter(Boolean),
+    intakes: (f.get('intakes') || '').split(',').map(s=>s.trim()).filter(Boolean)
+  };
+  save(K.GOALS, data);
+
+  const r = computeReco();
+  const first = (r.set && r.set[0]) || 'basil';
+  const p = PLANTS[first];
+  save(K.RECO, {...r, set:[first]});
+
+  // ✅ 중앙 큰 이미지 + 우상단 배지 + 아래 텍스트
+  const tips = (p.tips || []).slice(0,2).join(' · ');
+  const features = (p.tips || []).map(t=>`<li>${t}</li>`).join('');
+
+  $('#recoIntroCard').innerHTML = `
+    <div class="reco-hero">
+      <figure class="reco-figure">
+        <img src="${p.img || ''}" alt="${p.name}">
+        <div class="reco-badge">추천 작물</div>
+      </figure>
+
+      <div class="reco-title">${p.name}</div>
+      <div class="reco-sub">${tips || '초기 설문 결과를 바탕으로 제안했어요.'}</div>
+
+      <ul class="reco-list">
+        ${features}
+      </ul>
+    </div>
+  `;
+
+  navigate('reco-intro');
+}
+
 
 // ===== 추천 로직/데이터 =====
-const PLANTS={ basil:{name:'바질',tags:['core'],tips:['밝은 간접광','물 자주 주지 않기','수확은 윗부분부터']}, mint:{name:'민트',tags:['core','digestion','stress'],tips:['반그늘 선호','물을 말리지 않기','정기적인 순지르기']}, lettuce:{name:'상추',tags:['core'],tips:['충분한 광','균일한 수분','15~25°C']}, lemonbalm:{name:'레몬밤',tags:['sleep','stress','calm'],tips:['반그늘','과습 주의','신선 섭취 좋음']}, chamomile:{name:'카모마일',tags:['sleep','calm'],tips:['충분한 일조','배수 좋은 토양','꽃이 피면 수확']}, rosemary:{name:'로즈마리',tags:['focus'],tips:['강한 빛 선호','건조에 강함','가지치기 필요']}, thyme:{name:'타임',tags:['focus','digestion'],tips:['햇볕 좋은 곳','건조 토양','자주 수확']} };
+const PLANTS = {
+  basil:     { name:'바질',     tags:['core'],                    tips:['밝은 간접광','물 자주 주지 않기','수확은 윗부분부터'], img:'img/basil.png' },
+  mint:      { name:'민트',     tags:['core','digestion','stress'], tips:['반그늘 선호','물을 말리지 않기','정기적인 순지르기'], img:'img/mint.png' },
+  lettuce:   { name:'상추',     tags:['core'],                    tips:['충분한 광','균일한 수분','15~25°C'],                 img:'img/lettuce.png' },
+  lemonbalm: { name:'레몬밤',   tags:['sleep','stress','calm'],   tips:['반그늘','과습 주의','신선 섭취 좋음'],              img:'img/lemonbalm.png' },
+  chamomile: { name:'카모마일', tags:['sleep','calm'],            tips:['충분한 일조','배수 좋은 토양','꽃이 피면 수확'],     img:'img/chamomile.png' },
+  rosemary:  { name:'로즈마리', tags:['focus'],                   tips:['강한 빛 선호','건조에 강함','가지치기 필요'],        img:'img/rosemary.png' },
+  thyme:     { name:'타임',     tags:['focus','digestion'],       tips:['햇볕 좋은 곳','건조 토양','자주 수확'],              img:'img/thyme.png' },
+};
+
 function computeReco(){ const g=read(K.GOALS,{goals:[]}).goals||[]; const score={}; const inc=(k)=>score[k]=(score[k]||0)+1; g.forEach(goal=>{ if(goal==='sleep'){inc('lemonbalm');inc('chamomile')} if(goal==='stress'){inc('lemonbalm');inc('mint')} if(goal==='digestion'){inc('mint');inc('thyme')} if(goal==='focus'){inc('rosemary');inc('thyme')} }); if(!Object.keys(score).length){inc('basil')} const ranked=Object.entries(score).sort((a,b)=>b[1]-a[1]).map(([k])=>k); return {goals:g,set:ranked}; }
 
 function renderHome(){
@@ -167,4 +299,29 @@ function runSmokeTests(){
   }catch(e){
     console.error('Smoke test failure:',e);
   }finally{ console.groupEnd(); }
+}
+
+setTabsVisible(false);
+
+// 1) 금지 문자 사전 차단 (붙여넣기/단일 문자 모두 커버)
+function blockDisallowed(e){
+  const t = e.target;
+  // 일부 beforeinput에서 data가 null일 수 있음 → 그땐 후단 정제에 맡김
+  if (!e.data) return;
+  if (/[^A-Za-z0-9_@]/.test(e.data)) {
+    e.preventDefault();           // 금지 문자 자체가 못 들어오게
+    // 선택: 사용자에게 피드백
+    // toast('아이디는 영문/숫자/_/@만 가능합니다.');
+  }
+}
+
+// 2) 혹시 들어온 값은 화이트리스트로 정제
+function filterUserId(el){
+  const clean = el.value.replace(/[^A-Za-z0-9_@]/g, '');
+  if (clean !== el.value) {
+    const pos = el.selectionStart;
+    const diff = el.value.length - clean.length;
+    el.value = clean;
+    try { el.setSelectionRange(Math.max(0, pos - diff), Math.max(0, pos - diff)); } catch {}
+  }
 }
