@@ -4,9 +4,21 @@ const $=s=>document.querySelector(s); const $$=s=>Array.from(document.querySelec
 const read=(k,d=null)=>{try{return JSON.parse(localStorage.getItem(k)||(d===null?'null':JSON.stringify(d)));}catch{return d}};
 const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
 
+// 로그인 상태 (마지막 페이지 기억 제거)
+const KA = { AUTH: 'AUTH' };
+
+function setAuth(a){ localStorage.setItem(KA.AUTH, JSON.stringify(a)); }
+function getAuth(){ try { return JSON.parse(localStorage.getItem(KA.AUTH)); } catch { return null; } }
+function logout(){
+  localStorage.removeItem(KA.AUTH);
+  toast('로그아웃 되었습니다');
+  navigate('intro');
+}
+
 // ===== 탭 표시/숨김 =====
 function setTabsVisible(v){document.querySelector('nav.tabs')?.classList.toggle('hidden',!v)}
 
+// ===== 로그인 처리 =====
 function handleLogin(e){
   e.preventDefault();
   const id = e.target.userid.value.trim();
@@ -16,7 +28,9 @@ function handleLogin(e){
   const basic = read(K.BASIC, null);
   // 간단 매칭 (가입 시 저장한 아이디/비번과 비교)
   if(basic && basic.userid === id && basic.pw === pw){
+    setAuth({ loggedIn:true, userId:id, nick: basic.nick });
     toast(`${basic.nick || id}님 환영합니다!`);
+    setTabsVisible(true);
     navigate('home');
   }else{
     toast('아이디 또는 비밀번호가 올바르지 않습니다');
@@ -81,22 +95,21 @@ function validatePwSeq(){
   hint.textContent = '';
   hint.style.color = '#dc2626';
 
-  // 1) 길이부터 체크 (둘 중 하나라도 8자 미만이면)
+  // 1) 길이
   if (!hasMinLen1 || !hasMinLen2) {
     hint.textContent = '비밀번호는 8자 이상으로 입력하세요.';
-    // 폼 제출 막기용으로 pw2에 오류를 잡아두면 UX가 깔끔함
     pw2.setCustomValidity('비밀번호는 8자 이상이어야 합니다.');
     return;
   }
 
-  // 2) 특수기호 체크 (둘 중 하나라도 특수기호 없으면)
+  // 2) 특수기호
   if (!hasSpecial(val1) || !hasSpecial(val2)) {
     hint.textContent = '특수기호를 최소 1개 포함해 주세요. (!@#$%^&*)';
     pw2.setCustomValidity('특수기호 최소 1개 필요');
     return;
   }
 
-  // 3) 일치 여부 체크
+  // 3) 일치 여부
   if (val1 !== val2) {
     hint.textContent = '비밀번호가 일치하지 않습니다.';
     pw2.setCustomValidity('비밀번호가 일치하지 않습니다.');
@@ -108,6 +121,7 @@ function validatePwSeq(){
   hint.textContent = '비밀번호가 일치합니다.';
   pw2.setCustomValidity('');
 }
+
 function filterPhone(el) {
   const before = el.value;
   // 숫자 외 모든 문자 제거
@@ -117,9 +131,78 @@ function filterPhone(el) {
     toast('숫자만 입력할 수 있습니다.');
   }
 }
-function saveBasic(){ const f=new FormData($('#form-basic')); const req=['userid','pw','pw2','nick','phone','gender','birth','height','weight']; for(const k of req){ if(!(f.get(k)&&String(f.get(k)).trim())){ toast('모든 필수 항목을 입력해주세요'); return; } } if(f.get('pw')!==f.get('pw2')){ toast('비밀번호가 일치하지 않습니다'); return; } save(K.BASIC,Object.fromEntries(f.entries())); toast('기본 정보 저장됨'); navigate('survey'); }
 
-// ===== 설문 저장 → 추천 소개 =====
+function saveBasic(){
+  const f=new FormData($('#form-basic'));
+  const req=['userid','pw','pw2','nick','phone','gender','birth','height','weight'];
+  for(const k of req){ if(!(f.get(k)&&String(f.get(k)).trim())){ toast('모든 필수 항목을 입력해주세요'); return; } }
+  if(f.get('pw')!==f.get('pw2')){ toast('비밀번호가 일치하지 않습니다'); return; }
+
+  // 저장
+  const basicData = Object.fromEntries(f.entries());
+  save(K.BASIC, basicData);
+  toast('기본 정보 저장됨');
+
+  // ✅ 회원가입 직후에도 로그인 세션 유지
+  setAuth({ loggedIn: true, userId: basicData.userid, nick: basicData.nick });
+
+  // 온보딩 설문으로
+  navigate('survey');
+}
+
+// ===== 추천 로직/데이터 =====
+const PLANTS = {
+  basil: {
+    name: '바질',
+    tags: ['core'],
+    tips: ['밝은 간접광', '물 자주 주지 않기', '수확은 윗부분부터'],
+    img: 'img/basil.png',
+    desc: '비타민과 항산화 물질이 풍부해 기본 작물 세트(Core)에 포함됩니다. 음식의 풍미를 더하고, 가벼운 소화 보조 효과도 있습니다.'
+  },
+  mint: {
+    name: '민트',
+    tags: ['core', 'digestion', 'stress'],
+    tips: ['반그늘 선호', '물을 말리지 않기', '정기적인 순지르기'],
+    img: 'img/mint.png',
+    desc: '멘톨 성분이 위장을 진정시키고 스트레스 완화에 도움을 줍니다. 상쾌한 향으로 집중력을 유지하기에도 좋아요.'
+  },
+  lettuce: {
+    name: '상추',
+    tags: ['core'],
+    tips: ['충분한 광', '균일한 수분', '15~25°C 유지'],
+    img: 'img/lettuce.png',
+    desc: '기본 작물(Core)로 손쉽게 키울 수 있고, 식이섬유와 수분이 많아 식단 밸런스 유지에 적합합니다.'
+  },
+  lemonbalm: {
+    name: '레몬밤',
+    tags: ['sleep', 'stress', 'calm'],
+    tips: ['반그늘', '과습 주의', '신선 섭취 좋음'],
+    img: 'img/lemonbalm.png',
+    desc: '레몬향 성분인 시트랄과 로즈마린산이 스트레스와 불안을 완화하고, 숙면을 유도하는 허브입니다.'
+  },
+  chamomile: {
+    name: '카모마일',
+    tags: ['sleep', 'calm'],
+    tips: ['충분한 일조', '배수 좋은 토양', '꽃이 피면 수확'],
+    img: 'img/chamomile.png',
+    desc: '아피게닌 성분이 신경을 안정시켜 숙면을 돕습니다. 진정·진통 효과로 편안한 저녁 루틴에 어울립니다.'
+  },
+  rosemary: {
+    name: '로즈마리',
+    tags: ['focus'],
+    tips: ['강한 빛 선호', '건조에 강함', '가지치기 필요'],
+    img: 'img/rosemary.png',
+    desc: '로즈마린산이 기억력과 집중력을 향상시키며, 상쾌한 향은 피로감 완화에도 도움을 줍니다.'
+  },
+  thyme: {
+    name: '타임',
+    tags: ['focus', 'digestion'],
+    tips: ['햇볕 좋은 곳', '건조 토양', '자주 수확'],
+    img: 'img/thyme.png',
+    desc: '소화를 촉진하고, 항균·면역 강화 효과로 신체 리듬을 유지하는 데 도움이 됩니다.'
+  },
+};
+
 function saveSurvey(){
   const f = new FormData($('#form-survey'));
   const data = {
@@ -135,48 +218,88 @@ function saveSurvey(){
   const p = PLANTS[first];
   save(K.RECO, {...r, set:[first]});
 
-  // ✅ 중앙 큰 이미지 + 우상단 배지 + 아래 텍스트
-  const tips = (p.tips || []).slice(0,2).join(' · ');
-  const features = (p.tips || []).map(t=>`<li>${t}</li>`).join('');
-
+  // 추천 소개 카드
   $('#recoIntroCard').innerHTML = `
     <div class="reco-hero">
       <figure class="reco-figure">
         <img src="${p.img || ''}" alt="${p.name}">
         <div class="reco-badge">추천 작물</div>
       </figure>
-
       <div class="reco-title">${p.name}</div>
-      <div class="reco-sub">${tips || '초기 설문 결과를 바탕으로 제안했어요.'}</div>
-
+      <div class="reco-sub">${p.desc || '초기 설문 결과를 바탕으로 제안했어요.'}</div>
       <ul class="reco-list">
-        ${features}
+        ${(p.tips || []).map(t => `<li>${t}</li>`).join('')}
       </ul>
     </div>
   `;
 
+  // 설문 완료 시점에도 로그인 세션 보장 (중복 저장 무해)
+  const basic = read(K.BASIC, null);
+  if (basic?.userid) setAuth({ loggedIn: true, userId: basic.userid, nick: basic.nick });
+
   navigate('reco-intro');
 }
 
+function computeReco(){
+  const g=read(K.GOALS,{goals:[]}).goals||[];
+  const score={}; const inc=(k)=>score[k]=(score[k]||0)+1;
+  g.forEach(goal=>{
+    if(goal==='sleep'){inc('lemonbalm');inc('chamomile')}
+    if(goal==='stress'){inc('lemonbalm');inc('mint')}
+    if(goal==='digestion'){inc('mint');inc('thyme')}
+    if(goal==='focus'){inc('rosemary');inc('thyme')}
+  });
+  if(!Object.keys(score).length){inc('basil')}
+  const ranked=Object.entries(score).sort((a,b)=>b[1]-a[1]).map(([k])=>k);
+  return {goals:g,set:ranked};
+}
 
-// ===== 추천 로직/데이터 =====
-const PLANTS = {
-  basil:     { name:'바질',     tags:['core'],                    tips:['밝은 간접광','물 자주 주지 않기','수확은 윗부분부터'], img:'img/basil.png' },
-  mint:      { name:'민트',     tags:['core','digestion','stress'], tips:['반그늘 선호','물을 말리지 않기','정기적인 순지르기'], img:'img/mint.png' },
-  lettuce:   { name:'상추',     tags:['core'],                    tips:['충분한 광','균일한 수분','15~25°C'],                 img:'img/lettuce.png' },
-  lemonbalm: { name:'레몬밤',   tags:['sleep','stress','calm'],   tips:['반그늘','과습 주의','신선 섭취 좋음'],              img:'img/lemonbalm.png' },
-  chamomile: { name:'카모마일', tags:['sleep','calm'],            tips:['충분한 일조','배수 좋은 토양','꽃이 피면 수확'],     img:'img/chamomile.png' },
-  rosemary:  { name:'로즈마리', tags:['focus'],                   tips:['강한 빛 선호','건조에 강함','가지치기 필요'],        img:'img/rosemary.png' },
-  thyme:     { name:'타임',     tags:['focus','digestion'],       tips:['햇볕 좋은 곳','건조 토양','자주 수확'],              img:'img/thyme.png' },
+const TAG_LABELS = {
+  sleep: '수면',
+  stress: '스트레스',
+  digestion: '소화',
+  focus: '집중',
+  calm: '진정',
+  core: '기본'
 };
 
-function computeReco(){ const g=read(K.GOALS,{goals:[]}).goals||[]; const score={}; const inc=(k)=>score[k]=(score[k]||0)+1; g.forEach(goal=>{ if(goal==='sleep'){inc('lemonbalm');inc('chamomile')} if(goal==='stress'){inc('lemonbalm');inc('mint')} if(goal==='digestion'){inc('mint');inc('thyme')} if(goal==='focus'){inc('rosemary');inc('thyme')} }); if(!Object.keys(score).length){inc('basil')} const ranked=Object.entries(score).sort((a,b)=>b[1]-a[1]).map(([k])=>k); return {goals:g,set:ranked}; }
+function renderHome() {
+  const r = read(K.RECO, null);
+  const first = (r?.set && r.set[0]) || 'basil';
+  const p = PLANTS[first];
 
-function renderHome(){
-  const r=read(K.RECO,null); const first=(r?.set&&r.set[0])||'basil'; const p=PLANTS[first];
-  $('#heroReco').innerHTML=`<div style='display:flex;align-items:center;gap:12px'><div style='width:64px;height:64px;border-radius:16px;background:#d1fae5;border:1px solid var(--line)'></div><div><div class='badge'>추천 작물</div><div style='font-weight:900;font-size:18px;margin-top:4px'>${p.name}</div><div class='hint'>${p.tips[0]} · ${p.tips[1]}</div></div></div>`;
-  const list=(r?.set||['basil']);
-  $('#myCrops').innerHTML=list.map(k=>`<div class='item'><div class='meta'><div class='title'>${PLANTS[k].name}</div><div class='sub'>권장: ${PLANTS[k].tips[0]}</div></div><button class='btn' onclick="openCropDetail('${k}')">관리</button></div>`).join('');
+  // 상단 추천 카드
+  $('#heroReco').innerHTML = `
+    <div style="
+      display:flex; align-items:center; gap:12px;
+      background:#f9fafb; border-radius:16px; padding:12px;
+      box-shadow:0 2px 4px rgba(0,0,0,0.05);
+    ">
+      <div style="width:64px;height:64px;border-radius:12px;overflow:hidden;background:#d1fae5;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;">
+      </div>
+      <div style="flex:1;">
+        <div class="badge">추천 작물</div>
+        <div style="font-weight:900;font-size:18px;margin-top:4px;">${p.name}</div>
+        <div style="font-size:13px;color:#6b7280;margin-top:2px;">
+          ${p.tags.map(t => TAG_LABELS[t] || t).join(' · ')}
+        </div>
+        <div class="hint" style="margin-top:2px;">${p.tips[0]} · ${p.tips[1]}</div>
+      </div>
+    </div>
+  `;
+
+  // 내 작물 리스트
+  const list = (r?.set || ['basil']);
+  $('#myCrops').innerHTML = list.map(k => `
+    <div class="item">
+      <div class="meta">
+        <div class="title">${PLANTS[k].name}</div>
+        <div class="sub">권장: ${PLANTS[k].tips[0]}</div>
+      </div>
+      <button class="btn" onclick="openCropDetail('${k}')">관리</button>
+    </div>
+  `).join('');
 }
 
 // ===== 동의/추천/성장 가이드 =====
@@ -198,6 +321,7 @@ function renderReco(){
   const html = `<div style="display:flex;align-items:center;gap:12px"><div style="width:56px;height:56px;border-radius:14px;background:#d1fae5;border:1px solid var(--line)"></div><div><div class="badge">추천 작물</div><div style="font-weight:900;font-size:18px;margin-top:4px">${p.name}</div><div class="hint">${p.tips[0]} · ${p.tips[1]}</div></div></div><div style="margin-top:10px"><b>추천 세트:</b> ${g.pack} (${g.set.join(', ')})</div><div style="margin-top:6px"><b>재배·섭취 루틴:</b><ul style="margin:6px 0 0 18px">${g.routine.map(x=>`<li>${x}</li>`).join('')}</ul></div>`;
   const host = $('#recoDetail'); if(host) host.innerHTML = html;
 }
+
 function renderPlants(){ const r=read(K.RECO,null); const list=(r?.set||['basil']); $('#plantList').innerHTML=list.map(k=>{const p=PLANTS[k]; return `<div class='card pad'><div class='row-between'><div class='title-strong'>${p.name}</div><span class='badge'>${p.tags.join(' · ')}</span></div><ul style='margin:8px 0 0 18px;color:#4b5563'>${p.tips.map(t=>`<li>${t}</li>`).join('')}</ul></div>`;}).join(''); }
 function renderGrow(){ const r=read(K.RECO,null); const list=(r?.set||['basil']); const tips=list.map(k=>({name:PLANTS[k].name,guide:['빛: 하루 6~8시간','급수: 지표면이 마를 때','온도: 18~24°C 유지','수확: 상단/겉잎부터']})); $('#growTips').innerHTML=tips.map(x=>`<div class='card pad'><div class='title-strong'>${x.name}</div><ul style='margin:8px 0 0 18px;color:#4b5563'>${x.guide.map(t=>`<li>${t}</li>`).join('')}</ul></div>`).join(''); }
 
@@ -210,10 +334,10 @@ function renderCalendar(){ const title=$('#calTitle'); const grid=$('#calGrid');
   const recs=getRecords();
   for(let d=1; d<=days; d++){ const date=`${base.getFullYear()}-${String(base.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; const cell=document.createElement('div'); cell.className='day'; 
   const hasData = !!recs[date] && Object.keys(recs[date]).length > 0;
-// 아이콘만 표시해 레이아웃 고정
-cell.className = 'day' + (hasData ? ' has-data' : '');
-cell.innerHTML = `<div class='d'>${d}</div>${hasData ? `<span class='mark' title='입력 있음'>🌱</span>` : ''}`;
-cell.onclick=()=>openRecordModal(date); grid.appendChild(cell);} }
+  // 아이콘만 표시해 레이아웃 고정
+  cell.className = 'day' + (hasData ? ' has-data' : '');
+  cell.innerHTML = `<div class='d'>${d}</div>${hasData ? `<span class='mark' title='입력 있음'>🌱</span>` : ''}`;
+  cell.onclick=()=>openRecordModal(date); grid.appendChild(cell);} }
 function prevMonth(){ calRef.setMonth(calRef.getMonth()-1); renderCalendar(); }
 function nextMonth(){ calRef.setMonth(calRef.getMonth()+1); renderCalendar(); }
 function openRecordModal(date){ const ov=$('#recOverlay'); const m=$('#recModal'); ov.classList.add('show'); m.style.display='block'; const rec=getRecords()[date]||{}; m.innerHTML=`<div class='title'>${date} 기록하기</div>${FIELDS.map(f=>`<label>${f.label}<input id='f-${f.k}' type='${f.type}' ${f.step?`step='${f.step}'`:''} value='${rec[f.k]??''}'></label>`).join('')}<div class='right'><button class='btn ghost' onclick='closeRecModal()'>취소</button><button class='btn acc' onclick="saveDay('${date}')">저장하기</button></div>`; }
@@ -234,7 +358,7 @@ function saveCropMeta(){ const d=getCrop(); d.meta.shipDate=$('#shipDate').value
 function renderLogs(){ const host=$('#cropLogs'); const d=getCrop(); if(!host) return; host.innerHTML=(d.logs||[]).map((x,i)=>`<div class='item'><div class='meta'><div class='title'>${x.date} · ${x.action}</div><div class='sub'>${x.note||''}</div></div><button class='btn' onclick='delLog(${i})'>삭제</button></div>`).join('')||'<div class="hint">아직 로그가 없습니다.</div>'; }
 function delLog(i){ const d=getCrop(); d.logs.splice(i,1); setCrop(d); renderLogs(); }
 function openLogModal(){ $('#overlay').classList.add('show'); const m=$('#modal'); m.style.display='block'; m.innerHTML=`<div class='title'>관리 로그 추가</div><label>날짜<input type='date' id='logDate' value='${new Date().toISOString().slice(0,10)}'></label><label>작업<select id='logAction'><option>급수</option><option>영양제</option><option>수확</option><option>가지치기</option><option>기타</option></select></label><label>메모<input id='logNote' placeholder='간단 메모'></label><div class='right'><button class='btn ghost' onclick='closeModal()'>취소</button><button class='btn acc' onclick='saveLog()'>저장</button></div>`; }
-function saveLog(){ const d=getCrop(); d.logs=d.logs||[]; d.logs.unshift({date:$('#logDate').value, action:$('#logAction').value, note:$('#logNote').value}); setCrop(d); closeModal(); renderLogs(); toast('추가됨'); }
+function saveLog(){ const d=getCrop(); d.logs=d.logs||[]; d.logs.unshift({date:$('#logDate').value, action:'#'+$('#logAction').value, note:$('#logNote').value}); setCrop(d); closeModal(); renderLogs(); toast('추가됨'); }
 
 // ===== 마이 =====
 function renderMy(){ const b=read(K.BASIC,{}); $('#myNick').textContent=b.nick||'닉네임'; syncConsentsUI(); }
@@ -303,18 +427,14 @@ function runSmokeTests(){
 
 setTabsVisible(false);
 
+// ===== 아이디 필터링 =====
 // 1) 금지 문자 사전 차단 (붙여넣기/단일 문자 모두 커버)
 function blockDisallowed(e){
-  const t = e.target;
-  // 일부 beforeinput에서 data가 null일 수 있음 → 그땐 후단 정제에 맡김
   if (!e.data) return;
   if (/[^A-Za-z0-9_@]/.test(e.data)) {
-    e.preventDefault();           // 금지 문자 자체가 못 들어오게
-    // 선택: 사용자에게 피드백
-    // toast('아이디는 영문/숫자/_/@만 가능합니다.');
+    e.preventDefault();
   }
 }
-
 // 2) 혹시 들어온 값은 화이트리스트로 정제
 function filterUserId(el){
   const clean = el.value.replace(/[^A-Za-z0-9_@]/g, '');
@@ -325,3 +445,29 @@ function filterUserId(el){
     try { el.setSelectionRange(Math.max(0, pos - diff), Math.max(0, pos - diff)); } catch {}
   }
 }
+
+// ===== 초기 진입: 세션 유지 시 홈으로 =====
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    const auth = getAuth();
+
+    // ✅ localStorage 정상인지 콘솔에서 확인용
+    console.log('[Init] AUTH =', auth);
+    console.log('[Init] BASIC =', read(K.BASIC, null));
+
+    // AUTH에 로그인 정보가 있으면 홈으로
+    if (auth && auth.loggedIn) {
+      setTabsVisible(true);
+      navigate('home');
+      toast(`${auth.nick || auth.userId || '사용자'}님 환영합니다!`);
+    } else {
+      // AUTH가 없으면 회원가입 or 로그인 필요
+      setTabsVisible(false);
+      navigate('intro');
+    }
+  } catch (e) {
+    console.warn('초기화 중 오류:', e);
+    setTabsVisible(false);
+    navigate('intro');
+  }
+});

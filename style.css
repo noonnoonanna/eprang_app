@@ -67,7 +67,7 @@ width: max-content;white-space: normal;word-break: keep-all;line-height: 1.4;}
 /* 추천 작물 */
 /* 추천 작물 인트로 레이아웃 */
 .reco-hero { display: grid; gap: 10px; }
-.reco-figure { position: relative; margin: 0 auto; width: 100%; max-width: 460px; aspect-ratio: 16 / 10; border-radius: 16px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 8px 24px rgba(0,0,0,.06); background: #f3f4f6; }
+.reco-figure { position: relative; margin: 0 auto; width: 100%; max-width: 460px; aspect-ratio: 4 / 5; border-radius: 16px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 8px 24px rgba(0,0,0,.06); background: #f3f4f6; }
 .reco-figure img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .reco-badge { position: absolute; top: 8px; right: 8px; background: var(--acc); color: #fff; padding: 6px 10px; font-size: 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,.25); box-shadow: 0 4px 10px rgba(0,0,0,.08); }
 .reco-title { font-weight: 900; font-size: 20px; text-align: center; }
@@ -75,6 +75,8 @@ width: max-content;white-space: normal;word-break: keep-all;line-height: 1.4;}
 .reco-list {margin: 6px auto 0;padding-left: 18px;max-width: 520px;color: #4b5563;}
 .view-reco-intro-actions {text-align:center;margin-top:24px;}
 .view-reco-intro-actions button {padding: 10px 110px; border-radius: 20px;}
+/* 홈 메인 */
+#view-home .icons .btn {padding: 20px 7px;}
 /* 모달 */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);backdrop-filter:blur(2px);display:none;z-index:30}
 .overlay.show{display:block}
@@ -98,4 +100,4 @@ width: max-content;white-space: normal;word-break: keep-all;line-height: 1.4;}
 .title-strong{font-weight:800}
 .row-between{display:flex;align-items:center;justify-content:space-between}
 .right{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
-.icons{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
+.icons{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:8px}
