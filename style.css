@@ -39,6 +39,43 @@ nav.tabs{position:sticky;bottom:0;background:#ffffff;border-top:1px solid var(--
 .badge{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:#4b5563}
 .hint{color:#4b5563;font-size:12px}
 .disclaimer{font-size:12px;color:#4b5563}
+.goal-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.goal-buttons input[type="checkbox"] {
+  display: none;
+}
+
+.goal-buttons label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.goal-buttons input[type="checkbox"]:checked + label {
+  background: var(--acc);
+  color: #fff;
+  border-color: var(--acc);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.goal-buttons input[type="checkbox"]:checked + label::after {
+  content: "✓";
+  margin-left: 6px;
+  font-weight: bold;
+}
+
 /* 인트로 */
 .intro{display:grid;place-items:center;min-height:calc(100dvh - 56px);text-align:center;padding:24px}
 .intro h2{font-size:28px;line-height:1.35;margin:0 0 24px 0;font-weight:900}
