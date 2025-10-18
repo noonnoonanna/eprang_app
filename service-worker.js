@@ -1,4 +1,4 @@
-const CACHE = 'ipicare-v1';
+const CACHE = 'IpiCare-v1';
 const APP_SHELL = [
   './',
   './index.html',
