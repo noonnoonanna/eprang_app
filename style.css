@@ -7,10 +7,66 @@ header{position:sticky;top:0;z-index:10;backdrop-filter:saturate(150%) blur(8px)
 .bar{display:flex;align-items:center;gap:10px; padding:14px 16px}
 .bar h1{font-size:18px;margin:0;font-weight:800}
 .grow{flex:1}
-.btn{appearance:none;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff;color:var(--text);cursor:pointer}
+.btn{appearance:none;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff;color:#111;cursor:pointer}
 .btn.acc{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:700}
 .btn.ghost{background:#fff;border:1px solid var(--line)}
+.btn.link{background:transparent;padding:0;color:#059669;border:0}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-size:12px;border:1px solid var(--line)}
+main{flex:1;overflow:auto;padding:16px}
+.view{display:none}
+.view.active{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+.card.pad{padding:14px}
+.grid{display:grid;gap:12px}
+.cols{display:grid;gap:12px}
+.cols.two{grid-template-columns:1fr 1fr}
+.cols.dup{grid-template-columns:1fr auto;align-items:center}
+.item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;border:1px solid var(--line);background:#fff}
+.item .meta{flex:1}
+.item .meta .title{font-weight:800}
+.item .meta .sub{color:#6b7280;font-size:12px;margin-top:2px}
+form{display:grid;gap:12px}
+label{display:grid;gap:6px}
+input, textarea, select{width:100%;padding:12px;border-radius:12px;background:#fff;color:#111;border:1px solid rgba(0,0,0,.12)}
+input[type="checkbox"],input[type="radio"]{width:auto}
+nav.tabs{position:sticky;bottom:0;background:#ffffff;border-top:1px solid var(--line)}
+.tabs ul{margin:0;display:grid;grid-template-columns:repeat(4,1fr);list-style:none;padding:6px}
+.tabs button{display:grid;gap:4px;place-items:center;padding:10px;border-radius:12px;background:transparent;color:#4b5563;border:0}
+.tabs button.active{color:#111;background:#f3f4f6}
+.tabs.hidden{display:none}
 .toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 14px;border-radius:999px;border:1px solid var(--line);opacity:0;pointer-events:none;transition:.25s}
 .toast.show{opacity:1;pointer-events:auto}
 .badge{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:#4b5563}
 .hint{color:#4b5563;font-size:12px}
+.disclaimer{font-size:12px;color:#4b5563}
+/* 인트로 */
+.intro{display:grid;place-items:center;min-height:calc(100dvh - 56px);text-align:center;padding:24px}
+.intro h2{font-size:28px;line-height:1.35;margin:0 0 24px 0;font-weight:900}
+.line{display:block;opacity:0;transform:translateY(10px);filter:blur(2px);animation:lineIn .7s ease forwards}
+.line:nth-child(2){animation-delay:.25s}
+@keyframes lineIn{to{opacity:1;transform:translateY(0);filter:blur(0)}}
+@media (prefers-reduced-motion: reduce){ .line{opacity:1;transform:none;filter:none;animation:none} }
+/* 약관 */
+.agree-row{display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;border:1px solid var(--line);background:#fff}
+/* 모달 */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);backdrop-filter:blur(2px);display:none;z-index:30}
+.overlay.show{display:block}
+.modal{position:fixed;left:12px;right:12px;bottom:80px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;z-index:31;max-height:65vh;overflow:auto}
+.modal .title{font-weight:800;margin-bottom:6px}
+/* 캘린더 */
+.cal{display:grid;gap:8px}
+.cal-head{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;color:#4b5563}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.day{border:1px solid var(--line);border-radius:12px;min-height:72px;padding:6px;cursor:pointer;background:#fff}
+.day .d{font-weight:800}
+.day .note{font-size:12px;color:#4b5563;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cal-nav{display:flex;justify-content:space-between;align-items:center}
+/* 프로필 */
+.profile-head{display:flex;align-items:center;gap:12px}
+.avatar{width:48px;height:48px;border-radius:14px;background:#e5f5ec;border:1px solid var(--line)}
+.nick{font-weight:900;cursor:pointer}
+/* helpers */
+.title-strong{font-weight:800}
+.row-between{display:flex;align-items:center;justify-content:space-between}
+.right{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+.icons{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
