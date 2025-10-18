@@ -76,7 +76,12 @@ function getRecords(){ return read(K.RECORDS,{}); } function setRecords(o){ save
 function renderCalendar(){ const title=$('#calTitle'); const grid=$('#calGrid'); const base=new Date(calRef.getFullYear(),calRef.getMonth(),1); const firstDow=(base.getDay()+6)%7;
   title.textContent=`${base.getFullYear()}-${String(base.getMonth()+1).padStart(2,'0')}`; grid.innerHTML=''; const days=new Date(base.getFullYear(),base.getMonth()+1,0).getDate(); for(let i=0;i<firstDow;i++){ grid.appendChild(document.createElement('div')); }
   const recs=getRecords();
-  for(let d=1; d<=days; d++){ const date=`${base.getFullYear()}-${String(base.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; const cell=document.createElement('div'); cell.className='day'; const note=recs[date]? Object.keys(recs[date]).slice(0,2).map(k=>FIELDS.find(f=>f.k===k)?.label.split('(')[0]).join(', ') : ''; cell.innerHTML=`<div class='d'>${d}</div>${note?`<div class='note'>${note}…</div>`:''}`; cell.onclick=()=>openRecordModal(date); grid.appendChild(cell);} }
+  for(let d=1; d<=days; d++){ const date=`${base.getFullYear()}-${String(base.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; const cell=document.createElement('div'); cell.className='day'; 
+  const hasData = !!recs[date] && Object.keys(recs[date]).length > 0;
+// 아이콘만 표시해 레이아웃 고정
+cell.className = 'day' + (hasData ? ' has-data' : '');
+cell.innerHTML = `<div class='d'>${d}</div>${hasData ? `<span class='mark' title='입력 있음'>🌱</span>` : ''}`;
+cell.onclick=()=>openRecordModal(date); grid.appendChild(cell);} }
 function prevMonth(){ calRef.setMonth(calRef.getMonth()-1); renderCalendar(); }
 function nextMonth(){ calRef.setMonth(calRef.getMonth()+1); renderCalendar(); }
 function openRecordModal(date){ const ov=$('#recOverlay'); const m=$('#recModal'); ov.classList.add('show'); m.style.display='block'; const rec=getRecords()[date]||{}; m.innerHTML=`<div class='title'>${date} 기록하기</div>${FIELDS.map(f=>`<label>${f.label}<input id='f-${f.k}' type='${f.type}' ${f.step?`step='${f.step}'`:''} value='${rec[f.k]??''}'></label>`).join('')}<div class='right'><button class='btn ghost' onclick='closeRecModal()'>취소</button><button class='btn acc' onclick="saveDay('${date}')">저장하기</button></div>`; }
