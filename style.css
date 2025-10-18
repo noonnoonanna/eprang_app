@@ -106,15 +106,11 @@ nav.tabs{position:sticky;bottom:0;background:#ffffff;border-top:1px solid var(--
 }
 .day .d { font-weight: 800; }
 
-/* 날짜에 입력이 있는 경우 표시하는 작은 점 아이콘 */
 .day .mark {
   position: absolute;
   right: 6px;
   bottom: 6px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--acc);       /* 포인트 초록색 */
+  font-size: 14px; /* 보기 좋게 크기 조정 */
 }
 
 /* (선택) 입력 있음 강조 테두리 */
