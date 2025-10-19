@@ -344,10 +344,6 @@ function openRecordModal(date){ const ov=$('#recOverlay'); const m=$('#recModal'
 function closeRecModal(){ $('#recOverlay').classList.remove('show'); $('#recModal').style.display='none'; }
 function saveDay(date){ const rec=getRecords(); rec[date]=rec[date]||{}; FIELDS.forEach(f=>{ const v=$(`#f-${f.k}`).value; if(v!==''&&v!=null){ rec[date][f.k]= (f.type==='number')? Number(v): v; } }); if(rec[date].weight){ const h=parseFloat(read(K.BASIC,{}).height||read(K.VITALS,{}).height); if(h){ rec[date].bmi= Math.round((rec[date].weight/Math.pow(h/100,2))*10)/10; } } setRecords(rec); closeRecModal(); renderCalendar(); toast('저장됨'); }
 
-// ===== 설치/오프라인 =====
-let deferredPrompt; window.addEventListener('beforeinstallprompt',(e)=>{e.preventDefault();deferredPrompt=e;$('#installBtn').hidden=false}); $('#installBtn')?.addEventListener('click',async()=>{if(!deferredPrompt) return; deferredPrompt.prompt(); const {outcome}=await deferredPrompt.userChoice; if(outcome==='accepted') toast('설치 진행…'); deferredPrompt=null; $('#installBtn').hidden=true;});
-function updateOfflineBadge(){ $('#offlineBadge').hidden=navigator.onLine; } addEventListener('online',updateOfflineBadge); addEventListener('offline',updateOfflineBadge); updateOfflineBadge();
-
 // ===== 작물 상세 로직 =====
 let currentCrop = null; const CROPKEY='ipicare-crop-';
 function openCropDetail(k){ currentCrop=k; renderCropDetail(); navigate('crop-detail'); }
