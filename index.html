@@ -11,8 +11,8 @@
 <body>
   <div class="app">
     <header>
-      <div class="bar">        
-        <h1>IpiCare</h1>
+      <div class="bar">
+        <h1 style="cursor:pointer" onclick="navigate('home')">IpiCare</h1>
       </div>
     </header>
 
@@ -26,38 +26,32 @@
           </h2>
           <div class="intro-actions">
             <button class="btn acc" onclick="navigate('terms')">시작하기</button>
-			<div class="login-text">
-				이미 계정이 있나요?<span class="login-link" onclick="navigate('login')">로그인</span>
-			</div>
+            <div class="login-text">
+              이미 계정이 있나요?<span class="login-link" onclick="navigate('login')">로그인</span>
+            </div>
           </div>
         </div>
       </section>
-	  
-	  <!-- 로그인 -->
-	  <section id="view-login" class="view">
-  <div class="grid">
-    <div class="card pad">
-      <div class="title-strong">로그인</div>
-      <form id="form-login" onsubmit="handleLogin(event)">
-        <label>
-          <input type="text" name="userid" required placeholder="아이디" autocomplete="username">
-        </label>
-        <label>
-          <input type="password" name="password" required placeholder="비밀번호" autocomplete="current-password">
-        </label>
-        <div class="cols two" style="margin-top:8px">
-          <button type="button" class="btn ghost" onclick="navigate('intro')">이전</button>
-          <button type="submit" class="btn acc">로그인</button>
-        </div>
-      </form>
-    </div>
 
-    <div class="card pad hint">
-      아직 계정이 없나요?
-      <span class="login-link" onclick="navigate('terms')">회원가입</span>
-    </div>
-  </div>
-</section>
+      <!-- 로그인 -->
+      <section id="view-login" class="view">
+        <div class="grid">
+          <div class="card pad">
+            <div class="title-strong">로그인</div>
+            <form id="form-login" onsubmit="handleLogin(event)">
+              <label><input type="text" name="userid" required placeholder="아이디" autocomplete="username"></label>
+              <label><input type="password" name="password" required placeholder="비밀번호" autocomplete="current-password"></label>
+              <div class="cols two" style="margin-top:8px">
+                <button type="button" class="btn ghost" onclick="navigate('intro')">이전</button>
+                <button type="submit" class="btn acc">로그인</button>
+              </div>
+            </form>
+          </div>
+          <div class="card pad hint">
+            아직 계정이 없나요? <span class="login-link" onclick="navigate('terms')">회원가입</span>
+          </div>
+        </div>
+      </section>
 
       <!-- 1) 약관 동의 -->
       <section id="view-terms" class="view">
@@ -89,134 +83,121 @@
       </section>
 
       <!-- 2) 기본 정보 -->
-	<section id="view-basic" class="view">
-		<div class="grid">
-		  <div class="card pad">
-		    <div class="title-strong">기본 정보</div>
-			<form id="form-basic" onsubmit="event.preventDefault(); saveBasic();">
-			
-			<!-- ✅ 아이디: 영문, 숫자, 특수기호(_ @)만 가능 -->
-			<label>아이디
-				<div class="cols dup">
-					<input name="userid" id="userid" required minlength="4" maxlength="16" pattern="^[A-Za-z0-9_@]+$" placeholder="영문, 숫자, _ @만 사용 가능" title="아이디는 영문, 숫자, _ @만 사용할 수 있습니다."
-						inputmode="latin" autocapitalize="off" autocomplete="username" utocorrect="off" spellcheck="false" onbeforeinput="blockDisallowed(event)" oninput="filterUserId(this)" oncompositionend="filterUserId(this)" />
-					<button type="button" class="btn" onclick="checkIdDup()">중복체크</button>
-				</div>
-				<span id="idHint" class="hint"></span>
-			</label>
-	
-			<!-- ✅ 비밀번호: 8자 이상, 특수문자 포함 -->
-			<label>비밀번호
-				<input name="pw" id="pw" type="password" required minlength="8" oninput="validatePwSeq()" onblur="validatePwSeq()" placeholder="8자 이상, 특수기호 1개 이상 포함" title="8자 이상이며, 특수기호(!@#$%^&*)를 1개 이상 포함해야 합니다.">
-			</label>
-	
-			<label>비밀번호 확인
-			<input name="pw2" id="pw2" type="password" required minlength="8" oninput="validatePwSeq()" onblur="validatePwSeq()">
-			<span id="pwHint" class="hint"></span>
-			</label>
-	
-			<!-- ✅ 닉네임 / 연락처 -->
-			<label>닉네임<input name="nick" required maxlength="10"></label>
-	
-			<!-- 연락처: 숫자만 허용 -->
-			<label>연락처
-				<input name="phone" id="phone" required pattern="^[0-9]{10,11}$" maxlength="11" placeholder="01012345678" title="숫자만 입력 가능합니다. (- 제외)" oninput="filterPhone(this)" inputmode="numeric">
-			</label>
-	
-			<!-- ✅ 성별 / 생년월일 -->
-			<label>성별
-			<select name="gender" required>
-				<option value="">선택</option>
-				<option>여성</option>
-				<option>남성</option>
-			</select>
-			</label>
-	
-			<label>생년월일<input name="birth" type="date" required></label>
-	
-			<!-- ✅ 키 / 체중 -->
-			<div class="cols two">
-			<label>키(cm)<input type="number" name="height" min="50" max="250" step="0.1" required></label>
-			<label>체중(kg)<input type="number" name="weight" min="10" max="250" step="0.1" required></label>
-			</div>
-		</form>
-		</div>
-	
-		<div class="card pad">
-		<div class="cols two">
-			<button class="btn ghost" onclick="navigate('terms')">이전</button>
-			<button class="btn acc" onclick="saveBasic()">다음</button>
-		</div>
-		</div>
-	</div>
-	</section>
+      <section id="view-basic" class="view">
+        <div class="grid">
+          <div class="card pad">
+            <div class="title-strong">기본 정보</div>
+            <form id="form-basic" onsubmit="event.preventDefault(); saveBasic();">
+              <label>아이디
+                <div class="cols dup">
+                  <input name="userid" id="userid" required minlength="4" maxlength="16" pattern="^[A-Za-z0-9_@]+$" placeholder="영문, 숫자, _ @만 사용 가능"
+                    inputmode="latin" autocapitalize="off" autocomplete="username" utocorrect="off" spellcheck="false" onbeforeinput="blockDisallowed(event)" oninput="filterUserId(this)" oncompositionend="filterUserId(this)" />
+                  <button type="button" class="btn" onclick="checkIdDup()">중복체크</button>
+                </div>
+                <span id="idHint" class="hint"></span>
+              </label>
+              <label>비밀번호 <input name="pw" id="pw" type="password" required minlength="8" oninput="validatePwSeq()" onblur="validatePwSeq()" placeholder="8자 이상, 특수기호 1개 이상 포함"></label>
+              <label>비밀번호 확인 <input name="pw2" id="pw2" type="password" required minlength="8" oninput="validatePwSeq()" onblur="validatePwSeq()"><span id="pwHint" class="hint"></span></label>
+              <label>닉네임<input name="nick" required maxlength="10"></label>
+              <label>연락처 <input name="phone" id="phone" required pattern="^[0-9]{10,11}$" maxlength="11" placeholder="01012345678" oninput="filterPhone(this)" inputmode="numeric"></label>
+              <label>성별
+                <select name="gender" required>
+                  <option value="">선택</option><option>여성</option><option>남성</option>
+                </select>
+              </label>
+              <label>생년월일<input name="birth" type="date" required></label>
+              <div class="cols two">
+                <label>키(cm)<input type="number" name="height" min="50" max="250" step="0.1" required></label>
+                <label>체중(kg)<input type="number" name="weight" min="10" max="250" step="0.1" required></label>
+              </div>
+            </form>
+          </div>
+          <div class="card pad">
+            <div class="cols two">
+              <button class="btn ghost" onclick="navigate('terms')">이전</button>
+              <button class="btn acc" onclick="saveBasic()">다음</button>
+            </div>
+          </div>
+        </div>
+      </section>
 
-
-
-      <!-- 3) 온보딩 설문 -->
-	<section id="view-survey" class="view">
-		<div class="grid">
-			<div class="card pad">
-				<div class="title-strong">건강 목표</div>
-				<form id="form-survey">
-					<div class="goal-buttons">
-						<input type="checkbox" id="goal-sleep" name="goals" value="sleep">
-						<label for="goal-sleep">수면</label>
-				
-						<input type="checkbox" id="goal-stress" name="goals" value="stress">
-						<label for="goal-stress">스트레스</label>
-				
-						<input type="checkbox" id="goal-digestion" name="goals" value="digestion">
-						<label for="goal-digestion">소화</label>
-				
-						<input type="checkbox" id="goal-focus" name="goals" value="focus">
-						<label for="goal-focus">집중</label>
-												
-						<input type="checkbox" id="goal-calm" name="goals" value="calm">
-						<label for="goal-calm">진정</label>
-						
-						<input type="checkbox" id="goal-core" name="goals" value="core">
-						<label for="goal-core">기본</label>
-					</div>
-					
-					<label>생활습관/메모
-					<textarea name="habit" placeholder="예: 야근 잦음, 카페인 민감"></textarea>
-					</label>
-				
-					<label>식품 알레르기/금기 (쉼표 구분)
-					<input name="allergies" placeholder="예: 견과류, 카페인">
-					</label>
-				
-					<label>복용 중인 성분(있는 경우)
-					<input name="intakes" placeholder="예: 멜라토닌, 유산균">
-					</label>
-				</form>
-			</div>
-		
-			<div class="card pad">
-				<div class="cols two">
-					<button class="btn ghost" onclick="navigate('basic')">이전</button>
-					<button class="btn acc" onclick="saveSurvey()">저장하고<br>추천 작물 보기</button>
-				</div>
-			</div>
-		</div>
-	</section>
-
+      <!-- 3) 온보딩/재평가 설문 -->
+      <section id="view-survey" class="view">
+        <div class="grid">
+          <div class="card pad">
+            <div class="title-strong">건강 목표 상태 체크</div>
+            <form id="form-survey">
+              <div class="subhead">A. 오늘의 상태 <small class="hint">(최대 3개 선택)</small></div>
+              <div class="checklist" id="symptomList">
+                <label><input type="checkbox" name="symptom" value="sleep_bad" /> 잠이 잘 안 와요</label>
+                <label><input type="checkbox" name="symptom" value="stress_high" /> 스트레스가 많아요</label>
+                <label><input type="checkbox" name="symptom" value="focus_low" /> 집중이 잘 안 돼요</label>
+                <label><input type="checkbox" name="symptom" value="digest_heavy" /> 식후에 더부룩해요</label>
+                <label><input type="checkbox" name="symptom" value="tired" /> 몸이 자주 피곤해요</label>
+              </div>
+              <p class="hint" id="symptomCountHint">0/3 선택됨</p>
+              <div class="subhead">B. 식습관</div>
+              <div class="checklist">
+                <label><input type="checkbox" name="habit" value="snack" /> 야식을 자주 먹어요</label>
+                <label><input type="checkbox" name="habit" value="sweet" /> 단맛을 자주 찾아요</label>
+                <label><input type="checkbox" name="habit" value="fast_eat" /> 식사 속도가 빨라요</label>
+                <label><input type="checkbox" name="habit" value="coffee" /> 커피/카페인을 자주 마셔요</label>
+              </div>
+              <div class="subhead">C. 향·맛 취향</div>
+              <select name="flavor_pref">
+                <option value="soft">부드럽고 순한 향</option>
+                <option value="fresh">상쾌한 향</option>
+                <option value="strong">허브 향 강한 편</option>
+              </select>
+              <div class="subhead">D. 피해야 할 것 (선택)</div>
+              <div class="checklist">
+                <label><input type="checkbox" name="avoid" value="strong_scent" /> 향이 강한 식물은 부담</label>
+                <label><input type="checkbox" name="avoid" value="mint_family" /> 민트 계열은 피하고 싶음</label>
+              </div>
+              <label>기타 제외(콤마로 구분) <input name="avoid_manual" placeholder="예: 루꼴라, 타임" /></label>
+              <div class="subhead">E. 식품 알레르기 / 금기 (선택)</div>
+              <div class="checklist">
+                <label><input type="checkbox" name="allergy_flag" /> 허브/향신료 알레르기가 있어요</label>
+              </div>
+              <label>알레르기/금기 목록 (콤마로 구분)
+                <input name="allergy_list" placeholder="예: 카모마일, 민트, 루꼴라" />
+              </label>
+              <div class="subhead">F. 복용 중인 성분 (선택)</div>
+              <label>현재 복용 중인 성분/추출물 (콤마로 구분)
+                <textarea name="intake_list" rows="2" placeholder="예: 오메가3, 비타민D, 멜라토닌, 카페인"></textarea>
+              </label>
+            </form>
+          </div>
+          <div class="card pad">
+            <div class="cols two">
+              <button class="btn ghost" onclick="navigate('basic')">이전</button>
+              <button class="btn acc" onclick="saveSurvey()">저장하고<br>추천 작물 보기</button>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <!-- 4) 추천 작물 소개 -->
       <section id="view-reco-intro" class="view">
         <div class="grid">
           <div class="card pad" id="recoIntroCard"></div>
-		  <div class="view-reco-intro-actions">
-			<button class="btn acc" onclick="navigate('home')">완료</button>
-		  </div>
-		</div>
+          <div class="view-reco-intro-actions">
+            <div class="cols two">
+              <button class="btn ghost" onclick="navigate('home')">추천만 저장</button>
+              <button class="btn acc" onclick="startSubscribeFromReco()">구독 시작</button>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <!-- 5) 홈 -->
+      <!-- 5) 홈 (대시보드) -->
       <section id="view-home" class="view">
         <div class="grid">
-          <div class="card pad" id="heroReco"></div>
+          <div class="card pad" id="heroRecoSurvey"></div>
+          <div class="card pad" id="heroRecoRecord"></div>
+          <div class="card pad" id="homeSubSummary"></div>
+          <div class="card pad" id="homeStreak"></div>
+          <div class="card pad" id="homeToday"></div>
           <div class="card pad">
             <div class="title-strong">내 작물 상태</div>
             <div id="myCrops" class="list" style="margin-top:8px"></div>
@@ -224,7 +205,7 @@
           <div class="card pad">
             <div class="title-strong">바로가기</div>
             <div class="icons">
-              <button class="btn" onclick="navigate('survey')">🎯 건강 목표</button>
+              <button class="btn" onclick="startReevalSurvey()">📋 건강 상태</button>
               <button class="btn" onclick="navigate('recipes')">🍵 레시피</button>
               <button class="btn" onclick="navigate('grow')">⏰ 리마인더</button>
               <button class="btn" onclick="navigate('my')">🧾 구독</button>
@@ -249,25 +230,130 @@
       <section id="view-reco" class="view">
         <div class="grid">
           <div class="card pad">
-            <div class="title-strong">추천 가이드</div>
-            <div id="recoDetail" class="hint" style="margin-top:6px"></div>
+            <figure class="reco-hero-figure"><img id="recoHeroImg" alt="추천 작물 이미지" /></figure>
+            <div class="reco-hero-title" id="recoHeroTitle"></div>
+            <div class="reco-hero-sub" id="recoHeroSub"></div>
           </div>
-          <div class="card pad"><button class="btn" onclick="navigate('plants')">추천 원물 보기</button></div>
+          <div class="card pad">
+            <div class="tabs-inline" role="tablist" aria-label="추천 가이드 탭">
+              <button class="tab-btn active" data-tab="set" aria-selected="true">추천 세트</button>
+              <button class="tab-btn" data-tab="guide" aria-selected="false">재배·섭취 가이드</button>
+            </div>
+            <div class="tab-panels">
+              <div id="tab-set" class="tab-panel active"><div id="recoSetList" class="reco-set-list"></div></div>
+              <div id="tab-guide" class="tab-panel"><div id="recoGuide" class="reco-guide"></div></div>
+            </div>
+          </div>
         </div>
       </section>
+
+      <!-- 구독 시작 -->
+      <section id="view-subscribe" class="view">
+        <div class="grid">
+          <div class="card pad">
+            <div class="title-strong">구독 시작</div>
+            <div class="hint">추천 세트를 바탕으로 배송 주기와 주소를 설정합니다.</div>
+          </div>
+          <div class="card pad">
+            <div class="title-strong">패키지 선택</div>
+            <div class="checklist">
+              <label><input type="radio" name="sub_pack" value="Core" checked> Core (바질·민트·상추)</label>
+              <label><input type="radio" name="sub_pack" value="Calm"> Calm (레몬밤·카모마일)</label>
+              <label><input type="radio" name="sub_pack" value="Focus"> Focus (로즈마리·타임)</label>
+            </div>
+            <div class="cols two" style="margin-top:8px">
+              <label>배송 주기
+                <select id="subCadence">
+                  <option value="biweekly">격주</option>
+                  <option value="monthly">월 1회</option>
+                </select>
+              </label>
+              <label>시작일<input type="date" id="firstShipDate"></label>
+            </div>
+          </div>
+          <div class="card pad">
+            <div class="title-strong">스타터 번들 (8주 체험)</div>
+            <div class="checklist">
+              <label><input type="checkbox" id="chkStarter" checked> 스마트팜 + 플러그 스타터 번들(8주 체험)</label>
+              <div class="hint">체험 기간 종료 후 자동으로 정기구독으로 전환됩니다.</div>
+            </div>
+          </div>
+          <div class="card pad">
+            <div class="title-strong">옵션</div>
+            <div class="checklist">
+              <label><input type="checkbox" id="optHardware"> 스마트팜 키트(일회성 구매)</label>
+              <label><input type="checkbox" id="optInstall"> 설치·점검(옵션)</label>
+            </div>
+          </div>
+          <div class="card pad">
+            <div class="title-strong">소모품 구독</div>
+            <div class="checklist">
+              <label><input type="checkbox" id="consNutrient" checked> 영양액</label>
+              <label><input type="checkbox" id="consFilter"> 필터</label>
+              <label><input type="checkbox" id="consTrayLock"> 트레이·락</label>
+              <label><input type="checkbox" id="consSanitizer"> 살균제</label>
+            </div>
+          </div>
+          <div class="card pad">
+            <div class="title-strong">배송지</div>
+            <div class="cols two">
+              <label>수령인<input id="shipName" placeholder="수령인"></label>
+              <label>연락처<input id="shipPhone" placeholder="01012345678" maxlength="11" inputmode="numeric"></label>
+            </div>
+            <label>주소<input id="shipAddr1" placeholder="도로명 주소"></label>
+            <label>상세주소<input id="shipAddr2" placeholder="동/호수 등"></label>
+          </div>
+          <div class="card pad">
+            <div class="cols two">
+              <button class="btn ghost" onclick="navigate('reco-intro')">이전</button>
+              <button class="btn acc" onclick="confirmSubscribe()">구독 시작(데모)</button>
+            </div>
+            <div class="hint" style="margin-top:6px">* 데모: 결제 연동 없이 구독 상태만 활성화합니다.</div>
+          </div>
+        </div>
+      </section>
+
       <section id="view-plants" class="view"><div id="plantList" class="grid"></div><div class="card pad"><button class="btn" onclick="navigate('grow')">생육 방법 보기</button></div></section>
       <section id="view-grow" class="view"><div id="growTips" class="grid"></div><div class="card pad"><div class="title-strong">교체·수확 시점 알림(데모)</div><div class="hint">브라우저 알림 권한이 필요합니다.</div><div class="cols two"><button class="btn" onclick="reqNotifyPerm()">알림 권한 요청</button><button class="btn acc" onclick="demoSchedule()">3초 뒤 알림 테스트</button></div></div></section>
 
-      <!-- 8) 레시피 (탭은 없음, 홈 아이콘으로 접근) -->
-      <section id="view-recipes" class="view"><div class="grid">
-        <div class="card pad"><div class="title-strong">숏폼 레시피 (1–2분)</div>
-          <div class="list">
-            <div class="item"><div class="meta"><div class="title">레몬밤 티 1분</div><div class="sub">뜨거운 물 200ml + 레몬밤 잎 5~7장</div></div><button class="btn" onclick="toast('레시피 저장됨')">저장</button></div>
-            <div class="item"><div class="meta"><div class="title">인퓨즈드 워터</div><div class="sub">물 500ml + 허브 6장 + 레몬</div></div><button class="btn" onclick="toast('레시피 저장됨')">저장</button></div>
-            <div class="item"><div class="meta"><div class="title">바질 샐러드</div><div class="sub">바질 + 토마토 + 올리브오일</div></div><button class="btn" onclick="toast('레시피 저장됨')">저장</button></div>
+      <!-- 8) 레시피 -->
+      <section id="view-recipes" class="view">
+        <div class="grid">
+          <div class="card pad">
+            <div class="title-strong">숏폼 레시피 영상</div>
+            <div class="video-list">
+              <div class="video-item" data-recipe-id="lemonbalm">
+                <video width="100%" height="auto" controls playsinline preload="metadata">
+                  <source src="./mp4/lemonbalm.mp4" type="video/mp4">
+                </video>
+                <div class="meta">레몬밤 허브티 — 따뜻하고 편안한 하루</div>
+              </div>
+              <div class="video-item" data-recipe-id="mint_rosemary">
+                <video width="100%" height="auto" controls playsinline preload="metadata">
+                  <source src="./mp4/mint_rosemary.mp4" type="video/mp4">
+                </video>
+                <div class="meta">민트 & 로즈마리 인퓨즈드 워터 — 상쾌한 시작</div>
+              </div>
+              <div class="video-item" data-recipe-id="basil_lettuce">
+                <video width="100%" height="auto" controls playsinline preload="metadata">
+                  <source src="./mp4/basil_lettuce.mp4" type="video/mp4">
+                </video>
+                <div class="meta">바질·상추 샐러드 — 상큼한 식탁</div>
+              </div>
+              <div class="video-item" data-recipe-id="calm_blend">
+                <video width="100%" height="auto" controls playsinline preload="metadata">
+                  <source src="./mp4/calm_blend.mp4" type="video/mp4">
+                </video>
+                <div class="meta">허브 블렌드 — 카모마일·레몬밤·민트의 조화</div>
+              </div>
+            </div>
+            <div class="cols two" style="margin-top:1rem;">
+              <button class="btn ghost" onclick="navigate('home')">뒤로가기</button>
+              <button class="btn acc" onclick="saveAllRecipes()">전체 저장</button>
+            </div>
           </div>
         </div>
-      </div></section>
+      </section>
 
       <!-- 9) 마이 -->
       <section id="view-my" class="view">
@@ -283,12 +369,15 @@
               <button class="btn" onclick="openProfileEdit()">프로필 수정</button>
             </div>
           </div>
+          <div class="card pad" id="subManage"></div>
           <div class="card pad">
             <div class="title-strong">설정</div>
             <div class="list" style="margin-top:8px">
               <label class="item"><div class="meta"><div class="title">건강 데이터 사용 동의</div><div class="sub">추천 정확도 향상</div></div><input type="checkbox" id="ck-use-health" onchange="toggleConsent('use_health', this.checked)"></label>
               <label class="item"><div class="meta"><div class="title">리마인더 알림 동의</div><div class="sub">교체·수확·섭취 시점 알림</div></div><input type="checkbox" id="ck-remind" onchange="toggleConsent('reminder', this.checked)"></label>
               <div class="item"><div class="meta"><div class="title">데이터 내보내기</div><div class="sub">JSON 파일로 저장</div></div><button class="btn" onclick="exportData()">내보내기</button></div>
+              <div class="item"><div class="meta"><div class="title">데이터 영수증 / 동의 이력</div><div class="sub">보관 중인 데이터 항목과 동의 변경 이력</div></div><button class="btn" onclick="openDataReceipt()">보기</button></div>
+              <div class="item"><div class="meta"><div class="title">계정 및 데이터 삭제</div><div class="sub">로컬에 저장된 모든 데이터를 삭제합니다</div></div><button class="btn" onclick="deleteAllData()">삭제</button></div>
             </div>
           </div>
         </div>
@@ -299,7 +388,7 @@
         <div class="grid">
           <div class="card pad" id="cropHeader"></div>
           <div class="card pad">
-            <div class="title-strong">재배 메타</div>
+            <div class="title-strong">구독</div>
             <div class="cols two"><label>배송일<input type="date" id="shipDate"></label><label>심은 날<input type="date" id="plantDate"></label></div>
             <div class="right"><button class="btn" onclick="saveCropMeta()">저장</button></div>
           </div>
@@ -330,6 +419,7 @@
 
   <div id="toast" class="toast">저장되었습니다</div>
 
-  <script src="app.js"></script>
+  <!-- Real app (defer): will replace the stubs when loaded -->
+  <script src="app.js" defer></script>
 </body>
 </html>
