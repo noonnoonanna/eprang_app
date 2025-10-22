@@ -8,11 +8,202 @@
   <link rel="stylesheet" href="style.css" />
   <title>IpiCare</title>
 </head>
+<style>
+#homeSubSummary {
+      max-width: 420px;
+    }
+
+    #homeSubSummary .item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 20px;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(22, 163, 74, 0.05);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      margin-top: 8px;
+    }
+
+    #homeSubSummary .item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(22, 163, 74, 0.1);
+    }
+
+    #homeSubSummary .title {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    #homeSubSummary .badge.soft {
+      display: inline-block;
+      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: 500;
+      border-radius: 8px;
+      background: #dcfce7;
+      color: #15803d;
+      margin-bottom: 6px;
+    }
+
+    #homeSubSummary .status.active {
+      color: #16a34a;
+      font-weight: 600;
+    }
+
+    #homeSubSummary .status.paused {
+      color: #f59e0b;
+      font-weight: 600;
+    }
+
+    #homeSubSummary .btn {
+      background: #16a34a;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    #homeSubSummary .btn:hover {
+      background: #15803d;
+    }
+
+
+#todayRoutine {
+      max-width: 420px;
+    }
+
+
+       #todayRoutine ul {
+      list-style: none;
+      padding: 0;
+      margin: 6px 0 12px 0;
+    }
+
+    #todayRoutine li {
+      position: relative;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 10px 14px 10px 38px;
+      font-size: 14px;
+      color: #374151;
+      margin-bottom: 8px;
+      box-shadow: 0 2px 4px rgba(22, 163, 74, 0.05);
+      transition: all 0.2s ease;
+    }
+
+     #todayRoutine li::before {
+      content: '✔';
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #dcfce7;
+      color: #16a34a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    #todayRoutine li:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(22, 163, 74, 0.1);
+      background: #f0fdf4;
+    }
+
+    .right {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .btn {
+      background: #16a34a;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .btn.acc {
+      background: #fff;
+      color: #16a34a;
+      border: 1px solid #16a34a;
+    }
+
+    .btn:hover {
+      background: #15803d;
+      color: #fff;
+    }
+
+    .btn.acc:hover {
+      background: #16a34a;
+      color: #fff;
+    }
+
+    /* 바로가기 카드 */
+    #quickLinks .icons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    #quickLinks .icons .btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      color: #14532d;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 2px 6px rgba(22, 163, 74, 0.05);
+      cursor: pointer;
+      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+      text-align: center;
+    }
+
+    #quickLinks .icons .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(22, 163, 74, 0.12);
+      border-color: #c7ead5;
+    }
+
+    #quickLinks .icons .emoji {
+      font-size: 20px;
+      background: #eaffef;
+      padding: 10px;
+      border-radius: 50%;
+    }
+	
+</style>
 <body data-page="home">
   <div class="app">
     <header>
   <div class="bar">
-    <h1 style="cursor:pointer" onclick="navigate('home')">IpiCare</h1>
+    <h1 style="cursor:pointer" ><a href="home.html" style="all:unset;cursor:pointer">IpiCare</a></h1>
   </div>
 </header>
     <main>
@@ -20,25 +211,25 @@
 <section id="view-home" class="view active">
   <div class="grid">
     <div class="card pad" id="heroRecoSurvey"></div>
-    <div class="card pad" id="heroRecoRecord"></div>
-    <div class="card pad" id="homeSubSummary"></div>
-    <div class="card pad" id="homeStreak"></div>
-    <div class="card pad" id="homeToday"></div>
-    <div class="card pad">
+	<div class="card pad" id="heroRecoRecord"></div>
+	<div id="quickLinks" class="card">
+      <div class="title-strong">바로가기</div>
+      <div class="icons">
+        <button class="btn" onclick="startReevalSurvey && startReevalSurvey()"><span class="emoji">📋</span>건강 상태</button>
+        <button class="btn" onclick="navigate('recipes')"><span class="emoji">🍵</span>레시피</button>
+        <button class="btn" onclick="navigate('grow')"><span class="emoji">⏰</span>리마인더</button>
+        <button class="btn" onclick="navigate('my')"><span class="emoji">🧾</span>구독</button>
+        <button class="btn" onclick="toast && toast('오늘 브리핑 준비중')"><span class="emoji">📣</span>일일브리핑</button>
+        <button class="btn" onclick="navigate('my')"><span class="emoji">⚙️</span>설정</button>
+      </div>
+    </div>
+	<div class="card pad" id="homeToday"></div>
+	    <div class="card pad">
       <div class="title-strong">내 작물 상태</div>
       <div id="myCrops" class="list" style="margin-top:8px"></div>
     </div>
-    <div class="card pad">
-      <div class="title-strong">바로가기</div>
-      <div class="icons">
-        <button class="btn" onclick="startReevalSurvey && startReevalSurvey()">📋 건강 상태</button>
-        <button class="btn" onclick="navigate('recipes')">🍵 레시피</button>
-        <button class="btn" onclick="navigate('grow')">⏰ 리마인더</button>
-        <button class="btn" onclick="navigate('my')">🧾 구독</button>
-        <button class="btn" onclick="toast && toast('오늘 브리핑 준비중')">📣 일일브리핑</button>
-        <button class="btn" onclick="navigate('my')">⚙️ 설정</button>
-      </div>
-    </div>
+    <div class="card pad" id="homeSubSummary"></div>
+    <div class="card pad" id="homeStreak"></div>
     <div class="card pad"><div class="disclaimer">의료 고지: 본 서비스는 진단/치료/처방이 아닙니다. 증상이 지속되면 전문의 상담을 권장합니다.</div></div>
   </div>
 </section>

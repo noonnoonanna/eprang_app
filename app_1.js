@@ -1,9 +1,9 @@
 
 // ===== FREE PAGES (no login required up to subscribe start) =====
-window.FREE_PAGES = (function(prev){
+window.window.FREE_PAGES = (function(prev){
   if (prev && typeof prev.has==='function') return prev;
   return new Set(['intro','login','terms','basic','survey','reco-intro','reco','subscribe']);
-})(window.FREE_PAGES);
+})(window.window.FREE_PAGES);
 
 // ===== Keys & Utils =====
 const K={BASIC:'ipicare-basic',GOALS:'ipicare-goals',VITALS:'ipicare-vitals',CONSENT:'ipicare-consent',RECO:'ipicare-reco',PLAN:'ipicare-plan',RECORDS:'ipicare-records',RECIPES:'ipicare-recipes',CONSENT_LOG:'ipicare-consent-log',SURVEY_LOG:'ipicare-survey-log'};
@@ -185,17 +185,15 @@ function saveSurvey(){
   const state=collectSurveyState(); save(K.GOALS,state);
   const top3=computeRecoV2(state); save(K.RECO,{set:top3,state});
   const log=read(K.SURVEY_LOG,[]); log.push({at:new Date().toISOString(),state,top3}); save(K.SURVEY_LOG,log);
-  //const first=top3[0]||'basil'; const p=PLANTS[first]||PLANTS['basil'];
-  //const card=$('#recoIntroCard'); if(card){ card.innerHTML=`<div class="reco-hero"><figure class="reco-figure"><img src="${p.img||''}" alt="${p.name}"><div class="reco-badge">추천 작물</div></figure><div class="reco-title">${p.name}</div><div class="reco-sub">${p.desc||'설문 결과를 바탕으로 제안했어요.'}</div><ul class="reco-list">${(p.tips||[]).map(t=>`<li>${t}</li>`).join('')}</ul></div>`; }
-  try { sessionStorage.setItem('flash_reco', '1'); } catch {}
+  const first=top3[0]||'basil'; const p=PLANTS[first]||PLANTS['basil'];
+  const card=$('#recoIntroCard'); if(card){ card.innerHTML=`<div class="reco-hero"><figure class="reco-figure"><img src="${p.img||''}" alt="${p.name}"><div class="reco-badge">추천 작물</div></figure><div class="reco-title">${p.name}</div><div class="reco-sub">${p.desc||'설문 결과를 바탕으로 제안했어요.'}</div><ul class="reco-list">${(p.tips||[]).map(t=>`<li>${t}</li>`).join('')}</ul></div>`; }
   const basic=read(K.BASIC,null); if(basic?.userid) setAuth({loggedIn:true,userId:basic.userid,nick:basic.nick});
-  //if(NAV_CTX.surveyMode==='onboard'){ navigate('reco-intro'); }
-  //else{
-  //  navigate('reco-intro');
-  //  const actions=document.querySelector('#view-reco-intro .view-reco-intro-actions .cols.two');
-  //  if(actions){ actions.innerHTML=`<button class="btn ghost" onclick="navigate('home')">추천만 저장</button><button class="btn acc" onclick="startSubscribeFromReco()">구독 변경</button>`; }
-  //}
-  window.location.assign('reco-intro.html');
+  if(NAV_CTX.surveyMode==='onboard'){ navigate('reco-intro'); }
+  else{
+    navigate('reco-intro');
+    const actions=document.querySelector('#view-reco-intro .view-reco-intro-actions .cols.two');
+    if(actions){ actions.innerHTML=`<button class="btn ghost" onclick="navigate('home')">추천만 저장</button><button class="btn acc" onclick="startSubscribeFromReco()">구독 변경</button>`; }
+  }
 }
 function initRecoTabs(){
   const tabs=Array.from(document.querySelectorAll('#view-reco .tab-btn'));
@@ -206,12 +204,6 @@ function renderRecoV2(){
   try{
     const data=read(K.RECO,null); const set=(data&&data.set)||['basil','lettuce','mint']; const heroKey=set[0];
     const p=PLANTS[heroKey]||{name:'추천 원물',desc:'설문 결과를 바탕으로 제안했어요.',img:''};
-    // If reco-intro page uses single #recoIntroCard, populate it too
-    const introCard = document.getElementById('recoIntroCard');
-    if (introCard) {
-      introCard.innerHTML = `<div class="reco-hero"><figure class="reco-figure"><img src="${p.img||''}" alt="${p.name}"><div class="reco-badge">추천 작물</div></figure><div class="reco-title">${p.name}</div><div class="reco-sub">${p.desc||'설문 결과를 바탕으로 제안했어요.'}</div><ul class="reco-list">${(p.tips||[]).map(t=>`<li>${t}</li>`).join('')}</ul></div>`;
-    }
-
     const imgEl=$('#recoHeroImg'); const titleEl=$('#recoHeroTitle'); const subEl=$('#recoHeroSub');
     if(imgEl){ imgEl.src=p.img||''; imgEl.alt=p.name||'추천 작물'; }
     if(titleEl) titleEl.textContent=p.name||'추천 원물';
@@ -392,9 +384,8 @@ function renderHome(){
       </div>
       <div><div class="badge">건강 상태 기반 추천</div>
       <div style="font-weight:900;font-size:18px;margin-top:4px;">${p.name||'추천 작물'}</div>
-      </div></div>`;
+      <div class="hint">${(p.tips?.[0]||'')}${p.tips?.[1]?' · '+p.tips[1]:''}</div></div></div>`;
   }
-  //<div class="hint">${(p.tips?.[0]||'')}${p.tips?.[1]?' · '+p.tips[1]:''}</div>
   // (2) 기록 요약 카드
   const s=summarizeRecentRecords(7); const recordHost=$('#heroRecoRecord');
   if(recordHost){
@@ -415,7 +406,7 @@ function renderHome(){
   const subHost=$('#homeSubSummary');
   if(subHost){
     if(!plan){
-      subHost.innerHTML=`<div class="title-strong">구독</div><div class="hint">아직 구독이 없습니다.</div><div class="right"><button class="btn acc" onclick="navigate('subscribe')">구독 시작</button></div>`;
+      subHost.innerHTML=`<div class="title-strong">구독 요약</div><div class="hint">아직 구독이 없습니다.</div><div class="right"><button class="btn acc" onclick="navigate('subscribe')">구독 시작</button></div>`;
     } else {
       const next=nextShipFrom(plan); const diff=next?daysDiff(next,new Date()):null;
       const statusClass=plan.status==='active'?'active':(plan.status==='paused'?'paused':(plan.status==='trial'?'active':'canceled'));
@@ -425,16 +416,17 @@ function renderHome(){
       const cons=plan.consumables||{};
       const consList=Object.entries(cons).filter(([k,v])=>!!v).map(([k])=>({nutrient:'영양액',filter:'필터',traylock:'트레이·락',sanitizer:'살균제'}[k]||k)).join(', ');
       const extras=plan.extras||{}; const extraList=[extras.hardware?'스마트팜 키트':null, extras.installation?'설치·점검':null].filter(Boolean).join(', ');
-      subHost.innerHTML=`<div class="title-strong">구독</div>
+      subHost.innerHTML=`<div class="title-strong">구독 요약</div>
         <div class="item" style="margin-top:8px">
           <div class="meta">
-            <div class="title">${PACK_LABEL[plan.pack]||plan.pack} <span class="badge soft">${packNames}</span><br><span class="status ${statusClass}">${statusLabel}</span></div>
+            <div class="title">${PACK_LABEL[plan.pack]||plan.pack} <span class="badge soft">${packNames}</span> · ${plan.cadence==='biweekly'?'격주':'월 1회'} <span class="status ${statusClass}">${statusLabel}</span></div>
             ${trialInfo}
             <div class="sub">다음 배송: ${next?fmtDate(next):'-'}${(diff!=null && diff>=0)?` (D-${diff})`:''}</div>
             <div class="sub">소모품 구독: ${consList||'없음'}</div>
             <div class="sub">옵션: ${extraList||'없음'}</div>
             <div class="sub">배송지: ${plan.address?.addr1||''} ${plan.address?.addr2||''}</div>
           </div>
+          <div class="grow"></div>
           <button class="btn" onclick="navigate('my')">구독 관리</button>
         </div>`;
     }
@@ -449,7 +441,7 @@ function renderHome(){
   const todayHost=$('#homeToday');
   if(todayHost){
     const tasks=[`물주기 체크`,`겉잎 수확`,`레시피 보기`];
-    todayHost.innerHTML=`<div id="todayRoutine"><div class="title-strong">오늘 루틴</div><ul style="margin-top:6px;color:#4b5563">${tasks.map(t=>`<li>${t}</li>`).join('')}</ul><div class="right"><button class="btn" onclick="navigate('grow')">알림 설정</button><button class="btn acc" onclick="navigate('recipes')">레시피</button></div></div>`;
+    todayHost.innerHTML=`<div class="title-strong">오늘 루틴</div><ul style="margin:6px 0 0 18px;color:#4b5563">${tasks.map(t=>`<li>${t}</li>`).join('')}</ul><div class="right"><button class="btn" onclick="navigate('grow')">알림 설정</button><button class="btn acc" onclick="navigate('recipes')">레시피</button></div>`;
   }
   // (6) 내 작물 상태
   const host=$('#myCrops'); if(host){
@@ -498,7 +490,7 @@ function openConsentPrompt(){
   m.innerHTML = `<div class='title'>건강 데이터 사용 동의 필요</div>
     <div class='hint' style='margin-bottom:10px'>기록 기능을 사용하려면 건강 데이터 사용에 동의해 주세요.</div>
     <div class='right'>
-      <button class='btn ghost' style="color:black" onclick='closeModal()'>닫기</button>
+      <button class='btn ghost' onclick='closeModal()'>닫기</button>
       <button class='btn acc' onclick='toggleConsent("use_health", true); closeModal(); navigate("records");'>동의하고 계속</button>
     </div>`;
   return false;
@@ -541,14 +533,11 @@ function openDataReceipt(){
 
 // ===== Init (once) =====
 document.addEventListener('DOMContentLoaded',()=>{
-  try{  
-	if (document.body?.dataset?.page === 'survey') {
-	} else {
+  try{
     const page=(document.body?.dataset?.page||'').toLowerCase();
     const alwaysHide=['intro','terms','basic','survey','reco-intro','login','subscribe'];
     const auth=getAuth();
     setTabsVisible( !!(auth&&auth.loggedIn) && !alwaysHide.includes(page) );
-	}
   }catch(e){ try{ setTabsVisible(false); }catch(_){} }
 });
 
@@ -563,7 +552,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     if (page==='home'   && typeof renderHome==='function') renderHome();
     if (page==='records'&& typeof renderCalendar==='function') renderCalendar();
     if (page==='reco'   && typeof renderRecoV2==='function') renderRecoV2();
-	if (page==='reco-intro' && typeof renderRecoV2==='function') renderRecoV2();
     if (page==='plants' && typeof renderPlants==='function') renderPlants();
     if (page==='grow'   && typeof renderGrow==='function') renderGrow();
     if (page==='my'     && typeof renderMy==='function') renderMy();

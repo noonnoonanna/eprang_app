@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="style.css" />
+  <title>IpiCare</title>
+</head>
+<body data-page="survey">
+  <div class="app">
+    <header>
+  <div class="bar">
+    <h1 style="cursor:pointer" ><a href="intro.html" style="all:unset;cursor:pointer">IpiCare</a></h1>
+  </div>
+</header>
+    <main>
+      
+<section id="view-survey" class="view active">
+  <div class="grid">
+    <div class="card pad">
+      <div class="title-strong">건강 목표 상태 체크</div>
+      <form id="form-survey">
+        <div class="subhead">A. 요즘 나의 건강 상태 <small class="hint">(최대 3개 선택)</small></div>
+        <div class="checklist" id="symptomList">
+          <label><input type="checkbox" name="symptom" value="sleep_bad" /> 잠이 잘 안 와요</label>
+          <label><input type="checkbox" name="symptom" value="stress_high" /> 스트레스가 많아요</label>
+          <label><input type="checkbox" name="symptom" value="focus_low" /> 집중이 잘 안 돼요</label>
+          <label><input type="checkbox" name="symptom" value="digest_heavy" /> 식후에 더부룩해요</label>
+          <label><input type="checkbox" name="symptom" value="tired" /> 몸이 자주 피곤해요</label>
+        </div>
+        <p class="hint" id="symptomCountHint">0/3 선택됨</p>
+        <div class="subhead">B. 식습관</div>
+        <div class="checklist">
+          <label><input type="checkbox" name="habit" value="snack" /> 야식을 자주 먹어요</label>
+          <label><input type="checkbox" name="habit" value="sweet" /> 단맛을 자주 찾아요</label>
+          <label><input type="checkbox" name="habit" value="fast_eat" /> 식사 속도가 빨라요</label>
+          <label><input type="checkbox" name="habit" value="coffee" /> 커피/카페인을 자주 마셔요</label>
+        </div>
+        <div class="subhead">C. 향·맛 취향</div>
+        <select name="flavor_pref">
+          <option value="soft">부드럽고 순한 향</option>
+          <option value="fresh">상쾌한 향</option>
+          <option value="strong">허브 향 강한 편</option>
+        </select>
+        <div class="subhead">D. 피해야 할 것 (선택)</div>
+        <div class="checklist">
+          <label><input type="checkbox" name="avoid" value="strong_scent" /> 향이 강한 식물은 부담</label>
+          <label><input type="checkbox" name="avoid" value="mint_family" /> 민트 계열은 피하고 싶음</label>
+        </div>
+        <label>기타 제외(콤마로 구분) <input name="avoid_manual" placeholder="예: 루꼴라, 타임" /></label>
+        <div class="subhead">E. 식품 알레르기 / 금기 (선택)</div>
+        <div class="checklist"><label><input type="checkbox" name="allergy_flag" /> 허브/향신료 알레르기가 있어요</label></div>
+        <label>알레르기/금기 목록 (콤마로 구분)
+          <input name="allergy_list" placeholder="예: 카모마일, 민트, 루꼴라" />
+        </label>
+        <div class="subhead">F. 복용 중인 성분 (선택)</div>
+        <label>현재 복용 중인 성분/추출물 (콤마로 구분)
+          <textarea name="intake_list" rows="2" placeholder="예: 오메가3, 비타민D, 멜라토닌, 카페인"></textarea>
+        </label>
+      </form>
+    </div>
+    <div class="card pad">
+      <div class="cols two">
+        <button class="btn ghost" onclick="navigate('basic')">이전</button>
+        <button class="btn acc" onclick="saveSurvey()">저장하고<br>추천 작물 보기</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <div id="overlay" class="overlay" onclick="closeModal && closeModal(event)"></div>
+<div id="modal" class="modal" style="display:none"></div>
+<div id="recOverlay" class="overlay"></div>
+<div id="recModal" class="modal" style="display:none"></div>
+<div id="toast" class="toast">처리되었습니다</div>
+  <script src="app.js" defer></script>
+</body>
+</html>
