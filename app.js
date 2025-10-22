@@ -53,22 +53,39 @@ function startOnboardingSurvey(){ NAV_CTX.surveyMode = 'onboard'; navigate('surv
 // ===== Navigation (with gating) =====
 function setTabsVisible(v){document.querySelector('nav.tabs')?.classList.toggle('hidden',!v)}
 function navigate(name){
-  if (name==='records' && !getConsent().use_health){ return openConsentPrompt(); }
-  if (['grow','recipes','crop-detail'].includes(name) && !isSubscribed()){ return openSubPrompt(name); }
-  $$('.view').forEach(v=>v.classList.remove('active')); $('#view-'+name).classList.add('active');
-  $$('.tabs button').forEach(b=>b.classList.remove('active')); $('#tab-'+name)?.classList.add('active');
-  const loggedIn = isLoggedIn();
-  const onboardingViews = ['intro','terms','basic','survey','reco-intro','login','subscribe'];
-  setTabsVisible( loggedIn || !onboardingViews.includes(name) );
-  if(name==='home'){renderHome()}
-  if(name==='records'){renderCalendar()}
-  if(name==='reco'){renderRecoV2()}
-  if(name==='plants'){renderPlants()}
-  if(name==='grow'){renderGrow()}
-  if(name==='my'){renderMy()}
-  if(name==='subscribe'){renderSubscribe(inferPackFromReco())}
-  window.scrollTo({top:0,behavior:'smooth'});
+  try{
+    // route guard (when called from SPA pages)
+    if (name==='records' && typeof getConsent==='function' && !getConsent().use_health){ if (typeof openConsentPrompt==='function') return openConsentPrompt(); }
+    if (['grow','recipes','crop-detail'].includes(name) && typeof isSubscribed==='function' && !isSubscribed()){ if (typeof openSubPrompt==='function') return openSubPrompt(name); }
+    // 1) If this page has the section -> SPA switch
+    var target = document.getElementById('view-'+name);
+    if (target) {
+      document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+      target.classList.add('active');
+      document.querySelectorAll('.tabs button').forEach(function(b){ b.classList.remove('active'); });
+      var tab = document.getElementById('tab-'+name);
+      if (tab) tab.classList.add('active');
+      var loggedIn = (typeof isLoggedIn==='function') ? isLoggedIn() : false;
+      var onboardingViews = ['intro','terms','basic','survey','reco-intro','login','subscribe'];
+      if (typeof setTabsVisible==='function') setTabsVisible( loggedIn || !onboardingViews.includes(name) );
+      if (name==='home'   && typeof renderHome==='function') renderHome();
+      if (name==='records'&& typeof renderCalendar==='function') renderCalendar();
+      if (name==='reco'   && typeof renderRecoV2==='function') renderRecoV2();
+      if (name==='plants' && typeof renderPlants==='function') renderPlants();
+      if (name==='grow'   && typeof renderGrow==='function') renderGrow();
+      if (name==='my'     && typeof renderMy==='function') renderMy();
+      if (name==='subscribe' && typeof inferPackFromReco==='function' && typeof renderSubscribe==='function') renderSubscribe(inferPackFromReco());
+      window.scrollTo({top:0,behavior:'smooth'});
+      return;
+    }
+    // 2) Else -> MPA navigation
+    window.location.href = name + '.html';
+  }catch(e){
+    console.warn('[navigate] failed', e);
+    window.location.href = name + '.html';
+  }
 }
+
 
 // ===== Login/Signup =====
 function handleLogin(e){
@@ -585,3 +602,67 @@ Object.assign(window, {
 });
 
 function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1600) }
+
+
+// === MPA boot helpers ===
+(function(){
+  function pageKey(){
+    try{
+      var ds = document.body && document.body.dataset && document.body.dataset.page;
+      if (ds) return ds;
+      var file = (location.pathname.split('/').pop() || '').toLowerCase();
+      if (!file || file==='index.html') return 'index';
+      return file.replace(/\.html$/, '');
+    }catch(e){ return 'index'; }
+  }
+  function showTabsFor(page){
+    try{
+      var onboarding = ['intro','terms','basic','survey','reco-intro','login','subscribe'];
+      var logged = (typeof isLoggedIn==='function') ? isLoggedIn() : false;
+      if (typeof setTabsVisible==='function') setTabsVisible( logged || !onboarding.includes(page) );
+      // active tab
+      var id = 'tab-'+page;
+      document.querySelectorAll('nav.tabs button').forEach(function(b){ b.classList.remove('active'); });
+      var t = document.getElementById(id); if (t) t.classList.add('active');
+    }catch(e){}
+  }
+  function gateOrRedirect(page){
+    try{
+      if (page==='records' && typeof getConsent==='function' && !getConsent().use_health){
+        if (typeof openConsentPrompt==='function') openConsentPrompt();
+        // soft redirect to home
+        if (location.pathname.toLowerCase().indexOf('home.html')<0) location.replace('home.html');
+        return true;
+      }
+      if (['grow','recipes','crop-detail'].includes(page) && typeof isSubscribed==='function' && !isSubscribed()){
+        if (typeof openSubPrompt==='function') openSubPrompt(page);
+        if (location.pathname.toLowerCase().indexOf('home.html')<0) location.replace('home.html');
+        return true;
+      }
+      return false;
+    }catch(e){ return false; }
+  }
+  function bootPage(){
+    try{
+      var p = pageKey();
+      showTabsFor(p);
+      if (gateOrRedirect(p)) return;
+      // initial renders per page
+      if (p==='home'   && typeof renderHome==='function') renderHome();
+      if (p==='records'&& typeof renderCalendar==='function') renderCalendar();
+      if (p==='reco'   && typeof renderRecoV2==='function') renderRecoV2();
+      if (p==='plants' && typeof renderPlants==='function') renderPlants();
+      if (p==='grow'   && typeof renderGrow==='function') renderGrow();
+      if (p==='my'     && typeof renderMy==='function') renderMy();
+      if (p==='subscribe' && typeof inferPackFromReco==='function' && typeof renderSubscribe==='function') renderSubscribe(inferPackFromReco());
+    }catch(e){ console.warn('[bootPage] failed', e); }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootPage);
+  } else {
+    bootPage();
+  }
+})();
+// === minimal prompts (fallback if not defined) ===
+if (typeof openConsentPrompt!=='function'){ function openConsentPrompt(){ try{ alert('건강 데이터 동의가 필요합니다. 마이>설정에서 동의해주세요.'); }catch(e){} } }
+if (typeof openSubPrompt!=='function'){ function openSubPrompt(){ try{ alert('구독이 필요합니다. 추천에서 구독을 시작해주세요.'); }catch(e){} } }

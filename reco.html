@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="style.css" />
+  <title>IpiCare</title>
+</head>
+<body data-page="reco">
+  <div class="app">
+    <header>
+  <div class="bar">
+    <h1 style="cursor:pointer" onclick="navigate('home')">IpiCare</h1>
+  </div>
+</header>
+    <main>
+      
+<section id="view-reco" class="view active">
+  <div class="grid">
+    <div class="card pad">
+      <figure class="reco-hero-figure"><img id="recoHeroImg" alt="추천 작물 이미지" /></figure>
+      <div class="reco-hero-title" id="recoHeroTitle"></div>
+      <div class="reco-hero-sub" id="recoHeroSub"></div>
+    </div>
+    <div class="card pad">
+      <div class="tabs-inline" role="tablist" aria-label="추천 가이드 탭">
+        <button class="tab-btn active" data-tab="set" aria-selected="true">추천 세트</button>
+        <button class="tab-btn" data-tab="guide" aria-selected="false">재배·섭취 가이드</button>
+      </div>
+      <div class="tab-panels">
+        <div id="tab-set" class="tab-panel active"><div id="recoSetList" class="reco-set-list"></div></div>
+        <div id="tab-guide" class="tab-panel"><div id="recoGuide" class="reco-guide"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+    </main>
+    <nav class="tabs hidden">
+  <ul>
+    <li><button id="tab-home" onclick="navigate('home')">🏠<small>홈</small></button></li>
+    <li><button id="tab-records" onclick="navigate('records')">📝<small>기록</small></button></li>
+    <li><button id="tab-reco" onclick="navigate('reco')">✨<small>추천</small></button></li>
+    <li><button id="tab-my" onclick="navigate('my')">👤<small>마이</small></button></li>
+  </ul>
+</nav>
+  </div>
+  <div id="overlay" class="overlay" onclick="closeModal && closeModal(event)"></div>
+<div id="modal" class="modal" style="display:none"></div>
+<div id="recOverlay" class="overlay"></div>
+<div id="recModal" class="modal" style="display:none"></div>
+<div id="toast" class="toast">처리되었습니다</div>
+  <script src="app.js" defer></script>
+</body>
+</html>

@@ -38,7 +38,7 @@ nav.tabs{position:sticky;bottom:0;background:#ffffff;border-top:1px solid var(--
 border:1px solid var(--line);opacity:0;pointer-events:none;transition:.25s;display: inline-block;text-align: center;min-width: 240px;max-width: min(90vw, 560px);     
 width: max-content;white-space: normal;word-break: keep-all;line-height: 1.4;}
 .toast.show{opacity:1;pointer-events:auto}
-.badge{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:#4b5563}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:#4b5563;width:103%;}
 .hint{color:#4b5563;font-size:12px}
 .disclaimer{font-size:12px;color:#4b5563}
 .goal-buttons {display: grid;grid-template-columns: repeat(2, 1fr);gap: 10px;margin: 12px 0;}

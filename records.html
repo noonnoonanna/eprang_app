@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="style.css" />
+  <title>IpiCare</title>
+</head>
+<body data-page="records">
+  <div class="app">
+    <header>
+  <div class="bar">
+    <h1 style="cursor:pointer" onclick="navigate('home')">IpiCare</h1>
+  </div>
+</header>
+    <main>
+      
+<section id="view-records" class="view active">
+  <div class="card pad cal">
+    <div class="cal-nav"><button class="btn" onclick="prevMonth()">이전</button><div id="calTitle" class="title-strong"></div><button class="btn" onclick="nextMonth()">다음</button></div>
+    <div class="cal-head"><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div><div>일</div></div>
+    <div id="calGrid" class="cal-grid"></div>
+  </div>
+</section>
+
+    </main>
+    <nav class="tabs hidden">
+  <ul>
+    <li><button id="tab-home" onclick="navigate('home')">🏠<small>홈</small></button></li>
+    <li><button id="tab-records" onclick="navigate('records')">📝<small>기록</small></button></li>
+    <li><button id="tab-reco" onclick="navigate('reco')">✨<small>추천</small></button></li>
+    <li><button id="tab-my" onclick="navigate('my')">👤<small>마이</small></button></li>
+  </ul>
+</nav>
+  </div>
+  <div id="overlay" class="overlay" onclick="closeModal && closeModal(event)"></div>
+<div id="modal" class="modal" style="display:none"></div>
+<div id="recOverlay" class="overlay"></div>
+<div id="recModal" class="modal" style="display:none"></div>
+<div id="toast" class="toast">처리되었습니다</div>
+  <script src="app.js" defer></script>
+</body>
+</html>

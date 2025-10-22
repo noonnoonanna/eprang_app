@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="style.css" />
+  <title>IpiCare</title>
+</head>
+<body data-page="recipes">
+  <div class="app">
+    <header>
+  <div class="bar">
+    <h1 style="cursor:pointer" onclick="navigate('home')">IpiCare</h1>
+  </div>
+</header>
+    <main>
+      
+<section id="view-recipes" class="view active">
+  <div class="grid">
+    <div class="card pad">
+      <div class="title-strong">숏폼 레시피 영상</div>
+      <div class="video-list">
+        <div class="video-item" data-recipe-id="lemonbalm">
+          <video width="100%" height="auto" controls playsinline preload="metadata">
+            <source src="./mp4/lemonbalm.mp4" type="video/mp4">
+          </video>
+          <div class="meta">레몬밤 허브티 — 따뜻하고 편안한 하루</div>
+        </div>
+        <div class="video-item" data-recipe-id="mint_rosemary">
+          <video width="100%" height="auto" controls playsinline preload="metadata">
+            <source src="./mp4/mint_rosemary.mp4" type="video/mp4">
+          </video>
+          <div class="meta">민트 & 로즈마리 인퓨즈드 워터 — 상쾌한 시작</div>
+        </div>
+        <div class="video-item" data-recipe-id="basil_lettuce">
+          <video width="100%" height="auto" controls playsinline preload="metadata">
+            <source src="./mp4/basil_lettuce.mp4" type="video/mp4">
+          </video>
+          <div class="meta">바질·상추 샐러드 — 상큼한 식탁</div>
+        </div>
+        <div class="video-item" data-recipe-id="calm_blend">
+          <video width="100%" height="auto" controls playsinline preload="metadata">
+            <source src="./mp4/calm_blend.mp4" type="video/mp4">
+          </video>
+          <div class="meta">허브 블렌드 — 카모마일·레몬밤·민트의 조화</div>
+        </div>
+      </div>
+      <div class="cols two" style="margin-top:1rem;">
+        <button class="btn ghost" onclick="navigate('home')">뒤로가기</button>
+        <button class="btn acc" onclick="saveAllRecipes && saveAllRecipes()">전체 저장</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+    </main>
+    <nav class="tabs hidden">
+  <ul>
+    <li><button id="tab-home" onclick="navigate('home')">🏠<small>홈</small></button></li>
+    <li><button id="tab-records" onclick="navigate('records')">📝<small>기록</small></button></li>
+    <li><button id="tab-reco" onclick="navigate('reco')">✨<small>추천</small></button></li>
+    <li><button id="tab-my" onclick="navigate('my')">👤<small>마이</small></button></li>
+  </ul>
+</nav>
+  </div>
+  <div id="overlay" class="overlay" onclick="closeModal && closeModal(event)"></div>
+<div id="modal" class="modal" style="display:none"></div>
+<div id="recOverlay" class="overlay"></div>
+<div id="recModal" class="modal" style="display:none"></div>
+<div id="toast" class="toast">처리되었습니다</div>
+  <script src="app.js" defer></script>
+</body>
+</html>

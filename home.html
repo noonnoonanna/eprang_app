@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="style.css" />
+  <title>IpiCare</title>
+</head>
+<body data-page="home">
+  <div class="app">
+    <header>
+  <div class="bar">
+    <h1 style="cursor:pointer" onclick="navigate('home')">IpiCare</h1>
+  </div>
+</header>
+    <main>
+      
+<section id="view-home" class="view active">
+  <div class="grid">
+    <div class="card pad" id="heroRecoSurvey"></div>
+    <div class="card pad" id="heroRecoRecord"></div>
+    <div class="card pad" id="homeSubSummary"></div>
+    <div class="card pad" id="homeStreak"></div>
+    <div class="card pad" id="homeToday"></div>
+    <div class="card pad">
+      <div class="title-strong">내 작물 상태</div>
+      <div id="myCrops" class="list" style="margin-top:8px"></div>
+    </div>
+    <div class="card pad">
+      <div class="title-strong">바로가기</div>
+      <div class="icons">
+        <button class="btn" onclick="startReevalSurvey && startReevalSurvey()">📋 건강 상태</button>
+        <button class="btn" onclick="navigate('recipes')">🍵 레시피</button>
+        <button class="btn" onclick="navigate('grow')">⏰ 리마인더</button>
+        <button class="btn" onclick="navigate('my')">🧾 구독</button>
+        <button class="btn" onclick="toast && toast('오늘 브리핑 준비중')">📣 일일브리핑</button>
+        <button class="btn" onclick="navigate('my')">⚙️ 설정</button>
+      </div>
+    </div>
+    <div class="card pad"><div class="disclaimer">의료 고지: 본 서비스는 진단/치료/처방이 아닙니다. 증상이 지속되면 전문의 상담을 권장합니다.</div></div>
+  </div>
+</section>
+
+    </main>
+    <nav class="tabs hidden">
+  <ul>
+    <li><button id="tab-home" onclick="navigate('home')">🏠<small>홈</small></button></li>
+    <li><button id="tab-records" onclick="navigate('records')">📝<small>기록</small></button></li>
+    <li><button id="tab-reco" onclick="navigate('reco')">✨<small>추천</small></button></li>
+    <li><button id="tab-my" onclick="navigate('my')">👤<small>마이</small></button></li>
+  </ul>
+</nav>
+  </div>
+  <div id="overlay" class="overlay" onclick="closeModal && closeModal(event)"></div>
+<div id="modal" class="modal" style="display:none"></div>
+<div id="recOverlay" class="overlay"></div>
+<div id="recModal" class="modal" style="display:none"></div>
+<div id="toast" class="toast">처리되었습니다</div>
+  <script src="app.js" defer></script>
+</body>
+</html>

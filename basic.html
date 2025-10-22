@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="style.css" />
+  <title>IpiCare</title>
+</head>
+<body data-page="basic">
+  <div class="app">
+    <header>
+  <div class="bar">
+    <h1 style="cursor:pointer" onclick="navigate('home')">IpiCare</h1>
+  </div>
+</header>
+    <main>
+      
+<section id="view-basic" class="view active">
+  <div class="grid">
+    <div class="card pad">
+      <div class="title-strong">기본 정보</div>
+      <form id="form-basic" onsubmit="event.preventDefault(); saveBasic();">
+        <label>아이디
+          <div class="cols dup">
+            <input name="userid" id="userid" required minlength="4" maxlength="16" pattern="^[A-Za-z0-9_@]+$" placeholder="영문, 숫자, _ @만 사용 가능"
+              inputmode="latin" autocapitalize="off" autocomplete="username" utocorrect="off" spellcheck="false" onbeforeinput="blockDisallowed(event)" oninput="filterUserId(this)" oncompositionend="filterUserId(this)" />
+            <button type="button" class="btn" onclick="checkIdDup()">중복체크</button>
+          </div>
+          <span id="idHint" class="hint"></span>
+        </label>
+        <label>비밀번호 <input name="pw" id="pw" type="password" required minlength="8" oninput="validatePwSeq()" onblur="validatePwSeq()" placeholder="8자 이상, 특수기호 1개 이상 포함"></label>
+        <label>비밀번호 확인 <input name="pw2" id="pw2" type="password" required minlength="8" oninput="validatePwSeq()" onblur="validatePwSeq()"><span id="pwHint" class="hint"></span></label>
+        <label>닉네임<input name="nick" required maxlength="10"></label>
+        <label>연락처 <input name="phone" id="phone" required pattern="^[0-9]{10,11}$" maxlength="11" placeholder="01012345678" oninput="filterPhone(this)" inputmode="numeric"></label>
+        <label>성별
+          <select name="gender" required>
+            <option value="">선택</option><option>여성</option><option>남성</option>
+          </select>
+        </label>
+        <label>생년월일<input name="birth" type="date" required></label>
+        <div class="cols two">
+          <label>키(cm)<input type="number" name="height" min="50" max="250" step="0.1" required></label>
+          <label>체중(kg)<input type="number" name="weight" min="10" max="250" step="0.1" required></label>
+        </div>
+      </form>
+    </div>
+    <div class="card pad">
+      <div class="cols two">
+        <button class="btn ghost" onclick="navigate('terms')">이전</button>
+        <button class="btn acc" onclick="saveBasic()">다음</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+    </main>
+    <nav class="tabs hidden">
+  <ul>
+    <li><button id="tab-home" onclick="navigate('home')">🏠<small>홈</small></button></li>
+    <li><button id="tab-records" onclick="navigate('records')">📝<small>기록</small></button></li>
+    <li><button id="tab-reco" onclick="navigate('reco')">✨<small>추천</small></button></li>
+    <li><button id="tab-my" onclick="navigate('my')">👤<small>마이</small></button></li>
+  </ul>
+</nav>
+  </div>
+  <div id="overlay" class="overlay" onclick="closeModal && closeModal(event)"></div>
+<div id="modal" class="modal" style="display:none"></div>
+<div id="recOverlay" class="overlay"></div>
+<div id="recModal" class="modal" style="display:none"></div>
+<div id="toast" class="toast">처리되었습니다</div>
+  <script src="app.js" defer></script>
+</body>
+</html>

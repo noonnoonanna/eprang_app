@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="style.css" />
+  <title>IpiCare</title>
+</head>
+<body data-page="my">
+  <div class="app">
+    <header>
+  <div class="bar">
+    <h1 style="cursor:pointer" onclick="navigate('home')">IpiCare</h1>
+  </div>
+</header>
+    <main>
+      
+<section id="view-my" class="view active">
+  <div class="grid">
+    <div class="card pad">
+      <div class="profile-head">
+        <div class="avatar"></div>
+        <div><div class="hint">안녕하세요!</div><div id="myNick" class="nick" onclick="openProfileEdit && openProfileEdit()">닉네임</div></div>
+        <div class="grow"></div>
+        <button class="btn" onclick="openProfileEdit && openProfileEdit()">프로필 수정</button>
+      </div>
+    </div>
+    <div class="card pad" id="subManage"></div>
+    <div class="card pad">
+      <div class="title-strong">설정</div>
+      <div class="list" style="margin-top:8px">
+        <label class="item"><div class="meta"><div class="title">건강 데이터 사용 동의</div><div class="sub">추천 정확도 향상</div></div><input type="checkbox" id="ck-use-health" onchange="toggleConsent('use_health', this.checked)"></label>
+        <label class="item"><div class="meta"><div class="title">리마인더 알림 동의</div><div class="sub">교체·수확·섭취 시점 알림</div></div><input type="checkbox" id="ck-remind" onchange="toggleConsent('reminder', this.checked)"></label>
+        <div class="item"><div class="meta"><div class="title">데이터 내보내기</div><div class="sub">JSON 파일로 저장</div></div><button class="btn" onclick="exportData && exportData()">내보내기</button></div>
+        <div class="item"><div class="meta"><div class="title">데이터 영수증 / 동의 이력</div><div class="sub">보관 중인 데이터 항목과 동의 변경 이력</div></div><button class="btn" onclick="openDataReceipt && openDataReceipt()">보기</button></div>
+        <div class="item"><div class="meta"><div class="title">계정 및 데이터 삭제</div><div class="sub">로컬에 저장된 모든 데이터를 삭제합니다</div></div><button class="btn" onclick="deleteAllData && deleteAllData()">삭제</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+    </main>
+    <nav class="tabs hidden">
+  <ul>
+    <li><button id="tab-home" onclick="navigate('home')">🏠<small>홈</small></button></li>
+    <li><button id="tab-records" onclick="navigate('records')">📝<small>기록</small></button></li>
+    <li><button id="tab-reco" onclick="navigate('reco')">✨<small>추천</small></button></li>
+    <li><button id="tab-my" onclick="navigate('my')">👤<small>마이</small></button></li>
+  </ul>
+</nav>
+  </div>
+  <div id="overlay" class="overlay" onclick="closeModal && closeModal(event)"></div>
+<div id="modal" class="modal" style="display:none"></div>
+<div id="recOverlay" class="overlay"></div>
+<div id="recModal" class="modal" style="display:none"></div>
+<div id="toast" class="toast">처리되었습니다</div>
+  <script src="app.js" defer></script>
+</body>
+</html>
