@@ -12,7 +12,7 @@
   <div class="app">
     <header>
   <div class="bar">
-    <h1 style="cursor:pointer" onclick="navigate('home')">IpiCare</h1>
+    <h1 style="cursor:pointer" ><a href="home.html" style="all:unset;cursor:pointer">IpiCare</a></h1>
   </div>
 </header>
     <main>
@@ -24,27 +24,21 @@
       <span class="line">자연이 길러주는 나만의 건강 루틴</span>
     </h2>
     <div class="intro-actions">
-      <button class="btn acc" onclick="navigate('terms')">시작하기</button>
-      <div class="login-text">이미 계정이 있나요?<span class="login-link" onclick="navigate('login')">로그인</span></div>
+      <a class="btn acc" href="terms.html">시작하기</a>
+      <div class="login-text">이미 계정이 있나요?<a class="login-link" href="login.html">로그인</a></div>
     </div>
   </div>
 </section>
 
     </main>
-    <nav class="tabs hidden">
-  <ul>
-    <li><button id="tab-home" onclick="navigate('home')">🏠<small>홈</small></button></li>
-    <li><button id="tab-records" onclick="navigate('records')">📝<small>기록</small></button></li>
-    <li><button id="tab-reco" onclick="navigate('reco')">✨<small>추천</small></button></li>
-    <li><button id="tab-my" onclick="navigate('my')">👤<small>마이</small></button></li>
-  </ul>
-</nav>
   </div>
   <div id="overlay" class="overlay" onclick="closeModal && closeModal(event)"></div>
 <div id="modal" class="modal" style="display:none"></div>
 <div id="recOverlay" class="overlay"></div>
 <div id="recModal" class="modal" style="display:none"></div>
 <div id="toast" class="toast">처리되었습니다</div>
-  <script src="app.js" defer></script>
+  </script>
+</script>
+<script src="app.js" defer>
 </body>
 </html>
