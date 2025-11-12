@@ -25,6 +25,45 @@
   </div>
 </section>
 
+<!-- 주간 요약 + 그래프 (records.html) -->
+<section id="rec-stats" class="rec-stats" hidden>
+  <div class="card pad">
+    <h3 class="title-strong">이번 주 기록 요약</h3>
+    <div class="grid">
+      <div class="pill"><span>걸음수</span><b id="wk-steps">—</b></div>
+      <div class="pill"><span>근력운동</span><b id="wk-strength">—</b></div>
+      <div class="pill"><span>물 섭취</span><b id="wk-water">—</b></div>
+      <div class="pill"><span>평균 심박수</span><b id="wk-hr">—</b></div>
+      <div class="pill"><span>평균 체중</span><b id="wk-weight">—</b></div>
+    </div>
+  </div>
+
+  <div class="card pad chart">
+    <h3 class="title-strong">주간 패턴</h3>
+    <canvas id="recChart" height="160"></canvas>
+    <div class="hint" style="text-align:center;margin-top:8px">
+      걸음수(합) / 근력운동 분(합) / 물 섭취 L(합) / 심박수 bpm(평균)
+    </div>
+  </div>
+</section>
+
+<!-- 이번 주 건강 데이터 요약 -->
+<section id="summary" class="health-summary" hidden>
+  <div class="card pad">
+    <h3 class="title-strong">이번 주 건강 데이터 요약</h3>
+    <div class="sum-grid">
+      <div class="row"><span>몸무게</span><b><span id="s-weight" class="chip">—</span></b></div>
+      <div class="row"><span>걸음수</span><b><span id="s-steps" class="chip">—</span></b></div>
+      <div class="row"><span>근력운동</span><b><span id="s-strength" class="chip">—</span></b></div>
+      <div class="row"><span>심박수</span><b><span id="s-hr" class="chip">—</span></b></div>
+      <div class="row"><span>물 섭취</span><b><span id="s-water" class="chip">—</span></b></div>
+      <div class="row"><span>혈당</span><b><span id="s-glucose" class="chip">—</span></b></div>
+      <div class="row"><span>혈압</span><b><span id="s-bp" class="chip">—</span></b></div>
+    </div>
+  </div>
+</section>
+
+
     </main>
     <nav class="tabs hidden">
   <ul>
@@ -40,7 +79,239 @@
 <div id="recOverlay" class="overlay"></div>
 <div id="recModal" class="modal" style="display:none"></div>
 <div id="toast" class="toast">처리되었습니다</div>
-  <script src="app.js" defer></script>
 <script src="app.js" defer></script>
+<script>
+
+(function(){
+  const KEY='ipicare-records';
+  const $=s=>document.querySelector(s);
+
+  // ---------- helpers ----------
+  function read(){ try{return JSON.parse(localStorage.getItem(KEY)||'{}');}catch{return{}} }
+  function last7(){
+    const a=[];const t=new Date();
+    for(let i=6;i>=0;i--){const d=new Date(t.getFullYear(),t.getMonth(),t.getDate()-i);a.push(d.toISOString().slice(0,10));}
+    return a;
+  }
+  function pickLast7Records(){
+    const recs = read(); const days = last7();
+    return days.map(k => ({date:k, rec: recs[k] || null}));
+  }
+
+  // ---------- weekly aggregate for topline & chart ----------
+  function aggregateWeek(){
+    const rows = pickLast7Records();
+    const box={steps:0,strength:0,water:0,hr:[],weight:[],bmi:[],glucose:[],bpSys:[]};
+    let has=false;
+    rows.forEach(({rec})=>{
+      if(!rec) return; has=true;
+      if(typeof rec.steps==='number')    box.steps    += rec.steps;
+      if(typeof rec.strength==='number') box.strength += rec.strength; // 분
+      if(typeof rec.water==='number')    box.water    += rec.water;     // ml
+      if(typeof rec.hr==='number')       box.hr.push(rec.hr);
+      if(typeof rec.glucose==='number')  box.glucose.push(rec.glucose);
+      if(typeof rec.bpSys==='number')    box.bpSys.push(rec.bpSys);
+      if(typeof rec.weight==='number')   box.weight.push(rec.weight);
+      if(typeof rec.bmi==='number')      box.bmi.push(rec.bmi);
+    });
+    const avg=a=>a.length? a.reduce((x,y)=>x+y,0)/a.length : null;
+    return {
+      has,
+      steps: box.steps,
+      stepsAvg: box.steps/7,
+      strength: box.strength,
+      waterL: box.water/1000,
+      waterAvgL: box.water/7/1000,
+      hrAvg: avg(box.hr),
+      weightAvg: avg(box.weight),
+      bmiAvg: avg(box.bmi),
+      glucoseAvg: avg(box.glucose),
+      bpSysAvg: avg(box.bpSys),
+      rows
+    };
+  }
+
+  // ---------- mini bar chart ----------
+  function drawBarChart(canvas, series){
+    const ctx=canvas.getContext('2d');
+    const ratio=window.devicePixelRatio||1;
+    const parentW = canvas.parentElement.clientWidth || canvas.clientWidth || 320;
+    const W = parentW * ratio;
+    const H = Math.min(160, parentW*0.55) * ratio;
+
+    canvas.style.width='100%';
+    canvas.style.height = (H/ratio)+'px';
+    canvas.width=W; canvas.height=H;
+
+    ctx.clearRect(0,0,W,H);
+
+    const pad=16*ratio, gap=10*ratio;
+    const n=series.length, barW=Math.max(6*ratio,(W-pad*2-gap*(n-1))/n);
+    const maxV=Math.max(1,...series.map(s=>Number(s.value)||0));
+    const baseY=H-pad;
+
+    series.forEach((s,i)=>{
+      const x=pad+i*(barW+gap);
+      const val=Number(s.value)||0; const h=Math.max(2*ratio,(val/maxV)*(H-pad*2));
+      const y=baseY-h;
+      ctx.fillStyle=s.color; ctx.fillRect(x,y,barW,h);
+      ctx.fillStyle='#111'; ctx.textAlign='center';
+      ctx.font=`${11*ratio}px system-ui, -apple-system, Segoe UI, Roboto, Apple SD Gothic Neo, Malgun Gothic, sans-serif`;
+      ctx.fillText(s.label, x+barW/2, baseY+14*ratio);
+    });
+  }
+
+  // ---------- renderers ----------
+  function fmt(n, digits=0){
+    if(n==null || isNaN(n)) return '—';
+    return (digits? Number(n).toFixed(digits): Math.round(n)).toLocaleString();
+  }
+
+  function renderWeekTopline(a){
+    const host = $('#rec-stats'); if(!host) return;
+    if(!a || !a.has){ host.hidden=true; return; }
+    host.hidden=false;
+    $('#wk-steps').textContent    = a.steps? fmt(a.steps): '—';
+    $('#wk-strength').textContent = a.strength? fmt(a.strength): '—';
+    $('#wk-water').textContent    = a.waterL? fmt(a.waterL,1)+'L' : '—';
+    $('#wk-hr').textContent       = a.hrAvg? fmt(a.hrAvg) : '—';
+    $('#wk-weight').textContent   = a.weightAvg? fmt(a.weightAvg,1)+'kg' : '—';
+  }
+
+  function renderWeeklyChart(a){
+    const canvas = $('#recChart'); if(!canvas) return;
+    if(!a || !a.has){ return; }
+    const series = [
+      {label:'걸음수',  value:a.steps,     color:'#cfe8ff'},
+      {label:'운동',    value:a.strength,  color:'#ffe2b6'},
+      {label:'물 섭취', value:a.waterL,    color:'#d6f2df'},
+      {label:'심박수',  value:a.hrAvg||0,  color:'#ffd8d8'}
+    ];
+    drawBarChart(canvas, series);
+  }
+
+  function classify(value, ranges){
+    // ranges: {ok:[min,max], mid:[min,max]} -> returns 'ok'|'mid'|'bad'
+    if(value==null || isNaN(value)) return '';
+    const v=Number(value);
+    const inRange=(x)=> v>=x[0] && v<=x[1];
+    if(ranges.ok && inRange(ranges.ok)) return 'ok';
+    if(ranges.mid && inRange(ranges.mid)) return 'mid';
+    return 'bad';
+  }
+
+  function setChip(el, text, clazz){
+    if(!el) return;
+    el.textContent = text;
+    el.classList.remove('ok','mid','bad');
+    if(clazz) el.classList.add(clazz);
+  }
+
+  function labelFor(clazz){
+    if(clazz==='ok') return '정상';
+    if(clazz==='mid') return '평균';
+    if(clazz==='bad') return '부족';
+    return '—';
+  }
+
+  function renderHealthSummary(a){
+    const host = $('#summary'); if(!host) return;
+    if(!a || !a.has){ host.hidden=true; return; }
+    host.hidden=false;
+
+    // 1) 몸무게 / BMI
+    const weightText = a.weightAvg? `${fmt(a.weightAvg,1)}kg` : '—';
+    let bmiText='—', bmiClass='';
+    if(a.bmiAvg){
+      bmiText = `BMI ${fmt(a.bmiAvg,1)}`;
+      const bmiClassified = classify(a.bmiAvg, { ok:[18.5,24.9], mid:[17.5,29.9] });
+      bmiClass = bmiClassified;
+    }
+    setChip($('#s-weight'), labelFor(bmiClass), bmiClass);
+
+    // 2) 걸음수 (일평균)
+    const stepsAvg = a.stepsAvg || null;
+    const stepsClass = classify(stepsAvg, { ok:[8000, 9999999], mid:[4000,7999] });
+    setChip($('#s-steps'), labelFor(stepsClass), stepsClass);
+
+    // 3) 근력운동 (주합)
+    const strengthClass = classify(a.strength, { ok:[90, 9999999], mid:[30,89] });
+    setChip($('#s-strength'), labelFor(strengthClass), strengthClass);
+
+    // 4) 심박수 (평균)
+    const hrClass = classify(a.hrAvg, { ok:[55,85], mid:[50,95] });
+    setChip($('#s-hr'), labelFor(hrClass), hrClass);
+
+    // 5) 물 섭취 (일평균 L)
+    const waterAvgL = a.waterAvgL || null;
+    const waterClass = classify(waterAvgL, { ok:[1.5, 10], mid:[1.0,1.49] });
+    setChip($('#s-water'), waterAvgL? `${fmt(waterAvgL,1)}L/일`:'—', waterClass);
+
+      }
+
+  function renderAll(){
+    const a = aggregateWeek();
+    renderWeekTopline(a);
+    renderWeeklyChart(a);
+    renderHealthSummary(a);
+  }
+
+  // initial
+  window.addEventListener('DOMContentLoaded', renderAll);
+  // chart responsiveness
+  window.addEventListener('resize', ()=>{ try{ renderAll(); }catch{} });
+
+  // hook into app.js saveDay
+  const origSave = window.saveDay;
+  if (typeof origSave === 'function') {
+    window.saveDay = function(){
+      const r = origSave.apply(this, arguments);
+      try{ renderAll(); }catch{}
+      return r;
+    };
+  }
+
+  // expose for manual refresh
+  window.renderRecordsSummary = renderAll;
+})();
+
+</script>
+
+
+
+
+<style>
+/* ===== Records: 주간 요약/그래프 ===== */
+.rec-stats{display:grid;gap:12px;margin-top:12px}
+.rec-stats .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px}
+.rec-stats .pill{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.rec-stats .pill b{font-weight:800}
+.rec-stats .card.chart{width:100%}
+@media (max-width: 420px){
+  .rec-stats .grid{grid-template-columns:1fr}
+  .rec-stats .card.chart{width:100%}
+}
+
+/* 건강 요약(정상/보통/부족) */
+.health-summary{margin-top:12px}
+.health-summary .sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.health-summary .row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 12px;background:#fff;border:1px solid var(--line);border-radius:12px;
+  font-size:12px;
+}
+.chip{
+  display:inline-block;min-width:56px;text-align:center;
+  padding:6px 10px;border-radius:999px;background:#eef2f7;color:#111;font-weight:800;
+}
+.chip.ok{background:#e7f7ed;color:#0a7a4a}      /* 정상 */
+.chip.mid{background:#fff1ce;color:#7a5200}     /* 보통 */
+.chip.bad{background:#fde2e3;color:#9c1c1c}     /* 부족 */
+
+@media (max-width:420px){
+  .health-summary .sum-grid{grid-template-columns:1fr}
+}
+
+</style>
 </body>
 </html>

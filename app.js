@@ -258,6 +258,7 @@ function saveDay(date){
   FIELDS.forEach(f=>{ const el=$(`#f-${f.k}`); if(!el) return; const v=el.value; if(v!==''&&v!=null){ rec[date][f.k]=(f.type==='number')? Number(v): v; } });
   if(rec[date].weight){ const b=read(K.BASIC,{}); const vit=read(K.VITALS,{}); const h=parseFloat(b.height||vit.height); if(h){ rec[date].bmi=Math.round((rec[date].weight/Math.pow(h/100,2))*10)/10; } }
   setRecords(rec); closeRecModal(); renderCalendar(); toast('저장됨');
+  if (typeof window.renderRecordsSummary === 'function') window.renderRecordsSummary();
 }
 
 // ===== Crop detail =====
