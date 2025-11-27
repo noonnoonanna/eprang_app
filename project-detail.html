@@ -1,0 +1,815 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <title>이피랑 - 프로젝트 상세</title>
+ <style>
+    /* 기본 레이아웃 유지 */
+    body[data-page="project-detail"] main { padding: 20px 16px 120px; width: 100%; max-width: 520px; margin: 0 auto; background-color: #f8fafc; }
+    body[data-page="project-detail"] .pd-section { width: 100%; margin-bottom: 24px; }
+    
+    /* 요약 카드 디자인 고도화 */
+    body[data-page="project-detail"] .pd-summary-card { 
+      border-radius: 20px; 
+      padding: 24px 20px; 
+      background: #ffffff; 
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01); 
+      border: 1px solid #e2e8f0; 
+      position: relative; 
+      overflow: hidden; 
+    }
+    body[data-page="project-detail"] .pd-summary-chip { 
+      display: inline-flex; align-items: center; gap: 6px; 
+      padding: 6px 12px; border-radius: 99px;
+      font-size: 13px; font-weight: 700; 
+      color: #15803d; background: #dcfce7;
+      margin-bottom: 12px; 
+    }
+    body[data-page="project-detail"] .pd-summary-title { 
+      margin: 0 0 16px; font-size: 18px; font-weight: 800; color: #1e293b; letter-spacing: -0.02em; line-height: 1.3;
+    }
+    body[data-page="project-detail"] .pd-summary-meta { 
+      display: grid; grid-template-columns:1fr; gap: 8px; 
+      margin-top: 8px;
+    }
+    body[data-page="project-detail"] .pd-summary-pill { 
+      padding: 12px 8px; border-radius: 12px; 
+      background: #f8fafc; border: 1px solid #e2e8f0; 
+      display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+    }
+    body[data-page="project-detail"] .pd-summary-pill-label { 
+      font-size: 11px; color: #64748b; margin-bottom: 4px; font-weight: 600;
+    }
+    body[data-page="project-detail"] .pd-summary-pill-value { 
+      font-size: 13px; font-weight: 700; color: #0f172a; word-break: keep-all; line-height: 1.2;
+    }
+
+    /* 메인 카드 (Canvas 스타일) */
+    body[data-page="project-detail"] .pd-card { 
+      background: #ffffff; border-radius: 20px; 
+      border: 1px solid #e2e8f0; 
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
+      padding: 24px 20px; 
+    }
+    body[data-page="project-detail"] .pd-card-title { 
+      margin: 0 0 3px; font-size: 18px; font-weight: 800; color: #1e293b; 
+      display: flex; align-items: center; gap: 8px; 
+    }
+    body[data-page="project-detail"] .pd-card-title i { color: #16a34a; }
+    body[data-page="project-detail"] .pd-card-sub { 
+      margin: 0; font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom:20px;
+    }
+
+    /* 탭 디자인 */
+    body[data-page="project-detail"] .pd-tabs { 
+      display: flex; gap: 4px; padding: 4px; 
+      border-radius: 12px; background: #f1f5f9; 
+      margin-bottom: 20px; 
+    }
+    body[data-page="project-detail"] .pd-tab { 
+      flex: 1; border: 0; border-radius: 8px; 
+      background: transparent; padding: 10px; 
+      font-size: 14px; font-weight: 600; color: #64748b; 
+      cursor: pointer; transition: all 0.2s; 
+    }
+    body[data-page="project-detail"] .pd-tab.active { 
+      background: #ffffff; color: #0f172a; font-weight: 800;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+    }
+    body[data-page="project-detail"] .pd-tab-panels { width: 100%; }
+    body[data-page="project-detail"] .pd-tab-panel { display: none; animation: fadeIn 0.3s ease; }
+    body[data-page="project-detail"] .pd-tab-panel.active { display: block; }
+
+    /* Canvas Grid & Items - 가독성 개선 */
+    body[data-page="project-detail"] .pd-info-grid { 
+      display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 16px; 
+    }
+    @media (min-width: 480px) {
+      body[data-page="project-detail"] .pd-info-grid { grid-template-columns: 1fr 1fr; }
+    }
+    body[data-page="project-detail"] .pd-info-item { 
+      padding: 16px; border-radius: 16px; 
+      background: #fff; 
+      border: 1px solid #e2e8f0; 
+      border-left: 4px solid #16a34a; /* 강조선 */
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      transition: transform 0.2s;
+    }
+    body[data-page="project-detail"] .pd-info-item:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+    
+    body[data-page="project-detail"] .pd-info-label { 
+      display: flex; align-items: center; gap: 6px; 
+      font-size: 12px; font-weight: 700; color: #64748b; 
+      margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    body[data-page="project-detail"] .pd-info-label i { color: #94a3b8; }
+    
+    body[data-page="project-detail"] .pd-info-text { font-size: 14px; color: #334155; line-height: 1.6; }
+    body[data-page="project-detail"] .pd-info-value-strong { 
+      font-weight: 800; color: #0f172a; font-size: 15px; display: block; margin-bottom: 4px;
+    }
+    body[data-page="project-detail"] .pd-info-list { 
+      margin: 4px 0 0; padding-left: 0; list-style: none;
+    }
+    body[data-page="project-detail"] .pd-info-list li { 
+      margin-bottom: 4px; padding-left: 10px; position: relative; font-size: 13px; color: #475569;
+    }
+    body[data-page="project-detail"] .pd-info-list li::before {
+      content: "•"; position: absolute; left: 0; color: #cbd5e1;
+    }
+
+    /* Diagram - 청사진 스타일 */
+    body[data-page="project-detail"] .pd-diagram { 
+      margin-top: 10px; padding: 12px; 
+      background: #eff6ff; border: 1px dashed #93c5fd; 
+      border-radius: 12px; 
+      font-size: 12px; color: #1e40af; 
+    }
+    body[data-page="project-detail"] .pd-diagram-rows { 
+      display: flex; gap: 4px; margin-top: 8px; 
+    }
+    body[data-page="project-detail"] .pd-diagram-cell { 
+      flex: 1; padding: 8px 4px; 
+      background: #ffffff; border: 1px solid #bfdbfe; 
+      border-radius: 8px; text-align: center; 
+      font-weight: 700; font-size: 11px; color: #1e3a8a;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    /* Tags */
+    body[data-page="project-detail"] .pd-tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    body[data-page="project-detail"] .pd-chip { 
+      display: inline-flex; align-items: center; gap: 5px; 
+      padding: 5px 10px; border-radius: 6px; 
+      font-size: 11px; font-weight: 600; 
+      background: #f1f5f9; color: #475569; 
+    }
+    
+    /* Timeline - 가독성 개선 */
+    body[data-page="project-detail"] .pd-timeline { 
+      position: relative; margin-top: 20px; 
+      padding-left: 24px;
+    }
+    body[data-page="project-detail"] .pd-timeline::before {
+      content: ""; position: absolute; left: 7px; top: 10px; bottom: 10px; 
+      width: 2px; background: #e2e8f0;
+    }
+    body[data-page="project-detail"] .pd-timeline-group { 
+      margin-bottom: 30px; position: relative; 
+    }
+    body[data-page="project-detail"] .pd-timeline-heading { 
+      font-size: 15px; font-weight: 800; color: #0f172a; 
+      margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+      position: relative; left: -32px;
+    }
+    body[data-page="project-detail"] .pd-timeline-heading-icon {
+      width: 32px; height: 32px; border-radius: 50%; 
+      background: #fff; border: 2px solid #16a34a; 
+      display: flex; align-items: center; justify-content: center; 
+      font-size: 12px; color: #16a34a; z-index: 2;
+    }
+    body[data-page="project-detail"] .pd-timeline-list { }
+    body[data-page="project-detail"] .pd-timeline-item { 
+      margin-bottom: 16px; padding: 12px 16px; 
+      background: #f8fafc; border-radius: 12px; 
+      border: 1px solid #f1f5f9; 
+      position: relative;
+    }
+    /* 연결 점 */
+    body[data-page="project-detail"] .pd-timeline-item::after {
+      content: ""; position: absolute; left: -21px; top: 20px;
+      width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1;
+      border: 2px solid #fff; box-shadow: 0 0 0 1px #cbd5e1;
+    }
+    body[data-page="project-detail"] .pd-timeline-label { 
+      font-size: 14px; font-weight: 700; color: #334155; margin-bottom: 4px; display: block; 
+    }
+    body[data-page="project-detail"] .pd-timeline-content { font-size: 13px; color: #64748b; line-height: 1.5; }
+    body[data-page="project-detail"] .pd-timeline-meta { 
+      font-size: 11px; color: #94a3b8; margin-top: 6px; font-weight: 500;
+    }
+
+    /* Memo */
+    body[data-page="project-detail"] .pd-memo { 
+      margin-top: 24px; padding-top: 20px; 
+      border-top: 2px dashed #e2e8f0; 
+    }
+    body[data-page="project-detail"] .pd-memo-header { margin-bottom: 10px; }
+    body[data-page="project-detail"] .pd-memo-title { font-size: 16px; font-weight: 800; color: #1e293b; display: flex; gap:6px; align-items: center; }
+    body[data-page="project-detail"] .pd-memo-textarea { 
+      width: 100%; min-height: 120px; padding: 16px; 
+      border: 1px solid #cbd5e1; border-radius: 12px; 
+      background: #fff9c4; /* 메모장 느낌 */
+      color: #333; font-size: 14px; line-height: 1.6;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+      font-family: inherit;
+    }
+    body[data-page="project-detail"] .pd-memo-textarea:focus {
+      outline: none; border-color: #f59e0b; background: #fff;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+
+<body data-page="project-detail">
+  <div class="app">
+    <header>
+      <div class="bar">
+        <div class="logo">
+          <a href="home.html" style="all:unset;cursor:pointer"><img src="img/logo.png" alt="이피랑 로고" /></a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- 상단 요약 (실제 프로젝트 데이터로 채움) -->
+      <section class="pd-section">
+        <div class="pd-summary-card">
+          <div class="pd-summary-chip">
+            <i class="fa-solid fa-leaf"></i>
+            <span>프로젝트 상세</span>
+          </div>
+          <h1 class="pd-summary-title" id="pdProjectTitle">프로젝트 제목</h1>
+          <div class="pd-summary-meta">
+            <div class="pd-summary-pill">
+              <span class="pd-summary-pill-label">시설 유형</span>
+              <span class="pd-summary-pill-value" id="pdFacilityType">-</span>
+            </div>
+            <div class="pd-summary-pill">
+              <span class="pd-summary-pill-label">예상 투자 범위</span>
+              <span class="pd-summary-pill-value" id="pdInvestRange">-</span>
+            </div>
+            <div class="pd-summary-pill">
+              <span class="pd-summary-pill-label">목표 수익</span>
+              <span class="pd-summary-pill-value" id="pdProfitTarget">-</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3-1. 프로젝트 요구사항 & 설계 기록 -->
+      <section class="pd-section">
+        <div class="pd-card">
+          <div class="pd-card-header">
+            <h2 class="pd-card-title">
+              <i class="fa-solid fa-clipboard-list"></i>
+              <span>프로젝트 요구사항 & 설계 기록</span>
+            </h2>
+          </div>
+          <p class="pd-card-sub">이후 변경 이력도 계속 이어서 적어둘 수 있어요.</p>
+
+          <!-- 탭 -->
+          <div class="pd-tabs">
+            <button type="button" class="pd-tab active" data-tab="needs">요구사항</button>
+            <button type="button" class="pd-tab" data-tab="design">설계안</button>
+          </div>
+
+          <div class="pd-tab-panels">
+            <!-- 탭 1: 요구사항 -->
+            <div class="pd-tab-panel active" id="pdTabNeeds">
+              <div class="pd-info-grid">
+                <div class="pd-info-item">
+                  <div class="pd-info-label">
+                    <i class="fa-solid fa-user"></i>
+                    <span>사용자 유형 · 정책자금</span>
+                  </div>
+                  <div class="pd-info-text">
+                    <span class="pd-info-value-strong" id="pdUserType">-</span>,
+                    <span id="pdPolicy">-</span>
+                    <ul class="pd-info-list">
+                      <li id="pdLoanRange">희망 대출 규모: -</li>
+                      <li id="pdOwnCapital">보유 자기자본: -</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="pd-info-item">
+                  <div class="pd-info-label">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                    <span>지역 · 공간 유형</span>
+                  </div>
+                  <div class="pd-info-text">
+                    <span class="pd-info-value-strong" id="pdRegion">-</span>
+                    <ul class="pd-info-list">
+                      <li id="pdFacility">-</li>
+                      <li id="pdArea">-</li>
+                      <li id="pdCeil">-</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pd-info-grid">
+                <div class="pd-info-item">
+                  <div class="pd-info-label">
+                    <i class="fa-solid fa-plug-circle-bolt"></i>
+                    <span>전기 · 급배수 · 환기</span>
+                  </div>
+                  <div class="pd-info-text">
+                    <ul class="pd-info-list">
+                      <li id="pdElectric">-</li>
+                      <li id="pdWater">-</li>
+                      <li id="pdVent">-</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="pd-info-item">
+                  <div class="pd-info-label">
+                    <i class="fa-solid fa-route"></i>
+                    <span>동선 · 기둥 · 출입</span>
+                  </div>
+                  <div class="pd-info-text">
+                    <ul class="pd-info-list">
+                      <li id="pdPillar">-</li>
+                      <li id="pdEntrance">-</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pd-info-grid">
+                <div class="pd-info-item">
+                  <div class="pd-info-label">
+                    <i class="fa-solid fa-users-line"></i>
+                    <span>근무 시간 · 인력 구성</span>
+                  </div>
+                  <div class="pd-info-text">
+                    <ul class="pd-info-list">
+                      <li id="pdWorkHours">-</li>
+                      <li id="pdWorkType">-</li>
+                      <li id="pdStaff">-</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="pd-info-item">
+                  <div class="pd-info-label">
+                    <i class="fa-solid fa-scale-balanced"></i>
+                    <span>리스크 선호 · 유통 방향</span>
+                  </div>
+                  <div class="pd-info-text">
+                    <ul class="pd-info-list">
+                      <li id="pdRisk">-</li>
+                      <li id="pdDistribution">-</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 탭 2: 설계안 -->
+            <div class="pd-tab-panel" id="pdTabDesign">
+              <div class="pd-info-grid">
+                <div class="pd-info-item">
+                  <div class="pd-info-label">
+                    <i class="fa-solid fa-seedling"></i>
+                    <span>추천 작목 · 시설 조합</span>
+                  </div>
+                  <div class="pd-info-text">
+                    <span class="pd-info-value-strong" id="pdCropCombo">-</span>
+                    <ul class="pd-info-list">
+                      <li id="pdMainCrops">-</li>
+                      <li id="pdFacilityCombo">-</li>
+                    </ul>
+                    <div class="pd-tag-row">
+                      <span class="pd-chip" id="pdChipAutomation"><i class="fa-solid fa-microchip"></i><span>자동화 수준</span></span>
+                      <span class="pd-chip" id="pdChipStrategy"><i class="fa-solid fa-arrows-rotate"></i><span>운영 전략</span></span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="pd-info-item">
+                  <div class="pd-info-label">
+                    <i class="fa-solid fa-object-group"></i>
+                    <span>공간 배치 개략도</span>
+                  </div>
+                  <div class="pd-info-text">
+                    <div class="pd-diagram">
+                      <div id="pdDiagramText">출입구 기준 좌측은 작업·포장, 중앙은 재배랙, 우측은 양액·기계실·창고로 나누는 기본 흐름입니다.</div>
+                      <div class="pd-diagram-rows">
+                        <div class="pd-diagram-cell">출입·포장</div>
+                        <div class="pd-diagram-cell">재배 구역</div>
+                        <div class="pd-diagram-cell">양액·기계실</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pd-info-grid">
+                <div class="pd-info-item">
+                  <div class="pd-info-label">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <span>LED · 양액 · 공조 · 제어</span>
+                  </div>
+                  <div class="pd-info-text">
+                    <ul class="pd-info-list">
+                      <li id="pdLed">-</li>
+                      <li id="pdNutrient">-</li>
+                      <li id="pdHvac">-</li>
+                      <li id="pdControl">-</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="pd-info-item">
+                  <div class="pd-info-label">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>선택 · 변경 옵션</span>
+                  </div>
+                  <div class="pd-info-text">
+                    <ul class="pd-info-list">
+                      <li id="pdAutomation">-</li>
+                      <li id="pdExpansion">-</li>
+                      <li id="pdChangeLog">-</li>
+                    </ul>
+                    <div class="pd-tag-row">
+                      <span class="pd-chip"><i class="fa-solid fa-pen"></i><span>현장 협의 후 수정 가능</span></span>
+                      <span class="pd-chip"><i class="fa-solid fa-file-contract"></i><span>(주)그린 상세 설계와 연동</span></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- /pdTabDesign -->
+          </div><!-- /pd-tab-panels -->
+        </div>
+      </section>
+
+      <!-- 3-2. 견적 · 계약 · 시공 이력 -->
+      <section class="pd-section">
+        <div class="pd-card">
+          <div class="pd-card-header">
+            <h2 class="pd-card-title">
+              <i class="fa-solid fa-timeline"></i>
+              <span>견적 · 계약 · 시공 이력</span>
+            </h2>
+          </div>
+          <p class="pd-card-sub">이 프로젝트 타임라인을 정리합니다.</p>
+
+          <div class="pd-timeline">
+            <!-- 견적 -->
+            <div class="pd-timeline-group">
+              <div class="pd-timeline-heading">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+                <span>견적</span>
+              </div>
+              <div class="pd-timeline-list">
+                <div class="pd-timeline-item">
+                  <span class="pd-timeline-label">견적 요청</span>
+                  <div>설계안을 저장한 날짜 기준으로 1차 견적 요청일을 기록합니다.</div>
+                  <div class="pd-timeline-meta">
+                    <span id="pdQuoteRequestDate">요청일: -</span>
+                    <span>채널: 이피랑 내 견적 요청</span>
+                  </div>
+                </div>
+                <div class="pd-timeline-item">
+                  <span class="pd-timeline-label">(주)그린 1차 견적</span>
+                  <div id="pdQuoteSummary">예상 총 투자 및 옵션은 (주)그린 견적서 기준으로 입력합니다.</div>
+                  <div class="pd-timeline-meta">
+                    <span>유효기간: 직접 입력</span>
+                  </div>
+                  <button type="button" class="pd-link-btn">
+                    <i class="fa-solid fa-link"></i>
+                    <span>견적서 파일 / 링크</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 계약 -->
+            <div class="pd-timeline-group">
+              <div class="pd-timeline-heading">
+                <i class="fa-solid fa-file-signature"></i>
+                <span>계약</span>
+              </div>
+              <div class="pd-timeline-list">
+                <div class="pd-timeline-item">
+                  <span class="pd-timeline-label">계약 체결</span>
+                  <div id="pdContractSummary">계약일, 총 공사비, 주요 조건을 요약해서 적어둘 수 있습니다.</div>
+                  <div class="pd-timeline-meta">
+                    <span>계약금·중도금·잔금 마일스톤 정리</span>
+                  </div>
+                </div>
+                <div class="pd-timeline-item">
+                  <span class="pd-timeline-label">결제 마일스톤</span>
+                  <div>계약금 / 중도금 / 잔금 비율과 지급 시점을 정리해 둡니다.</div>
+                  <button type="button" class="pd-link-btn">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <span>계약서 요약 / 파일</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 시공 -->
+            <div class="pd-timeline-group">
+              <div class="pd-timeline-heading">
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+                <span>시공</span>
+              </div>
+              <div class="pd-timeline-list">
+                <div class="pd-timeline-item">
+                  <span class="pd-timeline-label">착공</span>
+                  <div id="pdConstructionStart">착공일과 주요 공정 시작 시점을 기록합니다.</div>
+                  <div class="pd-timeline-meta">
+                    <span>공정: 기초 · 랙/프레임 · 설비 · 제어 · 시운전</span>
+                  </div>
+                </div>
+                <div class="pd-timeline-item">
+                  <span class="pd-timeline-label">공정별 체크리스트</span>
+                  <div>각 공정 완료 시 체크해야 할 항목을 기록합니다.</div>
+                  <ul class="pd-info-list">
+                    <li>기초: 바닥 레벨링, 방수, 배수 라인 확인</li>
+                    <li>랙/프레임: 구조 고정, 통로 폭, 작업 높이 확인</li>
+                    <li>설비: 양액·배관·배선 정리, 누수·누전 점검</li>
+                    <li>제어: 센서·제어반 연동 및 알림 테스트</li>
+                    <li>시운전: 시험 재배 기간 설정 및 점검</li>
+                  </ul>
+                </div>
+                <div class="pd-timeline-item">
+                  <span class="pd-timeline-label">준공 · 인수인계</span>
+                  <div id="pdCompletion">준공일, 인수인계 내용, 운영 매뉴얼 인수 여부를 기록합니다.</div>
+                  <div class="pd-timeline-meta">
+                    <span id="pdWarranty">하자 보증 기간: -</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 향후 확장 -->
+            <div class="pd-timeline-group">
+              <div class="pd-timeline-heading">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>향후 확장</span>
+              </div>
+              <div class="pd-timeline-list">
+                <div class="pd-timeline-item">
+                  <span class="pd-timeline-label">운영 데이터 입력/연동</span>
+                  <div>수확량, 에너지 비용, 문제점, 개선사항 등 운영 데이터를 모아두면 이후 확장 설계 시 큰 도움이 됩니다.</div>
+                  <div class="pd-timeline-meta">
+                    <span>예: 월별 생산량, 폐기율, 전기·수도 요금, 장애 이력 등</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div><!-- /pd-timeline -->
+
+          <!-- 메모 영역 -->
+          <div class="pd-memo">
+            <div class="pd-memo-header">
+              <h3 class="pd-memo-title">
+                <i class="fa-solid fa-pen-to-square"></i>
+                <span>향후 확장 · 운영 메모</span>
+              </h3>
+            </div>
+            <p class="pd-memo-hint">수확량, 에너지 비용, 문제점, 개선사항 등을 자유롭게 적어두면, 추후 설계 변경이나 확장 논의에 바로 활용할 수 있어요.</p>
+            <textarea class="pd-memo-textarea" placeholder="예: 2025-01~02 겨울철 전기요금 상승, LED 조도/운영 시간 재조정 필요 등"></textarea>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 하단 버튼 바 -->
+    <div class="bottom-bar">
+      <button type="button" class="btn ghost" id="pdBtnBackProjects">홈으로</button>
+      <button type="button" class="btn acc" id="pdBtnContactGreen">상담</button>
+    </div>
+  </div>
+
+  <!-- 공통 모달/토스트 레이어 -->
+  <div id="overlay" class="overlay" onclick="closeModal && closeModal(event)"></div>
+  <div id="modal" class="modal" style="display:none"></div>
+  <div id="toast" class="toast">처리되었습니다</div>
+
+  <script src="app.js" defer></script>
+  <script>
+    document.addEventListener('DOMContentLoaded',function(){
+      // 탭 전환
+      var tabs=document.querySelectorAll('.pd-tab');
+      var panels={needs:document.getElementById('pdTabNeeds'),design:document.getElementById('pdTabDesign')};
+      tabs.forEach(function(btn){
+        btn.addEventListener('click',function(){
+          var target=this.getAttribute('data-tab');
+          tabs.forEach(function(b){b.classList.remove('active');});
+          this.classList.add('active');
+          Object.keys(panels).forEach(function(key){
+            if(panels[key]){
+              panels[key].classList.toggle('active',key===target);
+            }
+          });
+        });
+      });
+
+      // 공통 유틸
+      function setText(id,text){
+        var el=document.getElementById(id);
+        if(el && text!==undefined && text!==null && text!==''){
+          el.textContent=text;
+        }
+      }
+      function formatDate(iso){
+        if(!iso) return '';
+        var d=new Date(iso);
+        if(isNaN(d.getTime())) return '';
+        var y=d.getFullYear();
+        var m=String(d.getMonth()+1).padStart(2,'0');
+        var dd=String(d.getDate()).padStart(2,'0');
+        return y+'-'+m+'-'+dd;
+      }
+
+      // 로컬스토리지에서 프로젝트 불러오기
+      var key=(window.K && K.PROJECTS) || 'ep-projects';
+      var raw=localStorage.getItem(key) || '[]';
+      var projects;
+      try{
+        projects=JSON.parse(raw);
+      }catch(e){
+        projects=[];
+      }
+      if(!Array.isArray(projects) || !projects.length){
+        alert('저장된 프로젝트가 없습니다. 설문을 먼저 완료하고 설계안을 저장해 주세요.');
+        window.location.assign('home.html');
+        return;
+      }
+      var currentId=localStorage.getItem('ep-current-project-id');
+      var project=projects.find(function(p){return p.id===currentId;}) || projects[projects.length-1];
+
+      var survey=project.survey || {};
+      var reco=project.reco || {};
+      var s1=survey.step1 || {};
+      var s2=survey.step2 || {};
+      var s3=survey.step3 || {};
+
+      // 매핑 테이블
+      var userTypeMap={young:'청년농',successor:'후계농',return:'귀농 예정',other:'일반 창업자'};
+      var policyMap={yes:'정책자금 대상/신청 예정',no:'해당 없음',unknown:'잘 모름','':'미선택'};
+      var loanMap={none:'대출 계획 없음',lt100:'1억 미만','100_300':'1억 ~ 3억',gt300:'3억 이상','':'선택 안 함'};
+      var ownMap={lt30:'3천만 원 미만','30_100':'3천만 ~ 1억','100_300':'1억 ~ 3억',gt300:'3억 이상','':'선택 안 함'};
+      var facilitySimpleMap={biz_center:'지식산업센터',retail_space:'상가/근린생활시설',panel_factory:'판넬형 창고·공장',etc:'기타 실내 공간'};
+      var workHoursMap={'':'미선택',lt10:'주 10시간 미만','10_20':'주 10~20시간','20_40':'주 20~40시간',gt40:'주 40시간 이상'};
+      var workTypeMap={fulltime:'상근(풀타임)',parttime:'부업/겸업'};
+      var profitMap={'':'미설정','100':'월 100만 원 미만','300':'월 100~300만 원','500':'월 300~500만 원',high:'월 500만 원 이상'};
+      var riskMap={low:'안정형',mid:'중립형',high:'성장형'};
+      var distMap={wholesale:'도매',horeca_retail:'식당/카페/리테일',experience_edu_landscape:'체험·교육·조경',mixed_use:'복합(생산+체험/조경)'};
+
+      // 상단 요약
+      var facilitySimple=facilitySimpleMap[s2.facility] || '실내 공간';
+      var regionText=s1.region_si || '';
+      var facilityLabelFull=reco.facilityLabel || facilitySimple;
+      var summaryFacility=regionText ? facilityLabelFull : facilityLabelFull;
+      var profitLabel=profitMap[s3.profit_goal || ''] || '미설정';
+
+      setText('pdProjectTitle',reco.title || facilitySimple+' 프로젝트');
+      setText('pdProjectSubtitle',regionText ? regionText+'의 실내 스마트팜 프로젝트입니다.' : '온보딩 설문과 추천 설계안을 바탕으로 이 프로젝트의 요구사항과 설계를 한눈에 정리합니다.');
+      setText('pdFacilityType',summaryFacility);
+      setText('pdInvestRange',reco.invest || '투자 규모는 상담 후 확정');
+      setText('pdProfitTarget',profitLabel);
+
+      // 요구사항 탭 - 사용자/정책/자금
+      var userTypeLabel=userTypeMap[s1.user_type] || '미선택';
+      var policyLabel=policyMap[s1.policy || ''] || '미선택';
+      var loanLabel=loanMap[s1.loan_range || ''] || '미입력';
+      var ownLabel=ownMap[s1.own_capital || ''] || '미입력';
+
+      setText('pdUserType',userTypeLabel);
+      setText('pdPolicy',policyLabel);
+      setText('pdLoanRange','희망 대출 규모: '+loanLabel);
+      setText('pdOwnCapital','보유 자기자본: '+ownLabel);
+
+      // 지역/공간
+      setText('pdRegion',regionText || '지역 미입력');
+      setText('pdFacility',facilitySimple+' 실내 공간');
+
+      var areaParts=[];
+      if(s2.floor_area){areaParts.push('전용 '+s2.floor_area+'㎡');}
+      if(s2.usable_area){areaParts.push('사용 가능 '+s2.usable_area+'㎡');}
+      setText('pdArea',areaParts.join(' / ') || '면적 미입력');
+      setText('pdCeil',s2.ceil_height ? '층고 '+s2.ceil_height+'m' : '층고 미입력');
+
+      // 전기/급배수/환기
+      var electricParts=[];
+      if(s2.electric_power){electricParts.push('계약 전력 '+s2.electric_power+'kW');}
+      if(s2.electric_phase){
+        electricParts.push(s2.electric_phase==='3ph' ? '3상 전력' : s2.electric_phase);
+      }
+      if(s2.panel_location){electricParts.push('분전반 위치: '+s2.panel_location);}
+      setText('pdElectric',electricParts.join(', ') || '전기 정보 미입력');
+
+      var waterText;
+      if(s2.water_supply==='yes'){
+        waterText='급·배수 가능';
+      }else if(s2.water_supply==='no'){
+        waterText='급·배수 불가/추가 공사 필요';
+      }else if(s2.water_supply==='unknown'){
+        waterText='급·배수 상태 잘 모름';
+      }
+      if(s2.water_location){
+        waterText=(waterText ? waterText+', ' : '')+'위치: '+s2.water_location;
+      }
+      setText('pdWater',waterText || '급·배수 정보 미입력');
+
+      var ventText;
+      if(s2.ventilation==='window'){
+        ventText='창문/자연 환기 가능';
+      }else if(s2.ventilation==='duct'){
+        ventText='덕트/기계 환기 가능';
+      }else if(s2.ventilation==='none'){
+        ventText='환기 설비 없음(추가 검토 필요)';
+      }
+      setText('pdVent',ventText || '환기 정보 미입력');
+
+      // 동선/기둥/출입
+      setText('pdPillar',s2.pillar_info || '기둥 정보 미입력');
+      setText('pdEntrance',s2.entrance_path || '출입/동선 정보 미입력');
+
+      // 근무/인력
+      setText('pdWorkHours',workHoursMap[s2.work_hours || ''] || '근무 시간 미입력');
+      setText('pdWorkType',workTypeMap[s2.work_type || ''] || '운영 형태 미입력');
+      if(s2.family_staff){
+        setText('pdStaff','함께 일하는 인원: '+s2.family_staff+'명');
+      }else{
+        setText('pdStaff','함께 일하는 인원 미입력');
+      }
+
+      // 리스크/유통
+      var riskLabel=riskMap[s3.risk || ''] || '미선택';
+      setText('pdRisk','운영 성향: '+riskLabel);
+      var distArr=Array.isArray(s3.distribution) ? s3.distribution : [];
+      var distLabels=distArr.map(function(v){return distMap[v];}).filter(Boolean);
+      var distText=distLabels.length ? distLabels.join(' / ') : '유통 방향 미입력';
+      if(s3.distribution_etc){
+        distText+=' (기타: '+s3.distribution_etc+')';
+      }
+      setText('pdDistribution','유통: '+distText);
+
+      // 설계안 탭 - reco 데이터
+      setText('pdCropCombo',reco.cropType || '추천 작목·시설 조합 미정');
+      setText('pdMainCrops',reco.cropType || '-');
+      setText('pdFacilityCombo',reco.facilityLabel || facilitySimple+' 기반 스마트팜');
+
+      // 자동화/전략 태그(간단 힌트)
+      var chipAuto=document.getElementById('pdChipAutomation');
+      if(chipAuto && reco.estimatable===false){
+        chipAuto.querySelector('span').textContent='정보 보완 후 · 추가 상담 필요';
+      }else if(chipAuto){
+        chipAuto.querySelector('span').textContent='실내 전용 · 견적 연계 가능';
+      }
+      var chipStrategy=document.getElementById('pdChipStrategy');
+      if(chipStrategy){
+        var strategy='회전율 우선 설계';
+        if(reco.id==='portfolio_risk'){
+          strategy='리스크 분산 포트폴리오';
+        }else if(reco.id==='nursery_mix'){
+          strategy='육묘+생산 복합 운용';
+        }else if(reco.id==='showroom'){
+          strategy='체험·조경 중심 쇼룸형';
+        }
+        chipStrategy.querySelector('span').textContent=strategy;
+      }
+
+      // LED/양액/공조/제어: 설문+reco 기준 기본 문구
+      setText('pdLed','선택한 설계안에 맞는 엽채류/특용작물 전용 LED 스펙으로 설계됩니다.');
+      setText('pdNutrient','순환식 양액 시스템과 탱크 용량은 예상 재배 면적과 작물 구성에 맞춰 제안됩니다.');
+      setText('pdHvac','온·습도/CO₂ 제어가 가능한 공조 설비 기준으로 검토합니다.');
+      setText('pdControl','환경·양액 모니터링 및 원격 알림 기능을 포함한 제어 시스템 연동을 전제로 합니다.');
+
+      // 선택·변경 옵션 기본 문구
+      setText('pdAutomation','자동화 수준은 예산과 근무 가능 시간을 고려해 기본형~중급 자동화 중 선택 가능합니다.');
+      setText('pdExpansion','전기·배관 라인은 향후 랙/존 확장을 고려해 1.5배 수준까지 확장 가능하도록 설계할 수 있습니다.');
+      setText('pdChangeLog','현장 협의 및 시운전 이후 변경된 내용은 이 영역에 메모해 둘 수 있습니다.');
+
+      // 타임라인 일부에 실제 데이터 반영 (견적 요청일 = 프로젝트 생성일)
+      var createdDate=formatDate(project.createdAt);
+      if(createdDate){
+        setText('pdQuoteRequestDate','요청일: '+createdDate);
+      }
+      // 하자 보증 기본값
+      setText('pdWarranty','하자 보증 기간: 1년 (설비 별도 약정 가능)');
+
+      // 하단 버튼
+      var backBtn=document.getElementById('pdBtnBackProjects');
+      if(backBtn){
+        backBtn.addEventListener('click',function(){
+          window.location.assign('home.html');
+        });
+      }
+      var contactBtn=document.getElementById('pdBtnContactGreen');
+      if(contactBtn){
+        contactBtn.addEventListener('click',function(){
+          if(typeof toast==='function'){
+            toast('(주)그린과의 견적·상담 연동은 추후 버전에서 연결됩니다.');
+          }else{
+            alert('(주)그린과의 견적·상담 연동은 추후 버전에서 연결됩니다.');
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

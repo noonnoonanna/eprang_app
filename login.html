@@ -1,20 +1,28 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#ffffff" />
-  <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="stylesheet" href="style.css" />
-  <title>IpiCare</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+	<meta name="theme-color" content="#ffffff" />
+	<link rel="manifest" href="manifest.webmanifest" />
+	<link rel="stylesheet" href="style.css" />
+	<title>이피랑</title>
 </head>
+<style>
+form label {display: block;margin-bottom: 14px;}
+form input {width: 100%;padding: 10px 12px;border: 1px solid var(--line);border-radius: 8px;font-size: 15px;}
+.btn-row { display: flex; align-items: center; justify-content: space-between; gap: 12px;}
+.btn-row .btn { flex: 1; padding:13px 53px;}
+main .grid { width: 100%; max-width: 420px; margin: 0 auto; }
+.card { width: 100%;  max-width: none; }
+</style>
 <body data-page="login">
   <div class="app">
-    <header>
-  <div class="bar">
-    <h1 style="cursor:pointer" ><a href="intro.html" style="all:unset;cursor:pointer">IpiCare</a></h1>
-  </div>
-</header>
+		<header>
+			<div class="bar">
+				<div class="logo"><a href="intro.html" style="all:unset;cursor:pointer"><img src="img/logo.png" alt="이피랑 로고"></a></div>
+			</div>
+		</header>
     <main>
       
 <section id="view-login" class="view active">
@@ -22,9 +30,9 @@
     <div class="card pad">
       <div class="title-strong">로그인</div>
       <form id="form-login" onsubmit="handleLogin(event)">
-        <label><input type="text" name="userid" required placeholder="아이디" autocomplete="username"></label>
+        <label><input type="text" name="userid" required placeholder="이메일(아이디)" autocomplete="username"></label>
         <label><input type="password" name="password" required placeholder="비밀번호" autocomplete="current-password"></label>
-        <div class="cols two" style="margin-top:8px">
+        <div class="btn-row" style="margin-top:8px">
           <button type="button" class="btn ghost" onclick="navigate('intro')">이전</button>
           <button type="submit" class="btn acc">로그인</button>
         </div>
@@ -35,21 +43,8 @@
 </section>
 
     </main>
-    <nav class="tabs hidden">
-  <ul>
-    <li><button id="tab-home" onclick="navigate('home')">🏠<small>홈</small></button></li>
-    <li><button id="tab-records" onclick="navigate('records')">📝<small>기록</small></button></li>
-    <li><button id="tab-reco" onclick="navigate('reco')">✨<small>추천</small></button></li>
-    <li><button id="tab-my" onclick="navigate('my')">👤<small>마이</small></button></li>
-  </ul>
-</nav>
+
   </div>
-  <div id="overlay" class="overlay" onclick="closeModal && closeModal(event)"></div>
-<div id="modal" class="modal" style="display:none"></div>
-<div id="recOverlay" class="overlay"></div>
-<div id="recModal" class="modal" style="display:none"></div>
-<div id="toast" class="toast">처리되었습니다</div>
   <script src="app.js" defer></script>
-<script src="app.js" defer></script>
 </body>
 </html>

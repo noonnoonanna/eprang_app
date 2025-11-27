@@ -6,71 +6,597 @@
   <meta name="theme-color" content="#ffffff" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="stylesheet" href="style.css" />
-  <title>IpiCare</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <title>이피랑 - 설비 레시피</title>
+<style>
+  body[data-page="recipe"] main {
+    padding: 24px 16px 120px;
+    width: 100%;
+    max-width: 520px; /* 조금 더 넓게 */
+    margin: 0 auto;
+    background-color: #f8fafc; /* 배경색 추가로 카드 가독성 확보 */
+  }
+
+  /* [디자인 개선] 카드 스타일 고도화 (Canvas 느낌) */
+  body[data-page="recipe"] .card {
+    border-radius: 24px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0; /* 경계선 더 은은하게 */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02); /* 깊이감 있는 그림자 */
+    width: 100%;
+    padding: 24px 20px;
+    margin-bottom: 24px; /* 카드 간 간격 */
+    position: relative;
+  }
+  
+  /* 섹션 타이포그래피 */
+  body[data-page="recipe"] .section-title {
+    margin: 0 0 12px;
+    font-size: 20px; /* 폰트 키움 */
+    font-weight: 800;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: -0.02em;
+  }
+  body[data-page="recipe"] .section-title i {
+    color: #16a34a; /* 브랜드 컬러 */
+    background: #dcfce7;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  body[data-page="recipe"] .section-subtitle {
+    margin: 0 0 16px;
+    font-size: 14px;
+    color: #475569;
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+  body[data-page="recipe"] .section-caption {
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: #94a3b8;
+    background: #f1f5f9;
+    padding: 8px 12px;
+    border-radius: 8px;
+    display: inline-block;
+  }
+
+  /* [디자인 개선] 필터 영역 */
+  body[data-page="recipe"] .recipe-filter { margin-top: 20px; }
+  body[data-page="recipe"] .field-group { margin-bottom: 24px; }
+  body[data-page="recipe"] .field-label {
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 10px;
+    font-weight: 700;
+    font-size: 13px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  body[data-page="recipe"] .field-label::before {
+    content: ''; display: block; width: 4px; height: 14px; background: #cbd5e1; border-radius: 2px;
+  }
+
+  /* 그리드 조정 */
+  body[data-page="recipe"] .pill-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  @media (max-width:340px) {
+    body[data-page="recipe"] .pill-grid { grid-template-columns: 1fr; }
+  }
+
+  /* [디자인 개선] 필터 버튼 (Pill) */
+  body[data-page="recipe"] .pill-label { position: relative; cursor: pointer; user-select: none; }
+  body[data-page="recipe"] .pill-label input { position: absolute; opacity: 0; pointer-events: none; }
+  
+  body[data-page="recipe"] .pill-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 10px;
+    border-radius: 16px;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0; /* 테두리 강화 */
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748b;
+    min-height: 70px; /* 높이 확보 */
+    text-align: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  body[data-page="recipe"] .pill-content i {
+    font-size: 20px;
+    margin-bottom: 6px;
+    color: #94a3b8;
+    transition: color 0.2s;
+  }
+  
+  /* 필터 선택 시 스타일 (강조) */
+  body[data-page="recipe"] .pill-label input:checked + .pill-content {
+    border-color: #16a34a;
+    background: #f0fdf4;
+    color: #15803d;
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
+    transform: translateY(-2px);
+  }
+  body[data-page="recipe"] .pill-label input:checked + .pill-content i {
+    color: #16a34a;
+  }
+  
+  /* 체크 아이콘 */
+  body[data-page="recipe"] .pill-check {
+    position: absolute;
+    top: -6px; right: -6px;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: #16a34a;
+    border: 2px solid #fff;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    font-size: 12px;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 2;
+  }
+  body[data-page="recipe"] .pill-label input:checked ~ .pill-check {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* [디자인 개선] 레시피 카드 리스트 */
+  body[data-page="recipe"] .recipe-list { display: grid; gap: 16px; margin-top: 16px; }
+  
+  body[data-page="recipe"] .recipe-card {
+    display: flex;
+    flex-direction: column; /* 모바일에서 내용 많으면 세로 배치가 나을 수 있음, 여기선 유연하게 */
+    gap: 16px;
+    padding: 20px;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+    border-left: 5px solid #16a34a; /* 포인트 컬러 바 */
+    position: relative;
+  }
+  @media (min-width: 400px) {
+    body[data-page="recipe"] .recipe-card { flex-direction: row; align-items: flex-start; }
+  }
+
+  body[data-page="recipe"] .recipe-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px -5px rgba(22, 163, 74, 0.15);
+    border-color: #86efac;
+  }
+
+  /* 아이콘 박스 */
+  body[data-page="recipe"] .recipe-icon {
+    flex: 0 0 48px; width: 48px; height: 48px;
+    border-radius: 14px;
+    background: #dcfce7;
+    display: flex; align-items: center; justify-content: center;
+    color: #15803d;
+    font-size: 22px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+  }
+
+  body[data-page="recipe"] .recipe-body { flex: 1; min-width: 0; }
+  
+  /* 카드 제목 */
+  body[data-page="recipe"] .recipe-body h4 {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 800;
+    color: #1e293b;
+    line-height: 1.4;
+  }
+  
+  /* 카드 본문 */
+  body[data-page="recipe"] .recipe-body p {
+    margin: 0 0 12px;
+    font-size: 14px;
+    color: #475569;
+    line-height: 1.6;
+  }
+
+  /* 스펙 리스트 (그리드화) */
+  body[data-page="recipe"] .recipe-meta {
+    list-style: none;
+    margin: 12px 0;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 12px;
+    display: grid;
+    gap: 8px;
+    font-size: 12px;
+    color: #334155;
+    border: 1px solid #f1f5f9;
+  }
+  body[data-page="recipe"] .recipe-meta li {
+    display: flex; align-items: flex-start; gap: 6px;
+    line-height: 1.5;
+  }
+  body[data-page="recipe"] .recipe-meta li i {
+    margin-top: 3px;
+    font-size: 12px;
+    color: #16a34a; /* 아이콘 색상 강조 */
+    flex-shrink: 0;
+  }
+
+  /* 태그 스타일 (Badge) */
+  body[data-page="recipe"] .recipe-tags {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+  }
+  body[data-page="recipe"] .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 10px;
+    border-radius: 99px;
+    font-size: 11px; font-weight: 700;
+    border: 1px solid transparent;
+  }
+  body[data-page="recipe"] .badge-green {
+    background: #dcfce7; color: #15803d; border-color: #bbf7d0;
+  }
+  body[data-page="recipe"] .badge-gray {
+    background: #f1f5f9; color: #475569; border-color: #e2e8f0;
+  }
+
+  /* 카드 푸터 */
+  body[data-page="recipe"] .recipe-footer {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed #e2e8f0;
+    font-size: 12px;
+    color: #64748b;
+    font-style: italic;
+    display: flex; align-items: center; gap: 6px;
+  }
+  body[data-page="recipe"] .recipe-footer::before {
+    content: '\f05a'; /* font-awesome info-circle */
+    font-family: "Font Awesome 6 Free"; font-weight: 900;
+    color: #94a3b8;
+  }
+  </style>
 </head>
-<body data-page="recipes">
+
+<body data-page="recipe">
   <div class="app">
     <header>
-  <div class="bar">
-    <h1 style="cursor:pointer" ><a href="home.html" style="all:unset;cursor:pointer">IpiCare</a></h1>
-  </div>
-</header>
+      <div class="bar">
+        <div class="logo">
+          <a href="home.html" style="all:unset;cursor:pointer">
+            <img src="img/logo.png" alt="이피랑 로고" />
+          </a>
+        </div>
+      </div>
+    </header>
+
     <main>
-      
-<section id="view-recipes" class="view active">
-  <div class="grid">
-    <div class="card pad">
-      <div class="title-strong">숏폼 레시피 영상</div>
-      <div class="video-list">
-        <div class="video-item" data-recipe-id="lemonbalm">
-          <video width="100%" height="auto" controls playsinline preload="metadata">
-            <source src="./mp4/lemonbalm.mp4" type="video/mp4">
-          </video>
-          <div class="meta">레몬밤 허브티 — 따뜻하고 편안한 하루</div>
+      <!-- 상단 인트로 -->
+      <section class="card">
+        <h3 class="section-title">
+          <i class="fa-solid fa-flask"></i>
+          <span>설비 레시피 카탈로그</span>
+        </h3>
+        <p class="section-subtitle">
+          “이 조건·이 공간에서는 이런 설비 조합이 많이 쓰인다”는
+          <strong>실내 스마트팜·육묘장·조경 시설 설비 조합 레시피</strong>를 모아 둔 화면입니다.
+          나중에 제조 플랫폼의 표준 모듈 설계와 (주)그린 설계 인사이트로도 활용할 수 있어요.
+        </p>
+        <p class="section-caption">
+          설문으로 저장된 내 프로젝트와는 독립된, <strong>표준 설비 패턴 카탈로그</strong>입니다.
+        </p>
+      </section>
+
+      <!-- 필터 영역 -->
+      <section class="card">
+        <h3 class="section-title">
+          <i class="fa-solid fa-filter"></i>
+          <span>조건으로 설비 레시피 찾기</span>
+        </h3>
+        <p class="section-subtitle">
+          자주 등장하는 <strong>공간 유형·용도·작목</strong>을 조합해서
+          내 공간과 비슷한 설비 레시피를 골라볼 수 있습니다. (필터는 아직 예시용이며, 추후 실제 데이터와 연동 예정)
+        </p>
+
+        <div class="recipe-filter">
+          <!-- 공간 유형 -->
+          <div class="field-group">
+            <span class="field-label">공간 유형</span>
+            <div class="pill-grid">
+              <label class="pill-label">
+                <input type="radio" name="f_space" value="biz_center" checked>
+                <div class="pill-content">
+                  <i class="fa-solid fa-city"></i>
+                  <span>지식산업센터</span>
+                </div>
+                <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+              </label>
+              <label class="pill-label">
+                <input type="radio" name="f_space" value="retail">
+                <div class="pill-content">
+                  <i class="fa-regular fa-building"></i>
+                  <span>상가</span>
+                </div>
+                <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+              </label>
+              <label class="pill-label">
+                <input type="radio" name="f_space" value="panel">
+                <div class="pill-content">
+                  <i class="fa-solid fa-industry"></i>
+                  <span>샌드위치 판넬 창고</span>
+                </div>
+                <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+              </label>
+              <label class="pill-label">
+                <input type="radio" name="f_space" value="etc">
+                <div class="pill-content">
+                  <i class="fa-solid fa-ellipsis"></i>
+                  <span>기타 실내</span>
+                </div>
+                <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+              </label>
+            </div>
+          </div>
+
+          <!-- 용도 -->
+          <div class="field-group">
+            <span class="field-label">용도</span>
+            <div class="pill-grid">
+              <label class="pill-label">
+                <input type="radio" name="f_purpose" value="production" checked>
+                <div class="pill-content">
+                  <i class="fa-solid fa-seedling"></i>
+                  <span>생산 위주</span>
+                </div>
+                <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+              </label>
+              <label class="pill-label">
+                <input type="radio" name="f_purpose" value="nursery">
+                <div class="pill-content">
+                  <i class="fa-solid fa-seedling"></i>
+                  <span>육묘 위주</span>
+                </div>
+                <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+              </label>
+              <label class="pill-label">
+                <input type="radio" name="f_purpose" value="landscape">
+                <div class="pill-content">
+                  <i class="fa-solid fa-tree-city"></i>
+                  <span>체험·조경 위주</span>
+                </div>
+                <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+              </label>
+              <label class="pill-label">
+                <input type="radio" name="f_purpose" value="mixed">
+                <div class="pill-content">
+                  <i class="fa-solid fa-layer-group"></i>
+                  <span>복합</span>
+                </div>
+                <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+              </label>
+            </div>
+          </div>
+
+          <!-- 작목 -->
+          <div class="field-group">
+            <span class="field-label">작목</span>
+            <div class="pill-grid">
+              <label class="pill-label">
+                <input type="radio" name="f_crop" value="leafy" checked>
+                <div class="pill-content">
+                  <i class="fa-solid fa-leaf"></i>
+                  <span>엽채류</span>
+                </div>
+                <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+              </label>
+              <label class="pill-label">
+                <input type="radio" name="f_crop" value="herb">
+                <div class="pill-content">
+                  <i class="fa-solid fa-spray-can-sparkles"></i>
+                  <span>허브</span>
+                </div>
+                <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+              </label>
+              <label class="pill-label">
+                <input type="radio" name="f_crop" value="foliage">
+                <div class="pill-content">
+                  <i class="fa-solid fa-seedling"></i>
+                  <span>관엽</span>
+                </div>
+                <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+              </label>
+              <label class="pill-label">
+                <input type="radio" name="f_crop" value="strawberry">
+                <div class="pill-content">
+                  <i class="fa-solid fa-apple-whole"></i>
+                  <span>딸기</span>
+                </div>
+                <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+              </label>
+            </div>
+            <p class="section-caption">필요하면 ‘기타’ 작목이나 특수 용도는 추후 메모로 추가할 수 있어요.</p>
+          </div>
         </div>
-        <div class="video-item" data-recipe-id="mint_rosemary">
-          <video width="100%" height="auto" controls playsinline preload="metadata">
-            <source src="./mp4/mint_rosemary.mp4" type="video/mp4">
-          </video>
-          <div class="meta">민트 & 로즈마리 인퓨즈드 워터 — 상쾌한 시작</div>
+      </section>
+
+      <!-- 설비 레시피 카드 목록 -->
+      <section class="card">
+        <h3 class="section-title">
+          <i class="fa-solid fa-layer-group"></i>
+          <span>표준 설비 패턴</span>
+        </h3>
+        <p class="section-subtitle">
+          실제 현장에서 자주 쓰이는 <strong>설비 조합 레시피</strong>를 유형별로 정리했습니다.
+          각 레시피는 랙 구조, 층수, LED, 양액, 제어 수준 등을 한 눈에 볼 수 있게 요약되어 있습니다.
+        </p>
+
+        <div class="recipe-list">
+          <!-- 카드 1 -->
+          <article class="recipe-card" data-space="biz_center" data-purpose="production" data-crop="leafy">
+            <div class="recipe-icon">
+              <i class="fa-solid fa-city"></i>
+            </div>
+            <div class="recipe-body">
+              <h4>지식산업센터 30평 – 엽채 수직 스마트팜 A타입</h4>
+              <p>사무동·지식산업센터 내 30평 내외 공간에서 상추·바질 등 엽채류를 안정적으로 생산하는 기본형 패턴입니다.</p>
+              <ul class="recipe-meta">
+                <li><i class="fa-solid fa-border-all"></i> 랙 구조: 3열 배치, 4단 랙(통로 폭 90cm 기준)</li>
+                <li><i class="fa-solid fa-lightbulb"></i> LED: 랙당 45~55W 바 타입, 층당 2열 배치</li>
+                <li><i class="fa-solid fa-flask"></i> 양액 시스템: 중앙 양액실 1개, NFT 순환식, 1.5톤 탱크</li>
+                <li><i class="fa-solid fa-temperature-half"></i> 공조: 소형 냉난방+제습 일체형 2대, CO₂ 센서 연동</li>
+                <li><i class="fa-solid fa-microchip"></i> 제어 수준: 환경+양액 모니터링, 원격 알림, 기본 자동화</li>
+              </ul>
+              <div class="recipe-tags">
+                <span class="badge badge-green">생산 위주</span>
+                <span class="badge badge-gray">엽채류</span>
+                <span class="badge badge-gray">지식산업센터</span>
+              </div>
+              <div class="recipe-footer">초기 창업/부업용으로 많이 쓰이는, 회전율 중심의 입문형 레시피입니다.</div>
+            </div>
+          </article>
+
+          <!-- 카드 2 -->
+          <article class="recipe-card" data-space="retail" data-purpose="landscape" data-crop="foliage">
+            <div class="recipe-icon">
+              <i class="fa-solid fa-store"></i>
+            </div>
+            <div class="recipe-body">
+              <h4>상가 20평 – 쇼룸형 조경 스마트팜 B타입</h4>
+              <p>거리 상권·카페 인근 상가 20평을 활용해, 체험·전시용 조경 스마트팜을 구성하는 쇼룸형 패턴입니다.</p>
+              <ul class="recipe-meta">
+                <li><i class="fa-solid fa-border-all"></i> 구조물: 전면 쇼윈도 1열+내부 아일랜드형 구조물 2세트</li>
+                <li><i class="fa-solid fa-layer-group"></i> 층수: 관엽·허브 혼합 2~3단, 고객 시야 높이 위주 설계</li>
+                <li><i class="fa-solid fa-bolt"></i> 전력: 피크 12~15kW, 전시 조명+설비 합산 기준</li>
+                <li><i class="fa-solid fa-paint-roller"></i> 데코 요소: 목재 마감, 간접 조명, 포토존 벽체 포함</li>
+                <li><i class="fa-solid fa-shield-halved"></i> 안전: 투명 안전 커버, 코너 보호, 미끄럼 방지 바닥</li>
+              </ul>
+              <div class="recipe-tags">
+                <span class="badge badge-green">체험·조경 위주</span>
+                <span class="badge badge-gray">상가</span>
+                <span class="badge badge-gray">쇼룸형</span>
+              </div>
+              <div class="recipe-footer">브랜드 쇼룸·체험 공간으로 활용하는 프로젝트에서 반복적으로 쓰이는 레시피입니다.</div>
+            </div>
+          </article>
+
+          <!-- 카드 3 -->
+          <article class="recipe-card"data-space="panel" data-purpose="mixed" data-crop="nursery">
+            <div class="recipe-icon">
+              <i class="fa-solid fa-warehouse"></i>
+            </div>
+            <div class="recipe-body">
+              <h4>샌드위치 판넬 창고 50평 – 육묘+생산 복합형 C타입</h4>
+              <p>외곽 판넬형 창고 50평 정도를 활용해, 육묘와 생산을 함께 운영하는 복합 패턴입니다.</p>
+              <ul class="recipe-meta">
+                <li><i class="fa-solid fa-border-all"></i> 랙 구조: 육묘존 2열(저단 고밀도) + 생산존 2열(3~4단)</li>
+                <li><i class="fa-solid fa-lightbulb"></i> LED: 육묘존 고조도 타입, 생산존 일반 조도 타입 혼합</li>
+                <li><i class="fa-solid fa-flask"></i> 양액: 존 분리형 양액실 2세트, 레시피 별 EC/PH 분리 운용</li>
+                <li><i class="fa-solid fa-temperature-arrow-up"></i> 공조: 대용량 냉난방/제습기+순환팬, 구역별 온·습도 편차 보정</li>
+                <li><i class="fa-solid fa-microchip"></i> 제어 수준: 환경·양액·조명 스케줄 전체 자동화, 로그 저장</li>
+              </ul>
+              <div class="recipe-tags">
+                <span class="badge badge-green">복합(육묘+생산)</span>
+                <span class="badge badge-gray">샌드위치 판넬 창고</span>
+                <span class="badge badge-gray">중규모</span>
+              </div>
+              <div class="recipe-footer">정책자금·중규모 투자를 전제로 한, 성장 지향형 레이아웃 레시피입니다.</div>
+            </div>
+          </article>
         </div>
-        <div class="video-item" data-recipe-id="basil_lettuce">
-          <video width="100%" height="auto" controls playsinline preload="metadata">
-            <source src="./mp4/basil_lettuce.mp4" type="video/mp4">
-          </video>
-          <div class="meta">바질·상추 샐러드 — 상큼한 식탁</div>
-        </div>
-        <div class="video-item" data-recipe-id="calm_blend">
-          <video width="100%" height="auto" controls playsinline preload="metadata">
-            <source src="./mp4/calm_blend.mp4" type="video/mp4">
-          </video>
-          <div class="meta">허브 블렌드 — 카모마일·레몬밤·민트의 조화</div>
-        </div>
-      </div>
-      <div class="cols two" style="margin-top:1rem;">
-        <button class="btn ghost" onclick="navigate('home')">뒤로가기</button>
-        <button class="btn acc" onclick="saveAllRecipes && saveAllRecipes()">전체 저장</button>
-      </div>
+
+        <p class="section-caption">
+          실제 프로젝트와 연결할 때는, 이 레시피를 기준으로 세부 자재·공사비를 (주)그린과 함께 조정하게 됩니다.
+        </p>
+      </section>
+    </main>
+
+    <!-- 하단 버튼 바 -->
+    <div class="bottom-bar">
+      <button type="button" class="btn ghost" id="btnRecipeHome">홈으로</button>
     </div>
   </div>
-</section>
 
-    </main>
-    <nav class="tabs hidden">
-  <ul>
-    <li><button id="tab-home" onclick="navigate('home')">🏠<small>홈</small></button></li>
-    <li><button id="tab-records" onclick="navigate('records')">📝<small>기록</small></button></li>
-    <li><button id="tab-reco" onclick="navigate('reco')">✨<small>추천</small></button></li>
-    <li><button id="tab-my" onclick="navigate('my')">👤<small>마이</small></button></li>
-  </ul>
-</nav>
-  </div>
+  <!-- 공통 모달/토스트 레이어 -->
   <div id="overlay" class="overlay" onclick="closeModal && closeModal(event)"></div>
-<div id="modal" class="modal" style="display:none"></div>
-<div id="recOverlay" class="overlay"></div>
-<div id="recModal" class="modal" style="display:none"></div>
-<div id="toast" class="toast">처리되었습니다</div>
+  <div id="modal" class="modal" style="display:none"></div>
+  <div id="toast" class="toast">처리되었습니다</div>
+
   <script src="app.js" defer></script>
-<script src="app.js" defer></script>
+<script>
+  document.addEventListener('DOMContentLoaded',function(){
+    // 하단 버튼
+    var btnHome=document.getElementById('btnRecipeHome');
+    var btnSurvey=document.getElementById('btnRecipeToSurvey');
+    if(btnHome){
+      btnHome.addEventListener('click',function(){
+        window.location.assign('home.html');
+      });
+    }
+    if(btnSurvey){
+      btnSurvey.addEventListener('click',function(){
+        window.location.assign('survey.html');
+      });
+    }
+
+    // ============================
+    //  설비 레시피 필터링 로직
+    // ============================
+    var filterInputs=document.querySelectorAll('input[name="f_space"], input[name="f_purpose"], input[name="f_crop"]');
+    var cards=document.querySelectorAll('.recipe-card');
+
+    function getCheckedValue(name){
+      var el=document.querySelector('input[name="'+name+'"]:checked');
+      return el ? el.value : null;
+    }
+
+function applyRecipeFilter(){
+  var visibleCount = 0;
+
+  var space=getCheckedValue('f_space');
+  var purpose=getCheckedValue('f_purpose');
+  var crop=getCheckedValue('f_crop');
+
+  cards.forEach(function(card){
+    var okSpace=!space || card.dataset.space===space;
+    var okPurpose=!purpose || card.dataset.purpose===purpose;
+    var okCrop=!crop || card.dataset.crop===crop;
+
+    if(okSpace && okPurpose && okCrop){
+      card.style.display='';
+      visibleCount++;   // 🔥 이 줄 꼭 필요
+    }else{
+      card.style.display='none';
+    }
+  });
+
+  if(visibleCount === 0){
+    cards.forEach(function(card){
+      card.style.display='';
+    });
+  }
+}
+
+
+
+    // 라디오 눌릴 때마다 필터 적용
+    filterInputs.forEach(function(input){
+      input.addEventListener('change',applyRecipeFilter);
+    });
+
+    // 최초 1번 적용
+    applyRecipeFilter();
+  });
+</script>
+
 </body>
 </html>

@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <title>이피랑 - 데이터 브리핑</title>
+
+  <style>
+  body[data-page="briefing"] main{
+    padding:16px 14px 100px;
+    width:100%;
+    max-width:480px;
+    margin:0 auto;
+  }
+
+  body[data-page="briefing"] .br-card{
+    border-radius:18px;
+    background:#ffffff;
+    border:1px solid #e5e7eb;
+    box-shadow:0 4px 12px rgba(15,23,42,0.04);
+    width:100%;
+    padding:18px 16px;
+    margin-bottom:14px;
+  }
+
+  body[data-page="briefing"] .br-title{
+    margin:0 0 8px;
+    font-size:18px;
+    font-weight:800;
+    color:#111827;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+
+  body[data-page="briefing"] .br-title i{
+    color:var(--acc);
+  }
+
+  body[data-page="briefing"] .br-sub{
+    margin:0 0 8px;
+    font-size:13px;
+    color:#6b7280;
+    line-height:1.6;
+  }
+
+  body[data-page="briefing"] .br-caption{
+    margin:4px 0 0;
+    font-size:11px;
+    color:#9ca3af;
+  }
+
+  /* KPI 영역 */
+  body[data-page="briefing"] .br-kpi-grid{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:8px;
+    margin-top:8px;
+  }
+
+  @media (max-width:360px){
+    body[data-page="briefing"] .br-kpi-grid{
+      grid-template-columns:1fr;
+    }
+  }
+
+  body[data-page="briefing"] .br-kpi{
+    border-radius:14px;
+    border:1px solid #e5e7eb;
+    background:#f9fafb;
+    padding:8px 9px;
+  }
+
+  body[data-page="briefing"] .br-kpi-label{
+    font-size:11px;
+    color:#6b7280;
+    margin-bottom:2px;
+  }
+
+  body[data-page="briefing"] .br-kpi-value{
+    font-size:14px;
+    font-weight:800;
+    color:#111827;
+  }
+
+  body[data-page="briefing"] .br-kpi-hint{
+    margin-top:2px;
+    font-size:11px;
+    color:#9ca3af;
+  }
+
+  /* 인사이트 블록 */
+  body[data-page="briefing"] .br-block{
+    margin-top:6px;
+  }
+
+  body[data-page="briefing"] .br-block-title{
+    font-size:14px;
+    font-weight:700;
+    color:#111827;
+    margin:0 0 4px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+
+  body[data-page="briefing"] .br-block-title i{
+    font-size:13px;
+    color:#9ca3af;
+  }
+
+  body[data-page="briefing"] .br-block-body{
+    font-size:13px;
+    color:#4b5563;
+    line-height:1.6;
+  }
+
+  body[data-page="briefing"] .br-block-body strong{
+    font-weight:700;
+    color:#111827;
+  }
+
+  body[data-page="briefing"] .br-list{
+    margin:4px 0 0;
+    padding-left:16px;
+    font-size:13px;
+    color:#4b5563;
+    line-height:1.6;
+  }
+
+  body[data-page="briefing"] .br-list li{
+    margin-bottom:2px;
+  }
+
+  body[data-page="briefing"] .br-chip-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-top:6px;
+  }
+
+  body[data-page="briefing"] .br-chip{
+    font-size:11px;
+    border-radius:999px;
+    padding:3px 8px;
+    background:#f3f4f6;
+    color:#6b7280;
+  }
+
+  body[data-page="briefing"] .br-empty{
+    font-size:12px;
+    color:#9ca3af;
+    margin-top:6px;
+  }
+  </style>
+</head>
+
+<body data-page="briefing">
+  <div class="app">
+    <header>
+      <div class="bar">
+        <div class="logo">
+          <a href="home.html" style="all:unset;cursor:pointer">
+            <img src="img/logo.png" alt="이피랑 로고" />
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- 상단 설명 -->
+      <section class="br-card">
+        <h3 class="br-title">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>데이터 브리핑</span>
+        </h3>
+        <p class="br-sub">
+          온보딩 설문과 저장된 프로젝트를 바탕으로, <strong>내 조건과 비슷한 설계 패턴·수익 구조·설계 시 체크포인트</strong>를
+          브리핑 형식으로 정리해 주는 화면입니다.
+        </p>
+        <p class="br-caption">
+          장기적으로는 정책기관·연구기관용 실내 농업 데이터 리포트와 (주)그린 설계·제품 기획 피드백 자료의 기반이 됩니다.
+        </p>
+      </section>
+
+      <!-- 오늘의 브리핑 요약 -->
+      <section class="br-card">
+        <h3 class="br-title">
+          <i class="fa-regular fa-newspaper"></i>
+          <span>오늘의 브리핑 요약</span>
+        </h3>
+        <p class="br-sub">
+          지금까지 이 앱에 저장된 내 프로젝트 기준으로 간단한 요약을 보여줍니다.
+          실제 수익·비용 데이터와 타 사용자 집계는 추후 연동 예정이에요.
+        </p>
+
+        <div class="br-kpi-grid">
+          <div class="br-kpi">
+            <div class="br-kpi-label">저장된 프로젝트 수</div>
+            <div class="br-kpi-value" id="brKpiProjects">0개</div>
+            <div class="br-kpi-hint" id="brKpiProjectsHint">설문·설계안 저장 기준</div>
+          </div>
+          <div class="br-kpi">
+            <div class="br-kpi-label">엽채류 중심 설계 비율</div>
+            <div class="br-kpi-value" id="brKpiLeafy">-</div>
+            <div class="br-kpi-hint">추천 설계안 중 엽채류 비중</div>
+          </div>
+          <div class="br-kpi">
+            <div class="br-kpi-label">지식산업센터 비중</div>
+            <div class="br-kpi-value" id="brKpiBiz">-</div>
+            <div class="br-kpi-hint">공간 유형 기준</div>
+          </div>
+        </div>
+
+        <p class="br-caption" id="brKpiSummary">
+          아직 저장된 프로젝트 수가 적어, 경향 분석은 참고용으로만 제공됩니다.
+        </p>
+      </section>
+
+      <!-- 설계 패턴 인사이트 -->
+      <section class="br-card">
+        <h3 class="br-title">
+          <i class="fa-solid fa-sitemap"></i>
+          <span>설계 패턴 인사이트</span>
+        </h3>
+
+        <div class="br-block">
+          <h4 class="br-block-title">
+            <i class="fa-regular fa-lightbulb"></i>
+            <span>비슷한 조건에서 많이 선택한 설계 패턴</span>
+          </h4>
+          <p class="br-block-body" id="brPatternSentence">
+            저장된 프로젝트를 기반으로, 비슷한 조건(공간 유형·작목 중심)의 사용자들이 어떤 설계 패턴을 선택했는지 요약합니다.
+          </p>
+          <ul class="br-list" id="brPatternList">
+            <li>지식산업센터·엽채류 중심 사용자는 수직 랙형 스마트팜(3~4단) 설계를 선택하는 비중이 높습니다.</li>
+            <li>상가·조경 위주 사용자는 쇼룸형 구조(전면 쇼윈도+아일랜드 구조물)를 선호하는 경향이 있습니다.</li>
+            <li>샌드위치 판넬 창고는 육묘+생산 복합형으로 구성하는 사례가 자주 등장합니다.</li>
+          </ul>
+        </div>
+
+        <div class="br-chip-row" id="brPatternChips">
+          <span class="br-chip">수직 랙형</span>
+          <span class="br-chip">쇼룸형 조경</span>
+          <span class="br-chip">육묘+생산 복합</span>
+        </div>
+      </section>
+
+      <!-- 비용/수익 구조 경향 -->
+      <section class="br-card">
+        <h3 class="br-title">
+          <i class="fa-solid fa-coins"></i>
+          <span>고정비 · 수익 구조 브리핑</span>
+        </h3>
+
+        <div class="br-block">
+          <h4 class="br-block-title">
+            <i class="fa-solid fa-bolt"></i>
+            <span>LED · 전력 단가 관점</span>
+          </h4>
+          <p class="br-block-body" id="brCostSentence">
+            최근 전력 단가를 기준으로 볼 때, <strong>고효율 LED 옵션을 선택한 패턴</strong>에서
+            3년 누적 고정비가 일반형 대비 의미 있게 줄어드는 경향이 있습니다.
+            대신 초기 투자비가 증가하므로, <strong>예상 운영 시간·전력 단가·지원 사업 조건</strong>을 함께 보는 것이 중요합니다.
+          </p>
+        </div>
+
+        <div class="br-block">
+          <h4 class="br-block-title">
+            <i class="fa-solid fa-scale-balanced"></i>
+            <span>판넬형 창고 · 복합형 설계의 주의점</span>
+          </h4>
+          <p class="br-block-body" id="brRiskSentence">
+            판넬형 창고에서 <strong>육묘장+생산 복합형 설계</strong>를 선택한 사례에서 자주 언급되는 문제는
+            <strong>구역별 온·습도 편차, 품종별 생육 속도 차이, 작업 동선 피로도</strong>입니다.
+            설계 단계에서 <strong>공조 존 분리, 순환팬 배치, 작업 동선</strong>을 함께 설계하면 이런 리스크를 줄일 수 있습니다.
+          </p>
+        </div>
+
+        <p class="br-caption">
+          향후에는 실제 수확량·전력 사용량·운영비 데이터를 기반으로, 프로젝트별 맞춤 수익·고정비 브리핑이 제공될 예정입니다.
+        </p>
+      </section>
+
+      <!-- 설계 변경 시 체크포인트 -->
+      <section class="br-card">
+        <h3 class="br-title">
+          <i class="fa-solid fa-list-check"></i>
+          <span>설계 변경 시 체크포인트</span>
+        </h3>
+
+        <div class="br-block">
+          <h4 class="br-block-title">
+            <i class="fa-regular fa-clipboard"></i>
+            <span>지금 내 설계에서 특히 신경 쓸 만한 부분</span>
+          </h4>
+          <p class="br-block-body" id="brCheckSentence">
+            내 프로젝트 조건을 기준으로, 설계 변경 시 영향을 많이 받는 항목을 정리했습니다.
+          </p>
+          <ul class="br-list" id="brCheckList">
+            <li>공간 유형과 층고에 따라 <strong>랙 단 수·층수</strong>를 조정하면 초기 투자와 수익성의 균형이 달라집니다.</li>
+            <li><strong>작목 구성(엽채/허브/조경/육묘)</strong>을 바꾸면 LED 스펙·양액 라인 수·작업 동선 설계가 함께 바뀌어야 합니다.</li>
+            <li>향후 확장 계획이 있다면, <strong>전기·급배수 여유 용량</strong>과 설비 배치를 처음부터 고려하는 것이 좋습니다.</li>
+          </ul>
+        </div>
+
+        <p class="br-caption">
+          프로젝트 상세 화면에서 설계 옵션을 바꾸기 전에, 위 항목들을 한 번 더 점검해 보면 도움이 됩니다.
+        </p>
+      </section>
+    </main>
+
+    <!-- 하단 버튼 바 -->
+    <div class="bottom-bar">
+      <button type="button" class="btn ghost" id="brBtnHome">홈으로</button>
+      <button type="button" class="btn acc" id="brBtnProject">프로젝트 상세</button>
+    </div>
+  </div>
+
+  <!-- 공통 모달/토스트 -->
+  <div id="overlay" class="overlay" onclick="closeModal && closeModal(event)"></div>
+  <div id="modal" class="modal" style="display:none"></div>
+  <div id="toast" class="toast">처리되었습니다</div>
+
+  <script src="app.js" defer></script>
+  <script>
+  document.addEventListener('DOMContentLoaded',function(){
+    // 하단 버튼
+    var btnHome=document.getElementById('brBtnHome');
+    var btnProject=document.getElementById('brBtnProject');
+    if(btnHome){
+      btnHome.addEventListener('click',function(){window.location.assign('home.html');});
+    }
+    if(btnProject){
+      btnProject.addEventListener('click',function(){
+        // 최근 프로젝트 기준으로 상세 이동
+        var key=(window.K && K.PROJECTS) || 'ep-projects';
+        var projects=[];
+        try{
+          projects=(typeof read==='function')?read(key,[]):JSON.parse(localStorage.getItem(key)||'[]');
+        }catch(e){projects=[];}
+        if(!Array.isArray(projects) || !projects.length){
+          if(typeof toast==='function') toast('저장된 프로젝트가 없습니다.');
+          else alert('저장된 프로젝트가 없습니다.');
+          return;
+        }
+        // 가장 최근 생성 프로젝트
+        var latest=projects.slice().sort(function(a,b){
+          var ta=new Date(a.createdAt||0).getTime();
+          var tb=new Date(b.createdAt||0).getTime();
+          return tb-ta;
+        })[0];
+        if(latest && latest.id){
+          try{localStorage.setItem('ep-current-project-id',latest.id);}catch(e){}
+          window.location.assign('project-detail.html');
+        }else{
+          if(typeof toast==='function') toast('프로젝트 정보를 찾을 수 없습니다.');
+          else alert('프로젝트 정보를 찾을 수 없습니다.');
+        }
+      });
+    }
+
+    // =========================
+    //  ep-projects 기반 요약
+    // =========================
+    var key=(window.K && K.PROJECTS) || 'ep-projects';
+    var projects=[];
+    try{
+      projects=(typeof read==='function')?read(key,[]):JSON.parse(localStorage.getItem(key)||'[]');
+    }catch(e){projects=[];}
+    if(!Array.isArray(projects)) projects=[];
+
+    var total=projects.length;
+    var leafyCount=0;
+    var bizCount=0;
+    var mainCropLabel='';
+
+    projects.forEach(function(p){
+      var reco=p.reco||{};
+      var survey=p.survey||{};
+      var s2=survey.step2||{};
+      var cropSource=(reco.cropType||reco.title||'');
+      if(cropSource.includes('엽채')) leafyCount++;
+      if(s2.facility==='biz_center') bizCount++;
+    });
+
+    // KPI 표시
+    var elPr=document.getElementById('brKpiProjects');
+    var elPrHint=document.getElementById('brKpiProjectsHint');
+    var elLeaf=document.getElementById('brKpiLeafy');
+    var elBiz=document.getElementById('brKpiBiz');
+    var elSummary=document.getElementById('brKpiSummary');
+
+    if(elPr) elPr.textContent=total+'개';
+    if(elPrHint){
+      if(total>0){
+        elPrHint.textContent='온보딩 설문을 완료하고 설계안을 저장한 프로젝트 수입니다.';
+      }else{
+        elPrHint.textContent='설문·설계안을 저장하면 여기에서 요약을 볼 수 있어요.';
+      }
+    }
+
+    function percent(n,d){
+      if(!d) return '-';
+      return Math.round((n/d)*100)+'%';
+    }
+
+    if(elLeaf) elLeaf.textContent = total ? percent(leafyCount,total) : '-';
+    if(elBiz) elBiz.textContent = total ? percent(bizCount,total) : '-';
+
+    if(elSummary){
+      if(total<=1){
+        elSummary.textContent='저장된 프로젝트가 아직 많지 않아, 경향 분석은 참고용으로만 제공됩니다.';
+      }else{
+        elSummary.textContent='현재 저장된 내 프로젝트 기준으로, 엽채류 중심 설계 비중은 '+(total?percent(leafyCount,total):'-')+
+          ', 지식산업센터 공간 비중은 '+(total?percent(bizCount,total):'-')+' 수준입니다.';
+      }
+    }
+
+    // 설계 패턴 문장 약간 개인화
+    var elPatternSentence=document.getElementById('brPatternSentence');
+    if(elPatternSentence){
+      if(total===0){
+        elPatternSentence.textContent='아직 저장된 프로젝트가 없어, 기본적인 설계 패턴 예시만 보여주고 있습니다. 설문을 완료하고 설계안을 저장하면 내 조건에 맞는 문구로 바뀝니다.';
+      }else{
+        var base='지금까지 저장된 내 프로젝트 기준으로, ';
+        if(bizCount/ (total||1) >= 0.5 && leafyCount/(total||1) >= 0.5){
+          elPatternSentence.textContent = base +
+            '지식산업센터·엽채류 중심 조건에서 수직 랙형 스마트팜 설계를 선택한 비중이 높은 편입니다.';
+        }else if(leafyCount/(total||1) >= 0.5){
+          elPatternSentence.textContent = base +
+            '엽채류 중심 설계 비중이 높으며, 랙 단 수·층수를 조정하면서 투자 규모를 맞추는 패턴이 자주 등장합니다.';
+        }else{
+          elPatternSentence.textContent = base +
+            '공간 유형·작목 구성이 다양해, 프로젝트별로 다른 설계 패턴이 시도되고 있습니다.';
+        }
+      }
+    }
+
+    // 체크포인트 문장 약간 개인화
+    var elCheckSentence=document.getElementById('brCheckSentence');
+    if(elCheckSentence){
+      if(total===0){
+        elCheckSentence.textContent='내 프로젝트 조건을 아직 알 수 없어, 일반적인 설계 변경 체크포인트만 보여주고 있습니다.';
+      }else if(bizCount/(total||1)>=0.5){
+        elCheckSentence.textContent='지식산업센터 기반 설계에서는, 층고·기계실 위치·소음 규제 등을 고려해 랙 단 수와 공조 설비를 함께 조정하는 것이 중요합니다.';
+      }else{
+        elCheckSentence.textContent='내 프로젝트 조건을 기준으로, 설계 변경 시 특히 영향을 많이 받는 항목을 정리했습니다.';
+      }
+    }
+  });
+  </script>
+</body>
+</html>

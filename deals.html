@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <title>이피랑 - 견적/계약</title>
+
+  <style>
+
+  /* [디자인 개선] 카드 스타일 (Canvas Look) */
+  body[data-page="deals"] .dl-card {
+    border-radius: 24px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+    width: 100%;
+    padding: 24px 20px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  /* 타이틀 영역 */
+  body[data-page="deals"] .dl-title {
+    margin: 0 0 12px;
+    font-size: 20px;
+    font-weight: 800;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: -0.02em;
+  }
+  body[data-page="deals"] .dl-title i {
+    color: #16a34a;
+    background: #dcfce7;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+
+  body[data-page="deals"] .dl-sub {
+    margin: 0 0 16px;
+    font-size: 14px;
+    color: #475569;
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+
+  body[data-page="deals"] .dl-caption {
+    margin: 12px 0 0;
+    font-size: 12px;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 10px 12px;
+    border-radius: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  body[data-page="deals"] .dl-caption::before {
+    content: '\f05a'; font-family: "Font Awesome 6 Free"; font-weight: 900; color: #94a3b8;
+  }
+
+  /* [디자인 개선] 탭 스타일 (Pill Segment) */
+  body[data-page="deals"] .dl-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    padding: 4px;
+    background: #f1f5f9;
+    border-radius: 14px;
+    scrollbar-width: none; /* 스크롤바 숨김 */
+  }
+  body[data-page="deals"] .dl-tabs::-webkit-scrollbar { display: none; }
+
+  body[data-page="deals"] .dl-tab {
+    flex: 1;
+    min-width: fit-content;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: transparent;
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  body[data-page="deals"] .dl-tab i { font-size: 13px; }
+
+  /* 활성화 된 탭 */
+  body[data-page="deals"] .dl-tab--active {
+    background: #ffffff;
+    color: #0f172a;
+    font-weight: 800;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border-color: #e2e8f0;
+  }
+
+  /* 리스트 헤더 */
+  body[data-page="deals"] .dl-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding: 0 4px;
+  }
+
+  body[data-page="deals"] .dl-list-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #1e293b;
+  }
+
+  body[data-page="deals"] .dl-list-count {
+    font-size: 12px;
+    font-weight: 700;
+    color: #16a34a;
+    background: #dcfce7;
+    padding: 2px 8px;
+    border-radius: 99px;
+  }
+
+  body[data-page="deals"] .dl-empty {
+    margin-top: 20px;
+    padding: 30px 20px;
+    text-align: center;
+    font-size: 13px;
+    color: #94a3b8;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px dashed #cbd5e1;
+    line-height: 1.5;
+  }
+
+  body[data-page="deals"] .dl-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 10px;
+  }
+
+  /* [디자인 개선] 견적/계약 아이템 카드 */
+  body[data-page="deals"] .dl-item {
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: all 0.2s;
+    border-left: 4px solid #16a34a; /* 강조 라인 */
+  }
+  body[data-page="deals"] .dl-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px -4px rgba(0,0,0,0.08);
+  }
+
+  body[data-page="deals"] .dl-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* 타이틀 길어질 경우 대비 */
+    gap: 10px;
+  }
+
+  body[data-page="deals"] .dl-item-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #1e293b;
+    line-height: 1.4;
+  }
+
+  body[data-page="deals"] .dl-item-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  /* 메타 정보 (시설유형 등) */
+  body[data-page="deals"] .dl-item-meta {
+    font-size: 12px;
+    color: #64748b;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed #f1f5f9;
+  }
+  body[data-page="deals"] .dl-item-meta i {
+    font-size: 12px;
+    color: #94a3b8;
+    margin-right: 2px;
+  }
+
+  /* 본문 (금액, 옵션 등) */
+  body[data-page="deals"] .dl-item-body {
+    font-size: 13px;
+    color: #334155;
+    line-height: 1.6;
+    background: #f8fafc;
+    padding: 10px;
+    border-radius: 8px;
+  }
+
+  body[data-page="deals"] .dl-item-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  body[data-page="deals"] .dl-item-cta {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+  }
+
+  /* 배지 스타일 */
+  body[data-page="deals"] .dl-badge-vendor {
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 2px 6px;
+    background: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #dbeafe;
+  }
+
+  body[data-page="deals"] .dl-badge-stage {
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 99px;
+    padding: 2px 8px;
+    background: #dcfce7;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+  }
+
+  /* 버튼 스타일 고도화 */
+  body[data-page="deals"] .btn.outline {
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #475569;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    flex: 2; /* 주요 액션 버튼 더 크게 */
+  }
+  body[data-page="deals"] .btn.ghost {
+    background: transparent;
+    color: #94a3b8;
+    font-weight: 500;
+    font-size: 12px;
+    border: none;
+    flex: 1;
+  }
+  </style>
+</head>
+
+<body data-page="deals">
+  <div class="app">
+    <header>
+      <div class="bar">
+        <div class="logo">
+          <a href="home.html" style="all:unset;cursor:pointer">
+            <img src="img/logo.png" alt="이피랑 로고" />
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- 상단 설명 카드 -->
+      <section class="dl-card">
+        <h3 class="dl-title">
+          <i class="fa-solid fa-file-contract"></i>
+          <span>견적/계약 현황</span>
+        </h3>
+        <p class="dl-sub">
+          지금까지 내가 (주)그린에 요청해 둔 견적과, 받은 견적·진행 중인 계약 현황을 한 번에 모아서 보는 화면입니다.
+          어떤 프로젝트가 <strong>견적 요청 중인지, 견적이 도착했는지</strong> 탭으로 쉽게 확인하세요.
+        </p>
+        <div class="dl-caption">
+          공급사는 '농업회사법인 (주)그린' 기준으로 표기됩니다.
+        </div>
+      </section>
+
+      <!-- 탭 + 리스트 -->
+      <section class="dl-card" style="padding: 20px 16px;">
+        <!-- 탭 -->
+        <div class="dl-tabs" id="dlTabs">
+          <button type="button" class="dl-tab dl-tab--active" data-stage="request">
+            <i class="fa-regular fa-paper-plane"></i>
+            <span>견적 요청 중</span>
+          </button>
+          <button type="button" class="dl-tab" data-stage="quote">
+            <i class="fa-regular fa-file-lines"></i>
+            <span>견적 도착</span>
+          </button>
+          <button type="button" class="dl-tab" data-stage="contract">
+            <i class="fa-solid fa-handshake-simple"></i>
+            <span>계약 진행</span>
+          </button>
+          <button type="button" class="dl-tab" data-stage="done">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>완료</span>
+          </button>
+        </div>
+
+        <!-- 리스트 헤더 -->
+        <div class="dl-list-header">
+          <div class="dl-list-title" id="dlListTitle">견적 요청 중</div>
+          <div class="dl-list-count" id="dlListCount">0건</div>
+        </div>
+
+        <!-- 리스트 컨테이너 -->
+        <div id="dlListContainer">
+          <!-- JS로 채워짐 -->
+        </div>
+      </section>
+    </main>
+
+    <!-- 하단 버튼 바 -->
+    <div class="bottom-bar">
+      <button type="button" class="btn ghost" id="dlBtnHome">홈으로</button>
+      <button type="button" class="btn acc" id="dlBtnProjects">프로젝트 목록</button>
+    </div>
+  </div>
+
+  <!-- 공통 모달/토스트 -->
+  <div id="overlay" class="overlay" onclick="closeModal && closeModal(event)"></div>
+  <div id="modal" class="modal" style="display:none"></div>
+  <div id="toast" class="toast">처리되었습니다</div>
+
+  <script src="app.js" defer></script>
+  <script>
+  document.addEventListener('DOMContentLoaded',function(){
+    // ============================================
+    // [개발용] 더미 데이터 강제 주입 (UI 확인용)
+    // ============================================
+    // 실제 서비스에서는 이 부분이 없어야 하지만, 요청하신 대로 
+    // "밋밋하지 않게" 데이터를 채워넣기 위해 임시로 projects 배열을 만듭니다.
+    
+    var dummyProjects = [
+      {
+        id: 'mock-1',
+        status: 'quote_requested', // -> request
+        reco: { title: '김포 지식산업센터 30평형 A타입', facilityLabel: '지식산업센터' },
+        survey: { step1: { region_si: '경기도 김포시' }, step2: { facility: 'biz_center' } }
+      },
+      {
+        id: 'mock-2',
+        status: 'quote_received', // -> quote
+        reco: { title: '남양주 창고형 스마트팜 B타입', facilityLabel: '판넬형 창고' },
+        survey: { step1: { region_si: '경기도 남양주시' }, step2: { facility: 'panel_factory' } },
+        quote: { 
+          summary: '총 견적가: 1억 2,500만원 (VAT 별도)', 
+          validUntil: '2025.04.30',
+          optionsSummary: '자동화(중급), 양액기 1식 포함'
+        }
+      },
+      {
+        id: 'mock-3',
+        status: 'contracted', // -> contract
+        reco: { title: '성수동 쇼룸형 스마트팜', facilityLabel: '상가/쇼룸' },
+        survey: { step1: { region_si: '서울 성동구' }, step2: { facility: 'retail_space' } },
+        quote: {
+          summary: '계약금 납입 완료 (착공 대기)',
+          validUntil: '-',
+          optionsSummary: '쇼룸 인테리어 패키지 포함'
+        }
+      },
+      {
+        id: 'mock-4',
+        status: 'complete', // -> done
+        reco: { title: '이천 엽채류 수직농장 1호점', facilityLabel: '샌드위치 판넬' },
+        survey: { step1: { region_si: '경기도 이천시' }, step2: { facility: 'panel_factory' } },
+        quote: {
+          summary: '시공 완료 (2024.12.01)',
+          validUntil: '-',
+          optionsSummary: '운영 데이터 모니터링 중'
+        }
+      }
+    ];
+
+    // 기존 로직 유지하되, projects 변수를 위 더미데이터로 덮어씌웁니다.
+    // (원래는 localStorage에서 읽어와야 함)
+    var key=(window.K && K.PROJECTS) || 'ep-projects';
+    var projects=[];
+    try{
+      // 실제로는 아래 주석을 풀고 localStorage를 씁니다.
+      // projects=(typeof read==='function')?read(key,[]):JSON.parse(localStorage.getItem(key)||'[]');
+      
+      // 더미 데이터 사용
+      projects = dummyProjects;
+    }catch(e){
+      projects=[];
+    }
+    
+    // ============================================
+    //  아래부터는 기존 로직 그대로 유지
+    // ============================================
+
+    // 하단 버튼
+    var btnHome=document.getElementById('dlBtnHome');
+    var btnProjects=document.getElementById('dlBtnProjects');
+    if(btnHome){
+      btnHome.addEventListener('click',function(){window.location.assign('home.html');});
+    }
+    if(btnProjects){
+      btnProjects.addEventListener('click',function(){window.location.assign('home.html');});
+    }
+
+    // 프로젝트명 & 시설 유형 유틸 (home에서 쓰던 컨셉 재사용)
+    function buildProjectName(p){
+      var survey=p.survey||{};
+      var s1=survey.step1||{};
+      var s2=survey.step2||{};
+      var reco=p.reco||{};
+      var region=s1.region_si||'';
+      if(region){
+        var parts=region.split(/\s+/);
+        if(parts.length>=2){
+          region=parts[1]; // "김포시" 느낌으로
+        }
+      }
+      var facilityBase='';
+      switch(s2.facility){
+        case 'biz_center':facilityBase='지식산업센터';break;
+        case 'panel_factory':facilityBase='판넬형 창고·공장';break;
+        case 'retail_space':facilityBase='상가/근린생활시설';break;
+        default:facilityBase='실내 공간';break;
+      }
+      var cropSource=(reco.cropType||reco.title||'');
+      var cropWord='';
+      if(cropSource.includes('엽채')) cropWord='엽채 스마트팜';
+      else if(cropSource.includes('허브')) cropWord='허브 스마트팜';
+      else if(cropSource.includes('육묘')) cropWord='육묘장';
+      else if(cropSource.includes('조경')||cropSource.includes('쇼룸')) cropWord='조경 스마트팜';
+      var partsName=[];
+      if(region) partsName.push(region);
+      if(facilityBase) partsName.push(facilityBase);
+      if(cropWord) partsName.push(cropWord);
+      var name=partsName.join(' ');
+      return name || reco.title || '이름 없는 프로젝트';
+    }
+
+    function facilityTypeFromReco(p){
+      var reco=p.reco||{};
+      var label=reco.facilityLabel||'';
+      var title=reco.title||'';
+      var base=label||title;
+      if(base.includes('육묘')) return '실내 육묘장';
+      if(base.includes('조경')||base.includes('쇼룸')) return '실내용 조경 스마트팜';
+      return '실내 스마트팜';
+    }
+
+    // status -> stage 매핑
+    function mapStatusToStage(status){
+      switch(status){
+        case 'quote_requested':
+          return 'request';  // 견적 요청 중
+        case 'quote_review':
+        case 'quote_received':
+          return 'quote';    // 견적 도착
+        case 'contracted':
+        case 'construction':
+          return 'contract'; // 계약 진행
+        case 'operating':
+        case 'done':
+        case 'complete':
+          return 'done';     // 완료
+        default:
+          return null;       // draft 등은 여기서 안 씀
+      }
+    }
+
+    // 견적/계약 관련 프로젝트만 필터링
+    var dealItems=[];
+    projects.forEach(function(p){
+      var stage=mapStatusToStage(p.status);
+      if(!stage) return; // draft 등은 리스트에 안 올림
+
+      var name=buildProjectName(p);
+      var facility=facilityTypeFromReco(p);
+      var vendor='농업회사법인 (주)그린';
+
+      var quoteInfo=(p.quote && p.quote.summary) || '견적 금액 산출 중...';
+      var periodInfo=(p.quote && p.quote.validUntil) ? ('유효기간: '+p.quote.validUntil) : '유효기간: -';
+      var optionInfo=(p.quote && p.quote.optionsSummary) || '세부 옵션 조율 예정';
+
+      dealItems.push({
+        projectId:p.id,
+        stage:stage,
+        projectName:name,
+        facility:facility,
+        vendor:vendor,
+        quoteInfo:quoteInfo,
+        periodInfo:periodInfo,
+        optionInfo:optionInfo
+      });
+    });
+
+    var tabsContainer=document.getElementById('dlTabs');
+    var listTitle=document.getElementById('dlListTitle');
+    var listCount=document.getElementById('dlListCount');
+    var listContainer=document.getElementById('dlListContainer');
+    var currentStage='request';
+
+    function labelForStage(stage){
+      switch(stage){
+        case 'request':return '견적 요청 중';
+        case 'quote':return '견적 도착';
+        case 'contract':return '계약 진행';
+        case 'done':return '완료';
+        default:return '';
+      }
+    }
+
+    function ctaLabelForStage(stage){
+      switch(stage){
+        case 'request':return '상담 일정 확인';
+        case 'quote':return '견적서 보기';
+        case 'contract':return '계약 현황';
+        case 'done':return '완료 보고서';
+        default:return '자세히 보기';
+      }
+    }
+
+    function renderList(){
+      var filtered=dealItems.filter(function(item){return item.stage===currentStage;});
+
+      if(listTitle) listTitle.textContent=labelForStage(currentStage);
+      if(listCount) listCount.textContent=filtered.length+'건';
+
+      if(!filtered.length){
+        var msg='';
+        if(currentStage==='request'){
+          msg='아직 (주)그린에 견적을 요청한 프로젝트가 없습니다.';
+        }else if(currentStage==='quote'){
+          msg='도착한 견적이 없습니다. 견적서가 도착하면 알림을 드려요.';
+        }else if(currentStage==='contract'){
+          msg='진행 중인 계약이 없습니다.';
+        }else{
+          msg='완료된 계약이 아직 없습니다.';
+        }
+        listContainer.innerHTML='<div class="dl-empty"><i class="fa-regular fa-folder-open" style="font-size:24px; display:block; margin-bottom:10px;"></i>'+msg+'</div>';
+        return;
+      }
+
+      var html='<div class="dl-list">';
+      filtered.forEach(function(it){
+        html+='<article class="dl-item" data-project-id="'+it.projectId+'">';
+        html+='<div class="dl-item-header">';
+        html+='<div class="dl-item-title">'+it.projectName+'</div>';
+        html+='<div class="dl-item-tags">';
+        html+='<span class="dl-badge-stage">'+labelForStage(it.stage)+'</span>';
+        html+='</div></div>';
+
+        html+='<div class="dl-item-meta">';
+        html+='<span><i class="fa-regular fa-building"></i>'+it.facility+'</span>';
+        html+='<span class="dl-badge-vendor" style="margin-left:auto;">'+it.vendor+'</span>';
+        html+='</div>';
+
+        html+='<div class="dl-item-body">';
+        html+='<div style="font-weight:700; color:#1e293b; font-size:14px; margin-bottom:4px;">'+it.quoteInfo+'</div>';
+        html+='<div style="font-size:12px; color:#64748b;">'+it.periodInfo+'</div>';
+        html+='<div style="margin-top:6px; padding-top:6px; border-top:1px dashed #e2e8f0; font-size:12px;">'+it.optionInfo+'</div>';
+        html+='</div>';
+
+        html+='<div class="dl-item-footer">';
+        html+='<div class="dl-item-cta">';
+        html+='<button type="button" class="btn outline dl-btn-detail">'+ctaLabelForStage(it.stage)+'</button>';
+        html+='</div>';
+        html+='</div>';
+
+        html+='</article>';
+      });
+      html+='</div>';
+      listContainer.innerHTML=html;
+
+      // 버튼 이벤트 바인딩
+      var items=listContainer.querySelectorAll('.dl-item');
+      items.forEach(function(el){
+        var pid=el.dataset.projectId;
+        var btnDetail=el.querySelector('.dl-btn-detail');
+
+        function goDetail(){
+          if(pid){
+            try{localStorage.setItem('ep-current-project-id',pid);}catch(e){}
+            window.location.assign('project-detail.html');
+          }else{
+            if(typeof toast==='function') toast('프로젝트 정보를 찾을 수 없습니다.');
+            else alert('프로젝트 정보를 찾을 수 없습니다.');
+          }
+        }
+
+        if(btnDetail) btnDetail.addEventListener('click',goDetail);
+        el.addEventListener('click',function(e){
+          if(e.target.closest('button')) return;
+          goDetail();
+        });
+      });
+    }
+
+    // 탭 클릭
+    if(tabsContainer){
+      tabsContainer.addEventListener('click',function(e){
+        var tab=e.target.closest('.dl-tab');
+        if(!tab) return;
+        var stage=tab.dataset.stage;
+        if(!stage) return;
+        currentStage=stage;
+
+        // active 클래스
+        var allTabs=tabsContainer.querySelectorAll('.dl-tab');
+        allTabs.forEach(function(t){t.classList.remove('dl-tab--active');});
+        tab.classList.add('dl-tab--active');
+
+        renderList();
+      });
+    }
+
+    renderList();
+  });
+  </script>
+</body>
+</html>

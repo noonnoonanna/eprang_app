@@ -6,249 +6,266 @@
   <meta name="theme-color" content="#ffffff" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="stylesheet" href="style.css" />
-  <title>IpiCare</title>
+  <!-- Font Awesome 아이콘 사용을 위해 추가합니다 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <title>이피랑</title>
+  <style>
+:root{--primary:#16a34a;--primary-light:#dcfce7;--primary-dark:#15803d;--bg-soft:#ffffff;--text-main:#1a202c;--text-sub:#4a5568;--card-bg:#ffffff;--border-light:#e2e8f0;--shadow-sm:0 1px 3px rgba(0,0,0,0.08);--shadow-md:0 4px 12px rgba(0,0,0,0.1);--radius-lg:20px;--radius-md:14px;--radius-sm:10px;--transition-ease:all 0.3s ease;}
+body{font-family: 'Pretendard', sans-serif;background-color:var(--bg-soft);margin:0;padding:0;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+body[data-page="dashboard"] main{padding:20px 16px 100px;max-width:520px;margin:0 auto;}
+body[data-page="dashboard"] .dash-section{margin-bottom:70px; width:98%}
+body[data-page="dashboard"] .summary-banner{position:relative;border-radius:var(--radius-lg);padding:17px 20px 20px;background:linear-gradient(135deg,#f0fff4 0%,#f9fffa 100%);box-shadow:var(--shadow-md);overflow:hidden;border:1px solid var(--border-light);}
+body[data-page="dashboard"] .summary-chip{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;font-size:15px;font-weight:700;color:var(--primary-dark);margin-bottom:10px;}
+body[data-page="dashboard"] .summary-chip i{font-size:14px;}
+body[data-page="dashboard"] .summary-title{margin:0 0 6px;font-size:24px;font-weight:800;color:var(--text-main);}
+body[data-page="dashboard"] .summary-subtitle{margin:0 0 18px;font-size:14px;color:var(--text-sub);line-height:1.6;font-weight:500;}
+body[data-page="dashboard"] .summary-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;}
+body[data-page="dashboard"] .stat-item{padding:14px;border-radius:var(--radius-md);background:var(--card-bg);border:1px solid var(--border-light);box-shadow:var(--shadow-sm);transition:var(--transition-ease);}
+body[data-page="dashboard"] .stat-label{font-size:12px;color:var(--text-sub);margin-bottom:6px;font-weight:600;}
+body[data-page="dashboard"] .stat-value{font-size:18px;font-weight:800;color:var(--primary-dark);}
+body[data-page="dashboard"] .summary-bg-icon{position:absolute;right:-34px;bottom:-40px;width:100px;height:100px;border-radius:999px;background:radial-gradient(circle at 30% 30%,rgba(34,197,94,0.9),rgba(15,118,110,0.1));opacity:0.25;}
+body[data-page="dashboard"] .section-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;}
+body[data-page="dashboard"] .section-title{margin:0;font-size:20px;font-weight:800;color:var(--text-main);display:flex;align-items:center;gap:8px;min-width:0;}
+body[data-page="dashboard"] .section-title i{font-size:16px;color:var(--primary);}
+body[data-page="dashboard"] .section-header .btn{flex:0 0 auto;padding:0 11px;font-size:13px;height:33px;display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:999px;box-shadow:var(--shadow-sm);transition:var(--transition-ease);font-weight:500;background-color:var(--primary);color:white;}
+body[data-page="dashboard"] .section-header .btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);background-color:var(--primary-dark);}
+body[data-page="dashboard"] .section-header .btn i{font-size:14px;}
+body[data-page="dashboard"] .empty-state{padding:24px;border-radius:var(--radius-md);background:var(--card-bg);border:1px dashed #d1d5db;text-align:center;font-size:14px;color:var(--text-sub);line-height:1.5;box-shadow:var(--shadow-sm);}
+body[data-page="dashboard"] .empty-state strong{display:block;margin-bottom:8px;font-size:16px;color:var(--text-main);}
+body[data-page="dashboard"] .empty-state .btn{margin-top:16px;width:100%;max-width:300px;font-size:14px;font-weight:700;height:44px;border-radius:var(--radius-sm);background-color:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;box-shadow:var(--shadow-sm);transition:var(--transition-ease);}
+body[data-page="dashboard"] .empty-state .btn:hover{background-color:#dbeafe;transform:translateY(-2px);box-shadow:var(--shadow-md);}
+body[data-page="dashboard"] .project-list{margin-top:16px;display:grid;gap:12px;}
+.project-card a {
+  text-decoration: none !important;   /* 밑줄 제거 */
+  color: inherit !important;          /* 부모 글자색 따라감 */
+  display: block;
+  cursor: pointer;
+}
+/* 프로젝트 카드 레이아웃 변경: 배지를 아래로 내려서 메인 콘텐츠에 가로 공간을 최대한 확보합니다. */
+body[data-page="dashboard"] .project-card{
+    background:var(--card-bg);
+    border-radius:var(--radius-md);
+    border:1px solid var(--border-light);
+    box-shadow:var(--shadow-sm);
+    padding:25px 16px;
+    display: block; /* 그리드 대신 블록으로 변경 */
+    transition:var(--transition-ease);
+	margin-bottom:10px;
+}
+body[data-page="dashboard"] .project-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
+body[data-page="dashboard"] .project-main{
+    min-width:0;
+    margin-bottom: 12px; /* 태그와의 간격 추가 */
+}
+body[data-page="dashboard"] .project-name{font-size:16px;font-weight:600;color:var(--text-main);margin:0 0 12px;line-height:1.5;}
+body[data-page="dashboard"] .project-meta{display:flex;flex-wrap:wrap;gap:72px;align-items:center;margin-bottom:8px;}
+body[data-page="dashboard"] .project-meta span{font-size:14px;color:var(--text-sub);display:inline-flex;align-items:center;gap:5px;}
+body[data-page="dashboard"] .project-meta i{font-size:12px;color:#94a3b8;}
+body[data-page="dashboard"] .project-next{font-size:14px;color:#4a5568;line-height:1.6;}
+
+/* 태그 영역 스타일 변경: 가로로 나열하며 줄 바꿈 허용 */
+body[data-page="dashboard"] .project-tags{
+    display:flex;
+    flex-direction: row; /* 가로 나열 */
+    flex-wrap: wrap; /* 줄 바꿈 허용 */
+    align-items: center;
+    gap:8px;
+    padding-top: 23px; /* 경계선 위쪽 패딩 */
+    border-top: 1px dashed var(--border-light); /* 메인 정보와 구분선 추가 */
+}
+body[data-page="dashboard"] .project-tags .badge{font-size:12px;height:24px;line-height:24px;padding-inline:12px;white-space:nowrap;border-radius:999px;font-weight:600;}
+
+.badge-green{background:#e6fffa;color:#0d7a5b;}
+.badge-gray{background:#f3f4f6;color:#374151;}
+.badge-blue{background:#eff6ff;color:#1e40af;}
+.badge-orange{background:#fff7ed;color:#b45309;}
+body[data-page="dashboard"] .notice-list{display:grid;gap:12px;}
+body[data-page="dashboard"] .notice-card{background:var(--card-bg);border-radius:var(--radius-md);border:1px solid var(--border-light);padding:16px;box-shadow:var(--shadow-sm);transition:var(--transition-ease);margin-bottom:15px;}
+body[data-page="dashboard"] .notice-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
+body[data-page="dashboard"] .notice-title{margin:0 0 15px;font-size:16px;font-weight:700;color:var(--text-main);}
+body[data-page="dashboard"] .notice-body{margin:0 0 12px;font-size:14px;color:var(--text-sub);line-height:1.6;}
+body[data-page="dashboard"] .notice-meta{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--text-sub);}
+body[data-page="dashboard"] .notice-tag{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;background:#e0f2fe;border:1px solid #90cdf4;color:#2b6cb0;font-weight:600;}
+body[data-page="dashboard"] .notice-date{color:#94a3b8;display:inline-flex;align-items:center;gap:4px;}
+.tabs{position:fixed;bottom:0;left:0;width:100%;background-color:var(--card-bg);border-top:1px solid var(--border-light);box-shadow:var(--shadow-md);z-index:100;padding:8px 0;}
+.tabs ul{display:flex;justify-content:space-around;list-style:none;margin:0;padding:0;}
+.tabs li{flex:1;text-align:center;}
+.tabs button{background:none;border:none;color:var(--text-sub);font-size:20px;padding:8px 0;width:100%;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:var(--transition-ease);}
+.tabs button small{font-size:11px;font-weight:600;color:var(--text-sub);transition:var(--transition-ease);}
+.tabs button:hover,.tabs button.active{color:var(--primary);}
+.tabs button:hover small,.tabs button.active small{color:var(--primary);}
+#overlay,#recOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:none;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(2px);}
+#modal,#recModal{background:white;padding:24px;border-radius:20px;width:85%;max-width:320px;text-align:center;animation:popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);}
+@keyframes popIn{from{transform:scale(0.8);opacity:0;}to{transform:scale(1);opacity:1;}}
+.modal-title{font-size:1.1rem;font-weight:800;margin-bottom:8px;}
+.modal-msg{color:var(--text-sub);margin-bottom:20px;font-size:0.95rem;}
+.modal-btn{width:100%;padding:12px;background:var(--primary);color:white;border:none;border-radius:12px;font-weight:700;cursor:pointer;}
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background-color:rgba(0,0,0,0.75);color:white;padding:10px 20px;border-radius:999px;font-size:14px;z-index:1000;opacity:0;visibility:hidden;transition:opacity 0.3s ease, transform 0.3s ease;}
+#toast.show{opacity:1;visibility:visible;transform:translateX(-50%) translateY(-10px);}
+#noticeSection {margin-bottom:0}
+  </style>
 </head>
-<style>
-#homeSubSummary {
-      max-width: 420px;
-    }
 
-    #homeSubSummary .item {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 16px 20px;
-      border-radius: 14px;
-      border: 1px solid #e5e7eb;
-      background: #fff;
-      box-shadow: 0 2px 6px rgba(22, 163, 74, 0.05);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      margin-top: 8px;
-    }
+<!-- data-page는 dashboard로 유지 -->
+<body data-page="dashboard">
+  <div class="app">	
+		<header>
+			<div class="bar">
+				<div class="logo"><a href="home.html" style="all:unset;cursor:pointer"><img src="img/logo.png" alt="이피랑 로고"></a></div>
+			</div>
+		</header>
 
-    #homeSubSummary .item:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 16px rgba(22, 163, 74, 0.1);
-    }
-
-    #homeSubSummary .title {
-      font-size: 17px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    #homeSubSummary .badge.soft {
-      display: inline-block;
-      padding: 3px 8px;
-      font-size: 12px;
-      font-weight: 500;
-      border-radius: 8px;
-      background: #dcfce7;
-      color: #15803d;
-      margin-bottom: 6px;
-    }
-
-    #homeSubSummary .status.active {
-      color: #16a34a;
-      font-weight: 600;
-    }
-
-    #homeSubSummary .status.paused {
-      color: #f59e0b;
-      font-weight: 600;
-    }
-
-    #homeSubSummary .btn {
-      background: #16a34a;
-      color: white;
-      font-size: 14px;
-      font-weight: 600;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
-
-    #homeSubSummary .btn:hover {
-      background: #15803d;
-    }
-
-
-#todayRoutine {
-      max-width: 420px;
-    }
-
-
-       #todayRoutine ul {
-      list-style: none;
-      padding: 0;
-      margin: 6px 0 12px 0;
-    }
-
-    #todayRoutine li {
-      position: relative;
-      background: #fff;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 10px 14px 10px 38px;
-      font-size: 14px;
-      color: #374151;
-      margin-bottom: 8px;
-      box-shadow: 0 2px 4px rgba(22, 163, 74, 0.05);
-      transition: all 0.2s ease;
-    }
-
-     #todayRoutine li::before {
-      content: '✔';
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: #dcfce7;
-      color: #16a34a;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      font-weight: bold;
-    }
-
-    #todayRoutine li:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(22, 163, 74, 0.1);
-      background: #f0fdf4;
-    }
-
-    .right {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .btn {
-      background: #16a34a;
-      color: white;
-      font-size: 14px;
-      font-weight: 600;
-      padding: 8px 14px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
-
-    .btn.acc {
-      background: #fff;
-      color: #16a34a;
-      border: 1px solid #16a34a;
-    }
-
-    .btn:hover {
-      background: #15803d;
-      color: #fff;
-    }
-
-    .btn.acc:hover {
-      background: #16a34a;
-      color: #fff;
-    }
-
-    /* 바로가기 카드 */
-    #quickLinks .icons {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
-
-    #quickLinks .icons .btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px solid #e5e7eb;
-      background: #fff;
-      color: #14532d;
-      font-size: 14px;
-      font-weight: 600;
-      box-shadow: 0 2px 6px rgba(22, 163, 74, 0.05);
-      cursor: pointer;
-      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
-      text-align: center;
-    }
-
-    #quickLinks .icons .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 14px rgba(22, 163, 74, 0.12);
-      border-color: #c7ead5;
-    }
-
-    #quickLinks .icons .emoji {
-      font-size: 20px;
-      background: #eaffef;
-      padding: 10px;
-      border-radius: 50%;
-    }
-	
-</style>
-<body data-page="home">
-  <div class="app">
-    <header>
-  <div class="bar">
-    <h1 style="cursor:pointer" ><a href="home.html" style="all:unset;cursor:pointer">IpiCare</a></h1>
-  </div>
-</header>
     <main>
-      
-<section id="view-home" class="view active">
-  <div class="grid">
-    <div class="card pad" id="heroRecoSurvey"></div>
-	<div class="card pad" id="heroRecoRecord"></div>
-	<div id="quickLinks" class="card">
-      <div class="title-strong">바로가기</div>
-      <div class="icons">
-        <button class="btn" onclick="startReevalSurvey && startReevalSurvey()"><span class="emoji">📋</span>건강 상태</button>
-        <button class="btn" onclick="navigate('recipes')"><span class="emoji">🍵</span>레시피</button>
-        <button class="btn" onclick="navigate('grow')"><span class="emoji">⏰</span>리마인더</button>
-        <button class="btn" onclick="navigate('my')"><span class="emoji">🧾</span>구독</button>
-        <button class="btn" onclick="toast && toast('오늘 브리핑 준비중')"><span class="emoji">📣</span>일일브리핑</button>
-        <button class="btn" onclick="navigate('my')"><span class="emoji">⚙️</span>설정</button>
-      </div>
-    </div>
-	<div class="card pad" id="homeToday"></div>
-	    <div class="card pad">
-      <div class="title-strong">내 작물 상태</div>
-      <div id="myCrops" class="list" style="margin-top:8px"></div>
-    </div>
-    <div class="card pad" id="homeSubSummary"></div>
-    <div class="card pad" id="homeStreak"></div>
-    <div class="card pad"><div class="disclaimer">의료 고지: 본 서비스는 진단/치료/처방이 아닙니다. 증상이 지속되면 전문의 상담을 권장합니다.</div></div>
-  </div>
-</section>
+      <!-- 상단 프로젝트 요약 -->
+      <section class="dash-section" id="projectSummarySection">
+        <div class="summary-banner">
+          <div class="summary-chip">
+            <i class="fas fa-seedling"></i> 
+            <span>내 스마트팜 프로젝트</span>
+          </div>
+          <p class="summary-subtitle">
+            고객님의 스마트팜 프로젝트 현황을 한눈에 확인하고, 다음 단계로 나아가세요.
+          </p>
 
+          <div class="summary-stats">
+            <div class="stat-item">
+              <div class="stat-label">진행 중 프로젝트</div>
+              <div class="stat-value" id="statInProgress">0건</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">완료 프로젝트</div>
+              <div class="stat-value" id="statCompleted">0건</div>
+            </div>
+          </div>
+
+          <div class="summary-bg-icon"></div>
+        </div>
+      </section>
+
+      <!-- 프로젝트 목록 -->
+      <section class="dash-section" id="projectListSection">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fas fa-list-check"></i>
+            <span>프로젝트 목록</span>
+          </h2>
+          <!-- 버튼 디자인 통일 -->
+          <button type="button" class="btn acc" id="btnNewProject">
+            <i class="fas fa-plus"></i> 
+            <span>새 프로젝트</span>
+          </button>
+        </div>
+        
+        <!-- 프로젝트 리스트 (예시 카드 추가) -->
+        <div class="project-list" id="projectList">
+          <!-- 예시 카드 1 -->
+          <article class="project-card">
+            <div class="project-main">
+              <h3 class="project-name">김포 지식산업센터 3층 엽채 스마트팜</h3>
+              <div class="project-meta">
+                <span><i class="far fa-building"></i> 실내 스마트팜</span>
+                <span><i class="fas fa-chart-line"></i> 설계중</span>
+              </div>
+              <div class="project-next">
+                다음 단계: (주)그린 현장 방문 예정 10/12
+              </div>
+            </div>
+            <!-- project-tags가 project-main 아래로 배치되도록 HTML은 그대로 유지 -->
+            <div class="project-tags">
+              <span class="badge badge-green">실내 전용</span>
+              <span class="badge badge-gray">견적 연계 가능</span>
+            </div>
+          </article>
+          
+          <!-- 예시 카드 2 (완료) -->
+          <article class="project-card">
+            <div class="project-main">
+              <h3 class="project-name">수원 농업기술센터 연구용 스마트팜</h3>
+              <div class="project-meta">
+                <span><i class="fas fa-flask"></i> 연구용</span>
+                <span><i class="fas fa-check-circle"></i> 완료</span>
+              </div>
+              <div class="project-next">
+                완료: 2024-08-01
+              </div>
+            </div>
+            <div class="project-tags">
+              <span class="badge badge-blue">수경 재배</span>
+              <span class="badge badge-orange">기술 지원</span>
+            </div>
+          </article>
+
+          <!-- 프로젝트가 없는 경우에만 이 요소가 보입니다 (JS로 제어) -->
+          <div class="empty-state" id="projectEmptyState" style="display:none;">
+            <strong>아직 저장된 스마트팜 프로젝트가 없어요.</strong>
+            먼저 설문을 통해 <br>나만의 실내 스마트팜 설계 초안을 만들어 볼까요?
+            <button type="button" class="btn" id="btnStartFirstProject">
+              첫 프로젝트 만들러 가기
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 정책자금 · 교육 · 세미나 공지 -->
+      <section class="dash-section" id="noticeSection">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fas fa-bullhorn"></i>
+            <span>정책자금 · 교육 · 세미나</span>
+          </h2>
+          <!-- 버튼 디자인 통일 및 더보기 버튼 추가 -->
+          <button type="button" class="btn acc">
+            <i class="fas fa-arrow-right"></i>
+            <span>더보기</span>
+          </button>
+        </div>
+
+        <div class="notice-list" id="noticeList">
+          <article class="notice-card">
+            <h3 class="notice-title">청년농 정책자금 1차 신청 안내</h3>
+            <p class="notice-body">
+              청년·귀농 예정자 대상 실내 스마트팜 시설자금 신청 기간입니다.
+              신청 조건과 준비 서류를 확인해 주세요.
+            </p>
+            <div class="notice-meta">
+              <span class="notice-tag">정책자금</span>
+              <span class="notice-date"><i class="far fa-calendar-alt"></i> ~ 2026-03-31</span>
+            </div>
+          </article>
+
+          <article class="notice-card">
+            <h3 class="notice-title">초기 창업자 대상 스마트팜 입문 세미나</h3>
+            <p class="notice-body">
+              실내 수직농장, 육묘장, 조경·체험형 스마트팜까지<br>
+              유형별 장단점과 실제 사례를 한 번에 정리해 드립니다.
+            </p>
+            <div class="notice-meta">
+              <span class="notice-tag">세미나</span>
+              <span class="notice-date"><i class="far fa-calendar-alt"></i> 2026-04-10 예정</span>
+            </div>
+          </article>
+        </div>
+      </section>
     </main>
-    <nav class="tabs hidden">
-  <ul>
-    <li><button id="tab-home" onclick="navigate('home')">🏠<small>홈</small></button></li>
-    <li><button id="tab-records" onclick="navigate('records')">📝<small>기록</small></button></li>
-    <li><button id="tab-reco" onclick="navigate('reco')">✨<small>추천</small></button></li>
-    <li><button id="tab-my" onclick="navigate('my')">👤<small>마이</small></button></li>
-  </ul>
-</nav>
+
+    <!-- 하단 탭바 (공통) -->
+    <nav class="tabs">
+      <ul>
+        <li><button id="tab-home" onclick="navigate('home')" class="active">🏠<small>홈</small></button></li>
+        <li><button id="tab-records" onclick="navigate('records')">📝<small>기록</small></button></li>
+        <li><button id="tab-reco" onclick="navigate('reco')">✨<small>추천</small></button></li>
+        <li><button id="tab-my" onclick="navigate('my')">👤<small>마이</small></button></li>
+      </ul>
+    </nav>
   </div>
+
+  <!-- 공통 모달/토스트 레이어 -->
   <div id="overlay" class="overlay" onclick="closeModal && closeModal(event)"></div>
-<div id="modal" class="modal" style="display:none"></div>
-<div id="recOverlay" class="overlay"></div>
-<div id="recModal" class="modal" style="display:none"></div>
-<div id="toast" class="toast">처리되었습니다</div>
+  <div id="modal" class="modal" style="display:none"></div>
+  <div id="recOverlay" class="overlay"></div>
+  <div id="recModal" class="modal" style="display:none"></div>
+  <div id="toast" class="toast">처리되었습니다</div>
+
   <script src="app.js" defer></script>
 </body>
 </html>

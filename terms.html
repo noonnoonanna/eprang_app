@@ -1,57 +1,56 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#ffffff" />
-  <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="stylesheet" href="style.css" />
-  <title>IpiCare</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+	<meta name="theme-color" content="#ffffff" />
+	<link rel="manifest" href="manifest.webmanifest" />
+	<link rel="stylesheet" href="style.css" />
+	<title>이피랑</title>
 </head>
+<style>
+.agree-row{display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;border:1px solid var(--line);background:#fff;cursor: pointer;}
+.agree-row input[type="checkbox"] {cursor: pointer;}
+.agree-row .btn { margin-left: auto;cursor: pointer;flex:none;padding:12px;}
+</style>
 <body data-page="terms">
-  <div class="app">
-    <header>
-  <div class="bar">
-    <h1 style="cursor:pointer" ><a href="intro.html" style="all:unset;cursor:pointer">IpiCare</a></h1>
-  </div>
-</header>
-    <main>
-      
-<section id="view-terms" class="view active">
-  <div class="grid">
-    <div class="card pad">
-      <label class="agree-row"><input type="checkbox" id="agreeAll" onchange="toggleAllAgreements(this.checked)"><label for="agreeAll"><b>전체 약관 동의</b></label></label>
-    </div>
-    <div class="card pad">
-      <div class="grid">
-        <div class="agree-row">
-          <input type="checkbox" id="agreeService" onchange="syncAllAgree()">
-          <div class="grow"><label for="agreeService" class="grow">서비스 이용약관 (필수)</label></div>
-          <button type="button" class="btn ghost" onclick="openTerms('서비스 이용약관', TERMS.service)">〉</button>
-        </div>
-        <div class="agree-row">
-          <input type="checkbox" id="agreePrivacy" onchange="syncAllAgree()">
-          <div class="grow"><label for="agreePrivacy" class="grow">개인정보 수집 및 이용동의 (필수)</label></div>
-          <button type="button" class="btn ghost" onclick="openTerms('개인정보 수집 및 이용동의', TERMS.privacy)">〉</button>
-        </div>
-      </div>
-    </div>
-    <div class="card pad">
-      <div class="cols two">
-        <button class="btn ghost" onclick="navigate('intro')">이전</button>
-        <button id="btnTermsNext" class="btn acc" disabled onclick="navigate('basic')">다음</button>
-      </div>
-    </div>
-  </div>
-</section>
-
-    </main>
-  </div>
-  <div id="overlay" class="overlay" onclick="closeModal && closeModal(event)"></div>
-<div id="modal" class="modal" style="display:none"></div>
-<div id="recOverlay" class="overlay"></div>
-<div id="recModal" class="modal" style="display:none"></div>
-<div id="toast" class="toast">처리되었습니다</div>
-  <script src="app.js" defer></script>
+	<div class="app">
+		<header>
+			<div class="bar">
+				<div class="logo"><a href="intro.html" style="all:unset;cursor:pointer"><img src="img/logo.png" alt="이피랑 로고"></a></div>
+			</div>
+		</header>
+		<main>      
+			<section id="view-terms" class="view active">
+				<div class="grid">
+					<div class="card pad">
+						<label class="agree-row"><input type="checkbox" id="agreeAll" onchange="toggleAllAgreements(this.checked)"><label for="agreeAll"><b>전체 약관 동의</b></label></label>
+					</div>
+					<div class="card pad">
+						<div class="grid">
+							<div class="agree-row" style="margin-bottom:16px">
+								<input type="checkbox" id="agreeService" onchange="syncAllAgree()">
+								<div class="grow"><label for="agreeService" class="grow">서비스 이용약관 (필수)</label></div>
+								<button type="button" class="btn ghost" onclick="openTerms('서비스 이용약관', TERMS.service)">〉</button>
+							</div>
+							<div class="agree-row">
+								<input type="checkbox" id="agreePrivacy" onchange="syncAllAgree()">
+								<div class="grow"><label for="agreePrivacy" class="grow">개인정보 수집 및 이용동의 (필수)</label></div>
+								<button type="button" class="btn ghost" onclick="openTerms('개인정보 수집 및 이용동의', TERMS.privacy)">〉</button>
+							</div>
+						</div>
+					</div>
+					<div class="bottom-bar">
+						<button type="button" class="btn ghost" onclick="window.location.assign('intro.html')">이전</button>
+						<button type="button" class="btn acc" id="btnTermsNext" onclick="handleTermsNext()">다음</button>
+					</div>
+				</div>
+			</section>
+		</main>
+	</div>
+	<div id="overlay" class="overlay" onclick="closeModal && closeModal(event)"></div>
+	<div id="modal" class="modal" style="display:none"></div>
+	<div id="toast" class="toast">처리되었습니다</div>
+	<script src="app.js" defer></script>
 </body>
 </html>

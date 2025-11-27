@@ -1,67 +1,160 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#ffffff" />
-  <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="stylesheet" href="style.css" />
-  <title>IpiCare</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+	<meta name="theme-color" content="#ffffff" />
+	<link rel="manifest" href="manifest.webmanifest" />
+	<link rel="stylesheet" href="style.css" />
+	<title>이피랑</title>
 </head>
-<body data-page="basic">
-  <div class="app">
-    <header>
-  <div class="bar">
-    <h1 style="cursor:pointer" ><a href="intro.html" style="all:unset;cursor:pointer">IpiCare</a></h1>
-  </div>
-</header>
+<style>
+label {margin-bottom:12px;}
+body[data-page="intro"] .btn-auth{padding:0 14px;height:40px;border-radius:999px;border:1px solid #13b271;background:#e6faf2;color:#07915a;font-size:14px;font-weight:600;white-space:nowrap;flex-shrink:0;}
+body[data-page="intro"] .btn-auth:hover{background:#d4f5e8;border-color:#0f9b62;}
+body[data-page="intro"] .btn-auth:active{background:#bdebd9;border-color:#0a7b4c;transform:translateY(1px);}
+body[data-page="intro"] .btn-auth:disabled{background:#f3f3f3;border-color:#d0d0d0;color:#a0a0a0;cursor:default;}
+</style>
+<body data-page="intro">
+	<div class="app">
+		<header>
+			<div class="bar">
+				<div class="logo">
+          <a href="intro.html" style="all:unset;cursor:pointer">
+            <img src="img/logo.png" alt="이피랑 로고">
+          </a>
+        </div>
+			</div>
+		</header>
+
     <main>
-      
 <section id="view-basic" class="view active">
   <div class="grid">
     <div class="card pad">
-      <div class="title-strong">기본 정보</div>
+      <div class="title-strong">회원가입</div>
+
       <form id="form-basic" onsubmit="event.preventDefault(); saveBasic();">
-        <label>아이디
+
+        <!-- 이메일 (최상단 / ID 역할) -->
+        <label>이메일
+  <input name="userid" type="email" id="userid"
+    placeholder="로그인에 사용할 이메일 주소"
+  >
+  <span class="hint">입력한 이메일이 로그인 ID로 사용됩니다.</span>
+</label>
+
+        <!-- 비밀번호 -->
+        <label>비밀번호
+          <input 
+            name="pw" 
+            id="pw" 
+            type="password" 
+            required 
+            minlength="8"
+            placeholder="8자 이상, 특수기호 포함"
+            oninput="validatePwSeq()" 
+            onblur="validatePwSeq()" 
+          >
+        </label>
+
+        <!-- 비밀번호 확인 -->
+        <label>비밀번호 확인
+          <input 
+            name="pw2" 
+            id="pw2" 
+            type="password" 
+            required 
+            minlength="8"
+            oninput="validatePwSeq()" 
+            onblur="validatePwSeq()" 
+          >
+          <span id="pwHint" class="hint"></span>
+        </label>
+
+        <!-- 연락처 + 인증 버튼 -->
+        <label>연락처
           <div class="cols dup">
-            <input name="userid" id="userid" required minlength="4" maxlength="16" pattern="^[A-Za-z0-9_@]+$" placeholder="영문, 숫자, _ @만 사용 가능"
-              inputmode="latin" autocapitalize="off" autocomplete="username" utocorrect="off" spellcheck="false" onbeforeinput="blockDisallowed(event)" oninput="filterUserId(this)" oncompositionend="filterUserId(this)" />
-            <button type="button" class="btn" onclick="checkIdDup()">중복체크</button>
+            <input 
+              name="phone" 
+              id="phone" 
+              required 
+              pattern="^[0-9]{10,11}$"
+              maxlength="11"
+              placeholder="01012345678"
+              inputmode="numeric"
+              oninput="filterPhone(this)"
+            />
+            <button type="button" class="btn btn-auth" onclick="sendPhoneAuth()">인증요청</button>
           </div>
-          <span id="idHint" class="hint"></span>
+          <span id="phoneHint" class="hint"></span>
         </label>
-        <label>비밀번호 <input name="pw" id="pw" type="password" required minlength="8" oninput="validatePwSeq()" onblur="validatePwSeq()" placeholder="8자 이상, 특수기호 1개 이상 포함"></label>
-        <label>비밀번호 확인 <input name="pw2" id="pw2" type="password" required minlength="8" oninput="validatePwSeq()" onblur="validatePwSeq()"><span id="pwHint" class="hint"></span></label>
-        <label>닉네임<input name="nick" required maxlength="10"></label>
-        <label>연락처 <input name="phone" id="phone" required pattern="^[0-9]{10,11}$" maxlength="11" placeholder="01012345678" oninput="filterPhone(this)" inputmode="numeric"></label>
-        <label>성별
-          <select name="gender" required>
-            <option value="">선택</option><option>여성</option><option>남성</option>
-          </select>
+
+        <!-- 인증번호 입력 (UI만) -->
+        <label id="phoneCodeWrap" style="display:none;">인증번호
+		 <div class="cols dup">
+		  <input 
+            name="phoneCode"
+            id="phoneCode"
+            inputmode="numeric"
+            maxlength="6"
+            placeholder="6자리"
+          >
+          <button type="button" class="btn btn-auth" onclick="verifyPhoneCode()">확인</button>
+		  </div>
         </label>
-        <label>생년월일<input name="birth" type="date" required></label>
-        <div class="cols two">
-          <label>키(cm)<input type="number" name="height" min="50" max="250" step="0.1" required></label>
-          <label>체중(kg)<input type="number" name="weight" min="10" max="250" step="0.1" required></label>
-        </div>
+
       </form>
     </div>
-    <div class="card pad">
-      <div class="cols two">
-        <button class="btn ghost" onclick="navigate('terms')">이전</button>
-        <button class="btn acc" onclick="saveBasic()">다음</button>
-      </div>
+
+	<div class="bottom-bar">
+        <button class="btn ghost" onclick="window.location.assign('intro.html')">이전</button>
+        <button class="btn acc" onclick="saveBasic()">완료</button>
     </div>
+
   </div>
 </section>
-
     </main>
-  </div>
+
+	</div>
+
   <div id="overlay" class="overlay" onclick="closeModal && closeModal(event)"></div>
-<div id="modal" class="modal" style="display:none"></div>
-<div id="recOverlay" class="overlay"></div>
-<div id="recModal" class="modal" style="display:none"></div>
-<div id="toast" class="toast">처리되었습니다</div>
+  <div id="modal" class="modal" style="display:none"></div>
+  <div id="recOverlay" class="overlay"></div>
+  <div id="recModal" class="modal" style="display:none"></div>
+  <div id="toast" class="toast">처리되었습니다</div>
+
   <script src="app.js" defer></script>
+
+  <script>
+    // 휴대폰 인증 요청 (UI만)
+function sendPhoneAuth() {
+  const phone = document.getElementById('phone').value.trim();
+
+  if (!phone) {
+    openTerms('알림', '휴대전화 번호를 입력해주세요.');
+    return;
+  }
+
+  document.getElementById('phoneCodeWrap').style.display = 'block';
+  openTerms('알림', '인증번호가 발송되었습니다. (데모)');
+}
+
+
+
+    // 인증번호 확인 (UI만)
+function verifyPhoneCode() {
+  const code = document.getElementById('phoneCode').value.trim();
+
+  if (code.length < 4) {
+    openTerms('알림', '올바른 인증번호를 입력해주세요.');
+    return;
+  }
+
+  openTerms('알림', '인증되었습니다!');
+}
+
+
+  </script>
+
 </body>
 </html>

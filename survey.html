@@ -1,186 +1,795 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#ffffff" />
-  <title>IpiCare — 설문(패치 미리보기)</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+	<meta name="theme-color" content="#ffffff" />
+	<link rel="manifest" href="manifest.webmanifest" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="style.css" />
+	<title>이피랑</title>
+</head>  
+  <style>
+:root{--primary:#16a34a;--primary-light:#dcfce7;--primary-dark:#15803d;--bg-color:#f8fafc;--card-bg:#ffffff;--text-main:#1f2937;--text-sub:#6b7280;--line:#e5e7eb;--radius:16px;--shadow-sm:0 1px 2px 0 rgba(0,0,0,0.05);--shadow-md:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06);--shadow-lg:0 10px 15px -3px rgba(0,0,0,0.1),0 4px 6px -2px rgba(0,0,0,0.05);--transition:all 0.3s cubic-bezier(0.4,0,0.2,1);}
+form{width:98%}
+.progress-container{padding:16px 20px 0;max-width:600px;margin:0 auto;width:100%;}
+.progress-info{display:flex;justify-content:space-between;font-size:0.85rem;color:var(--text-sub);margin-bottom:8px;font-weight:600;}
+.progress-info strong{color:var(--primary);}
+.progress-track{height:6px;background:var(--line);border-radius:999px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),#34d399);width:33%;transition:width 0.5s cubic-bezier(0.4,0,0.2,1);border-radius:999px;}
+.survey-card{background:var(--card-bg);border-radius:var(--radius);box-shadow:var(--shadow-md);padding:5px 24px;width:100%;max-width:600px;margin-bottom:80px;opacity:0;transform:translateY(20px);display:none;transition:var(--transition);}
+.survey-card.active{display:block;animation:slideUpFade 0.5s forwards;}
+.survey-card.slide-out{animation:slideOutLeft 0.3s forwards;}
+@keyframes slideUpFade{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes slideOutLeft{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(-20px);}}
+.q-badge{display:inline-block;padding:4px 10px;background:var(--primary-light);color:var(--primary-dark);border-radius:999px;font-size:0.75rem;font-weight:700;margin-bottom:12px;}
+.q-title{font-size:1.3rem;font-weight:800;color:var(--text-main);margin-bottom:10px;line-height:1.3;}
+.q-sub{font-size:0.95rem;color:var(--text-sub);margin-bottom:24px;}
+.field-group{margin-bottom:32px;}
+.field-label{font-size:1rem;font-weight:700;margin-bottom:12px;display:block;color:var(--text-main);}
+input[type="text"],input[type="number"],select{width:100%;padding:14px;border:2px solid var(--line);border-radius:12px;font-size:1rem;transition:var(--transition);background:#f9fafb;appearance:none;}
+input:focus,select:focus{outline:none;border-color:var(--primary);background:#fff;box-shadow:0 0 0 4px var(--primary-light);}
+.pill-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;}
+.pill-label{position:relative;cursor:pointer;}
+.pill-label input{position:absolute;opacity:0;width:0;height:0;}
+.pill-content{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;background:#fff;border:2px solid var(--line);border-radius:14px;text-align:center;transition:var(--transition);height:100%;font-weight:600;color:var(--text-sub);}
+.pill-content i{font-size:1.5rem;margin-bottom:8px;color:#9ca3af;transition:color 0.3s;}
+.pill-label input:checked+.pill-content{border-color:var(--primary);background:var(--primary-light);color:var(--primary-dark);box-shadow:0 4px 12px rgba(22,163,74,0.15);transform:translateY(-2px);}
+.pill-label input:checked+.pill-content i{color:var(--primary);}
+.pill-check{position:absolute;top:8px;right:8px;width:20px;height:20px;background:var(--primary);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;opacity:0;transform:scale(0);transition:var(--transition);}
+.pill-label input:checked~.pill-check{opacity:1;transform:scale(1);}
+.list-group{display:flex;flex-direction:column;gap:10px;}
+.list-item{display:flex;align-items:center;padding:14px 16px;background:#fff;border:2px solid var(--line);border-radius:12px;cursor:pointer;transition:var(--transition);}
+.list-item:hover{background:#f9fafb;}
+.list-item input{margin-right:12px;accent-color:var(--primary);width:18px;height:18px;}
+.list-item.selected{border-color:var(--primary);background:var(--primary-light);}
+.reco-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px;display:flex;gap:12px;align-items:flex-start;}
+.reco-icon{width:40px;height:40px;border-radius:10px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.reco-info h4{margin:0 0 4px 0;font-size:1rem;}
+.reco-info p{margin:0;font-size:0.85rem;color:var(--text-sub);}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:none;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(2px);}
+.modal-content{background:white;padding:24px;border-radius:20px;width:85%;max-width:320px;text-align:center;animation:popIn 0.3s cubic-bezier(0.175,0.885,0.32,1.275);}
+@keyframes popIn{from{transform:scale(0.8);opacity:0;}to{transform:scale(1);opacity:1;}}
+.modal-title{font-size:1.1rem;font-weight:800;margin-bottom:8px;}
+.modal-msg{color:var(--text-sub);margin-bottom:20px;font-size:0.95rem;}
+.modal-btn{width:100%;padding:12px;background:var(--primary);color:white;border:none;border-radius:12px;font-weight:700;cursor:pointer;}
+  </style>
 <body data-page="survey">
-  <div class="app">
-    <header>
-      <div class="bar">
-        <h1 style="cursor:pointer"><a href="intro.html" style="all:unset;cursor:pointer">IpiCare</a></h1>
-      </div>
-    </header>
+		<div class="app">
+		<header>
+			<div class="bar">
+				<div class="logo"><a href="intro.html" style="all:unset;cursor:pointer"><img src="img/logo.png" alt="이피랑 로고"></a></div>
+			</div>
+		</header>
+		
+  <!-- Floating Progress -->
+  <div class="progress-container">
+    <div class="progress-info">
+      <span><strong id="stepNow">1</strong> / 3</span>
+      <span id="progressPercent">33%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressBar"></div>
+    </div>
+  </div>
 
-    <!-- ▼▼▼ 여기부터 교체(main) ▼▼▼ -->
-    <main id="surveyWizard">
-      <style>
-        /* --- Patch-only styles (scoped to #surveyWizard) --- */
-        #surveyWizard { width: 380px; display: grid; gap: 14px; margin: 0 auto; }
-        #surveyWizard .card { background: var(--card, #fff); border: 1px solid var(--line, #e5e7eb); border-radius: 14px; box-shadow: 0 2px 10px rgba(22,163,74,.05); padding: 16px; }
-        #surveyWizard .subhead { font-weight: 700; margin: 14px 0 8px; }
-        #surveyWizard .checklist { display: grid; gap: 8px; }
-        #surveyWizard .checklist label { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 1px solid var(--line, #e5e7eb); border-radius: 12px; background: #fff; cursor: pointer; transition: .15s; }
-        #surveyWizard .checklist label:hover { border-color: #cfeede; background: #f8fffb; }
+  <main id="wizardMain">
+    
+    <form id="surveyForm" onsubmit="return false;">
+      
+      <!-- STEP 1: Basic Info -->
+      <section class="survey-card active" data-step="0">
+        <span class="q-badge">Step 1</span>
+        <div class="q-title">어떤 농부를 꿈꾸시나요?</div>
+        <div class="q-sub">가장 가까운 유형을 선택해 주세요.</div>
 
-        /* Progress bar */
-        #surveyWizard .progress .track { height: 8px; background: #ecfdf5; border: 1px solid #d1fae5; border-radius: 999px; overflow: hidden; }
-        #surveyWizard .progress .bar { height: 100%; width: 0%; background: var(--green, #16a34a); transition: width .25s ease; }
-
-        /* Custom checkbox (stronger, visible) */
-        #surveyWizard .checklist input[type="checkbox"]{
-          -webkit-appearance: none; appearance: none;
-          width: 22px; height: 22px; border-radius: 6px;
-          border: 2px solid #b7e6c9; background: #fff;
-          display: inline-grid; place-items: center;
-          transition: all .2s ease-in-out; position: relative;
-        }
-        #surveyWizard .checklist input[type="checkbox"]:checked{
-          border-color: var(--green, #16a34a);
-          background: var(--green, #16a34a);
-          box-shadow: 0 0 0 3px rgba(22,163,74,.18);
-        }
-        #surveyWizard .checklist input[type="checkbox"]:checked::after{
-          content: "✔"; color: #fff; font-size: 14px; font-weight: 800;
-          position: absolute; left: 50%; top: 50%; transform: translate(-50%,-55%);
-        }
-
-        /* Inputs */
-        #surveyWizard select, #surveyWizard input[type="text"], #surveyWizard textarea{
-          width: 100%; border: 1px solid var(--line, #e5e7eb); border-radius: 10px; padding: 10px 12px; background: #fff; outline: none;
-        }
-
-        /* Buttons */
-        #surveyWizard .cols { display: grid; gap: 8px; }
-        #surveyWizard .two { grid-template-columns: 1fr 1fr; }
-        #surveyWizard .btn { padding: 12px 14px; border-radius: 10px; border: 1px solid var(--line, #e5e7eb); background: #fff; font-weight: 700; cursor: pointer; }
-        #surveyWizard .btn.acc { background: var(--green, #16a34a); color: #fff; border-color: var(--green, #16a34a); }
-        #surveyWizard .btn.acc:hover { background: #15803d; }
-      </style>
-
-      <!-- 진행바 -->
-      <section class="card progress">
-        <div class="track"><div class="bar" id="progressBar"></div></div>
-      </section>
-
-      <form id="surveyForm">
-        <div class="card step" data-step="0">
-          <div class="subhead">A. 요즘 나의 건강 상태 <small class="hint">(최대 3개 선택)</small></div>
-          <div class="checklist" id="symptomList">
-            <label><input type="checkbox" name="symptom" value="sleep_bad" /> 잠이 잘 안 와요</label>
-            <label><input type="checkbox" name="symptom" value="stress_high" /> 스트레스가 많아요</label>
-            <label><input type="checkbox" name="symptom" value="focus_low" /> 집중이 잘 안 돼요</label>
-            <label><input type="checkbox" name="symptom" value="digest_heavy" /> 식후에 더부룩해요</label>
-            <label><input type="checkbox" name="symptom" value="tired" /> 몸이 자주 피곤해요</label>
-          </div>
-          <p class="hint" id="symptomCountHint">0/3 선택됨</p>
-        </div>
-
-        <div class="card step" data-step="1">
-          <div class="subhead">B. 식습관</div>
-          <div class="checklist">
-            <label><input type="checkbox" name="habit" value="snack" /> 야식을 자주 먹어요</label>
-            <label><input type="checkbox" name="habit" value="sweet" /> 단맛을 자주 찾아요</label>
-            <label><input type="checkbox" name="habit" value="fast_eat" /> 식사 속도가 빨라요</label>
-            <label><input type="checkbox" name="habit" value="coffee" /> 커피/카페인을 자주 마셔요</label>
+        <div class="field-group">
+          <label class="field-label">유형</label>
+          <div class="pill-grid">
+            <label class="pill-label">
+              <input type="radio" name="user_type" value="young" checked>
+              <div class="pill-content">
+                <i class="fa-solid fa-user-graduate"></i>
+                <span>청년농</span>
+              </div>
+              <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+            </label>
+            <label class="pill-label">
+              <input type="radio" name="user_type" value="successor">
+              <div class="pill-content">
+                <i class="fa-solid fa-users"></i>
+                <span>후계농</span>
+              </div>
+              <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+            </label>
+            <label class="pill-label">
+              <input type="radio" name="user_type" value="return">
+              <div class="pill-content">
+                <i class="fa-solid fa-tractor"></i>
+                <span>귀농 예정</span>
+              </div>
+              <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+            </label>
+            <label class="pill-label">
+              <input type="radio" name="user_type" value="other">
+              <div class="pill-content">
+                <i class="fa-regular fa-face-smile"></i>
+                <span>일반 창업자</span>
+              </div>
+              <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+            </label>
           </div>
         </div>
 
-        <div class="card step" data-step="2">
-          <div class="subhead">C. 향·맛 취향</div>
-          <select name="flavor_pref">
-            <option value="soft">부드럽고 순한 향</option>
-            <option value="fresh">상쾌한 향</option>
-            <option value="strong">허브 향 강한 편</option>
+        <div class="field-group">
+          <label class="field-label">지역</label>
+          <input type="text" name="region_si" placeholder="예: 경기도 김포시, 충남 홍성군" autocomplete="off">
+        </div>
+	  
+	  <div class="field-group">
+          <label class="field-label">정책자금 대상 여부</label>
+          <div class="pill-grid">
+            <label class="pill-label">
+              <input type="radio" name="policy" value="yes">
+              <div class="pill-content">
+                <i class="fa-solid fa-file-contract"></i>
+                <span>대상/신청 예정자</span>
+              </div>
+              <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+            </label>
+            <label class="pill-label">
+              <input type="radio" name="policy" value="no">
+              <div class="pill-content">
+                <i class="fa-solid fa-ban"></i>
+                <span>해당 없음</span>
+              </div>
+              <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+            </label>
+            <label class="pill-label">
+              <input type="radio" name="policy" value="unknown">
+              <div class="pill-content">
+                <i class="fa-regular fa-circle-question"></i>
+                <span>잘 모름</span>
+              </div>
+              <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+            </label>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">희망 대출 규모 (대략)</label>
+          <select name="loan_range">
+            <option value="">선택해주세요</option>
+            <option value="none">대출 계획 없음</option>
+            <option value="lt100">1억 미만</option>
+            <option value="100_300">1억 ~ 3억</option>
+            <option value="gt300">3억 이상</option>
           </select>
         </div>
 
-        <div class="card step" data-step="3">
-          <div class="subhead">D. 피해야 할 것 (선택)</div>
-          <div class="checklist">
-            <label><input type="checkbox" name="avoid" value="strong_scent" /> 향이 강한 식물은 부담</label>
-            <label><input type="checkbox" name="avoid" value="mint_family" /> 민트 계열은 피하고 싶음</label>
+        <div class="field-group">
+          <label class="field-label">보유 자기자본 범위 (선택)</label>
+          <select name="own_capital">
+            <option value="">선택 안 함</option>
+            <option value="lt30">3천만 원 미만</option>
+            <option value="30_100">3천만 ~ 1억</option>
+            <option value="100_300">1억 ~ 3억</option>
+            <option value="gt300">3억 이상</option>
+          </select>
+        </div>
+	  </section>
+
+      <!-- STEP 2: Environment -->
+      <section class="survey-card" data-step="1">
+        <span class="q-badge">Step 2</span>
+        <div class="q-title">어떤 환경을 선호하시나요?</div>
+        <div class="q-sub">시설 유형과 규모를 알려주시면 맞춤 설계를 제안해 드립니다.</div>
+
+        <div class="field-group">
+          <label class="field-label" style="margin-bottom:21px;">시설 유형</label>
+          <div class="pill-grid">
+            <label class="pill-label">
+              <input type="radio" name="facility" value="biz_center" checked>
+              <div class="pill-content">
+                <i class="fa-solid fa-city"></i>
+                <span>지식산업센터</span>
+              </div>
+              <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+            </label>
+            <label class="pill-label">
+              <input type="radio" name="facility" value="retail_space">
+              <div class="pill-content">
+                <i class="fa-regular fa-building"></i>
+                <span>상가/근린생활시설</span>
+              </div>
+              <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+            </label>
+            <label class="pill-label">
+				<input type="radio" name="facility" value="panel_factory">
+				<div class="pill-content">
+				<i class="fa-solid fa-industry"></i>
+				<span>판넬형 창고·공장</span>
+				</div>
+				<div class="pill-check"><i class="fa-solid fa-check"></i></div>
+			</label> 
+             <label class="pill-label">
+              <input type="radio" name="facility" value="etc">
+              <div class="pill-content">
+                <i class="fa-solid fa-ellipsis"></i>
+                <span>기타(복화문화공간, 지하 등)</span>
+              </div>
+              <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+            </label>
           </div>
-          <label>기타 제외(콤마로 구분)
-            <input type="text" name="avoid_manual" placeholder="예: 루꼴라, 타임" />
-          </label>
         </div>
 
-        <div class="card step" data-step="4">
-          <div class="subhead">E. 식품 알레르기 / 금기 (선택)</div>
-          <div class="checklist"><label><input type="checkbox" name="allergy_flag" /> 허브/향신료 알레르기가 있어요</label></div>
-          <label>알레르기/금기 목록 (콤마로 구분)
-            <input name="allergy_list" placeholder="예: 카모마일, 민트, 루꼴라" />
-          </label>
-        </div>
+       <!-- 공간 스펙 -->
+<div class="field-group">
+  <label class="field-label">전용 면적 (㎡)</label>
+  <input type="number" name="floor_area" placeholder="숫자만 입력 (예: 100)" inputmode="numeric">
+</div>
 
-        <div class="card step" data-step="5">
-          <div class="subhead">F. 복용 중인 성분 (선택)</div>
-          <label>현재 복용 중인 성분/추출물 (콤마로 구분)
-            <textarea name="intake_list" rows="2" placeholder="예: 오메가3, 비타민D, 멜라토닌, 카페인"></textarea>
-          </label>
-        </div>
-      </form>
+<div class="field-group">
+  <label class="field-label">실제 사용 가능 면적 (㎡)</label>
+  <input type="number" name="usable_area" placeholder="숫자만 입력 (예: 80)" inputmode="numeric">
+</div>
 
-      <section class="card">
-        <div class="cols two">
-          <button class="btn ghost" id="btnPrev" type="button">이전</button>
-          <button class="btn acc" id="btnNext" type="button">다음</button>
+<div class="field-group">
+  <label class="field-label">층고 (m)</label>
+  <input type="number" name="ceil_height" placeholder="예: 3.5" inputmode="numeric">
+</div>
+
+<div class="field-group">
+  <label class="field-label">기둥 간격 / 위치</label>
+  <input type="text" name="pillar_info" placeholder="예: 간격 6m, 중앙 1개" />
+</div>
+
+<div class="field-group">
+  <label class="field-label">출입 동선</label>
+  <input type="text" name="entrance_path" placeholder="예: 도어 폭 1.2m, 후문 있음" />
+</div>
+
+<hr style="margin:24px 0;">
+
+<!-- 인프라 -->
+<div class="field-group">
+  <label class="field-label">계약 전력 (kW)</label>
+  <input type="number" name="electric_power" placeholder="예: 20 (모르면 비워두세요)" inputmode="numeric">
+
+  <div class="pill-grid" style="margin-top:8px;">
+    <label class="pill-label">
+      <input type="radio" name="electric_power_known" value="unknown">
+      <div class="pill-content">
+        <i class="fa-regular fa-circle-question"></i>
+        <span>모르겠음</span>
+      </div>
+      <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+    </label>
+  </div>
+</div>
+
+
+<div class="field-group">
+  <label class="field-label">전기 설비</label>
+  <div class="pill-grid" style="grid-template-columns: repeat(3, 1fr);">
+    <label class="pill-label">
+      <input type="radio" name="electric_phase" value="single">
+      <div class="pill-content">
+        <i class="fa-solid fa-plug"></i>
+        <span>단상</span>
+      </div>
+      <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+    </label>
+    <label class="pill-label">
+      <input type="radio" name="electric_phase" value="three">
+      <div class="pill-content">
+        <i class="fa-solid fa-bolt"></i>
+        <span>3상</span>
+      </div>
+      <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+    </label>
+    <label class="pill-label">
+      <input type="radio" name="electric_phase" value="unknown">
+      <div class="pill-content">
+        <i class="fa-regular fa-circle-question"></i>
+        <span>모르겠음</span>
+      </div>
+      <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+    </label>
+  </div>
+</div>
+
+
+<div class="field-group">
+  <label class="field-label">분전반 위치</label>
+  <input type="text" name="panel_location" placeholder="예: 우측 벽면 (모르면 비워두세요)" />
+
+  <div class="pill-grid" style="margin-top:8px;">
+    <label class="pill-label">
+      <input type="radio" name="panel_location_known" value="unknown">
+      <div class="pill-content">
+        <i class="fa-regular fa-circle-question"></i>
+        <span>모르겠음</span>
+      </div>
+      <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+    </label>
+  </div>
+</div>
+
+
+<div class="field-group">
+  <label class="field-label">급·배수 가능 여부</label>
+  <div class="pill-grid" style="grid-template-columns: repeat(3, 1fr);">
+    <label class="pill-label">
+      <input type="radio" name="water_supply" value="yes">
+      <div class="pill-content">
+        <i class="fa-solid fa-droplet"></i>
+        <span>가능</span>
+      </div>
+      <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+    </label>
+    <label class="pill-label">
+      <input type="radio" name="water_supply" value="no">
+      <div class="pill-content">
+        <i class="fa-regular fa-circle-xmark"></i>
+        <span>불가</span>
+      </div>
+      <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+    </label>
+    <label class="pill-label">
+      <input type="radio" name="water_supply" value="unknown">
+      <div class="pill-content">
+        <i class="fa-regular fa-circle-question"></i>
+        <span>모르겠음</span>
+      </div>
+      <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+    </label>
+  </div>
+</div>
+
+
+<div class="field-group">
+  <label class="field-label">급·배수 위치</label>
+  <input type="text" name="water_location" placeholder="예: 전면부 1m (모르면 비워두세요)" />
+
+  <div class="pill-grid" style="margin-top:8px;">
+    <label class="pill-label">
+      <input type="radio" name="water_location_known" value="unknown">
+      <div class="pill-content">
+        <i class="fa-regular fa-circle-question"></i>
+        <span>모르겠음</span>
+      </div>
+      <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+    </label>
+  </div>
+</div>
+
+
+<div class="field-group">
+  <label class="field-label">환기·배기</label>
+  <div class="pill-grid">
+    <label class="pill-label">
+      <input type="radio" name="ventilation" value="window">
+      <div class="pill-content">
+        <i class="fa-solid fa-wind"></i>
+        <span>창 있음</span>
+      </div>
+      <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+    </label>
+    <label class="pill-label">
+      <input type="radio" name="ventilation" value="duct">
+      <div class="pill-content">
+        <i class="fa-solid fa-fan"></i>
+        <span>덕트 있음</span>
+      </div>
+      <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+    </label>
+    <label class="pill-label">
+      <input type="radio" name="ventilation" value="none">
+      <div class="pill-content">
+        <i class="fa-regular fa-circle-xmark"></i>
+        <span>없음</span>
+      </div>
+      <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+    </label>
+  </div>
+</div>
+
+  
+    <div class="field-group">
+    <label class="field-label">주당 근무 가능 시간</label>
+    <select name="work_hours">
+      <option value="">선택해 주세요</option>
+      <option value="lt10">주 10시간 미만</option>
+      <option value="10_20">주 10~20시간</option>
+      <option value="20_40">주 20~40시간</option>
+      <option value="gt40">주 40시간 이상</option>
+    </select>
+  </div>
+  <div class="field-group">
+    <label class="field-label">상근 여부</label>
+    <div class="pill-grid" style="grid-template-columns: repeat(2, 1fr);">
+      <label class="pill-label">
+        <input type="radio" name="work_type" value="fulltime">
+        <div class="pill-content">
+          <i class="fa-solid fa-briefcase"></i>
+          <span>상근<br>(풀타임)</span>
         </div>
+        <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+      </label>
+      <label class="pill-label">
+        <input type="radio" name="work_type" value="parttime">
+        <div class="pill-content">
+          <i class="fa-solid fa-moon"></i>
+          <span>부업 / 겸업</span>
+        </div>
+        <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+      </label>
+    </div>
+  </div>
+    <div class="field-group">
+    <label class="field-label">함께 일하는 인원</label>
+    <input type="number" name="family_staff" placeholder="본인 제외 인원 수 (예: 2)" inputmode="numeric">
+  </div>
       </section>
-    </main>
-    <!-- ▲▲▲ 여기까지 교체(main) ▲▲▲ -->
 
+      <!-- STEP 3: Goals -->
+      <section class="survey-card" data-step="2">
+        <span class="q-badge">Step 3</span>
+        <div class="q-title">목표와 선호도를 알려주세요.</div>
+        <div class="q-sub">수익 목표와 리스크 성향에 따라 작목을 추천해 드립니다.</div>
+
+        <div class="field-group">
+          <label class="field-label">목표 월 수익</label>
+          <select name="profit_goal">
+            <option value="" disabled selected>선택해 주세요</option>
+            <option value="100">월 100만원 미만 (소소하게)</option>
+            <option value="300">월 100~300만원 (부업 수준)</option>
+            <option value="500">월 300~500만원 (안정적)</option>
+            <option value="high">월 500만원 이상 (고수익)</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">운영 성향</label>
+          <div class="pill-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+            <label class="pill-label">
+              <input type="radio" name="risk" value="low" checked>
+              <div class="pill-content" style="padding: 12px;">
+                <i class="fa-solid fa-shield-cat"></i>
+                <span>안정형</span>
+              </div>
+              <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+            </label>
+            <label class="pill-label">
+              <input type="radio" name="risk" value="mid">
+              <div class="pill-content" style="padding: 12px;">
+                <i class="fa-solid fa-balance-scale"></i>
+                <span>중립형</span>
+              </div>
+              <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+            </label>
+            <label class="pill-label">
+              <input type="radio" name="risk" value="high">
+              <div class="pill-content" style="padding: 12px;">
+                <i class="fa-solid fa-rocket"></i>
+                <span>성장형</span>
+              </div>
+              <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+            </label>
+          </div>
+        </div>
+		
+		<!-- 유통 경로 선호 (복수 선택 + 기타 입력 가능) -->
+<div class="field-group">
+  <label class="field-label">유통 경로 선호 <span style="font-size:0.85rem; color:#6b7280;">(복수 선택 가능)</span></label>
+  
+  <div class="pill-grid" style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));">
+    <label class="pill-label">
+      <input type="checkbox" name="distribution" value="wholesale">
+      <div class="pill-content">
+        <i class="fa-solid fa-truck"></i>
+        <span>도매</span>
+      </div>
+      <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+    </label>
+
+    <label class="pill-label">
+      <input type="checkbox" name="distribution" value="horeca_retail">
+      <div class="pill-content">
+        <i class="fa-solid fa-box-open"></i>
+        <span>식당/카페/리테일 납품</span>
+      </div>
+      <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+    </label>
+
+    <label class="pill-label">
+      <input type="checkbox" name="distribution" value="experience_edu_landscape">
+      <div class="pill-content">
+        <i class="fa-solid fa-person-walking"></i>
+        <span>체험·관광·교육·조경용 위주</span>
+      </div>
+      <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+    </label>
+	
+	<label class="pill-label">
+      <input type="checkbox" name="distribution" value="mixed_use">
+      <div class="pill-content">
+        <i class="fa-solid fa-utensils"></i>
+        <span>복합(생산+체험/조경)</span>
+      </div>
+      <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+    </label>
+  </div>
+
+  <!-- 기타(선택 없음, 입력만) -->
+  <input 
+    type="text" 
+    name="distribution_etc" 
+    placeholder="그 외 유통 경로를 입력해주세요."
+    style="margin-top:12px;"
+  >
+</div>
+
+    </div>
+      </section>
+
+    </form>
+  </main>
+
+  <!-- Navigation Bar -->
+  <div class="bottom-bar">
+    <button type="button" class="btn btn-prev" id="btnPrev" disabled>이전</button>
+    <button type="button" class="btn btn-next" id="btnNext">다음</button>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="customModal">
+    <div class="modal-content">
+      <div style="font-size: 2rem; margin-bottom: 12px;">🌱</div>
+      <div class="modal-title" id="modalTitle">알림</div>
+      <div class="modal-msg" id="modalMsg">메시지 내용</div>
+      <button class="modal-btn" id="btnCloseModal">확인</button>
+    </div>
   </div>
   <script src="app.js" defer></script>
   <script defer>
-    (function(){
-      const steps = document.querySelectorAll('#surveyWizard .step');
+     (function () {
+      const steps = Array.from(document.querySelectorAll('.survey-card'));
       const total = steps.length;
-      let step = 0;
+      const bar = document.getElementById('progressBar');
+      const stepNow = document.getElementById('stepNow');
+      const progressPercent = document.getElementById('progressPercent');
+      const btnPrev = document.getElementById('btnPrev');
+      const btnNext = document.getElementById('btnNext');
+      const form = document.getElementById('surveyForm');
+      let current = 0;
 
-      const bar = document.querySelector('#surveyWizard #progressBar');
-      const prevBtn = document.querySelector('#surveyWizard #btnPrev');
-      const nextBtn = document.querySelector('#surveyWizard #btnNext');
+      document.querySelectorAll('.list-item input').forEach(input => {
+        input.addEventListener('change', function() {
+          const parent = this.closest('.list-item');
+          if(this.type === 'radio') {
+
+             const name = this.name;
+             document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+               r.closest('.list-item').classList.remove('selected');
+             });
+          }
+          if(this.checked) parent.classList.add('selected');
+          else parent.classList.remove('selected');
+        });
+      });
 
       function updateView() {
-        steps.forEach((s, i) => s.style.display = (i === step ? 'block' : 'none'));
-        if (bar) bar.style.width = (((step + 1) / total) * 100) + '%';
-        if (prevBtn) prevBtn.disabled = (step === 0);
-        if (nextBtn) nextBtn.textContent = (step === total - 1) ? '저장하고 추천 보기' : '다음';
+        const pct = Math.round(((current + 1) / total) * 100);
+        bar.style.width = pct + '%';
+        stepNow.textContent = current + 1;
+        progressPercent.textContent = pct + '%';
+
+        steps.forEach((s, idx) => {
+          if (idx === current) {
+            s.classList.remove('slide-out');
+            s.classList.add('active');
+          } else if (idx < current) {
+             s.classList.remove('active');
+             s.classList.add('slide-out');
+             setTimeout(() => s.classList.remove('active'), 300);
+          } else {
+            s.classList.remove('active', 'slide-out');
+          }
+        });
+
+        btnPrev.disabled = false;
+        btnNext.innerHTML = (current === total - 1) ? '결과 보기 <i class="fa-solid fa-arrow-right"></i>' : '다음 단계';
+        
+		const main = document.getElementById('wizardMain');
+        main.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
-      if (prevBtn) prevBtn.addEventListener('click', function(){
-        if (step > 0) step--;
-        updateView();
-      });
+function showModal(msg) {
+  const m = document.getElementById('customModal');
+  document.getElementById('modalTitle').style.display = 'none';
+  document.getElementById('modalMsg').textContent = msg;
+  m.style.display = 'flex';
+}
+      
+function closeModal() {
+  document.getElementById('customModal').style.display = 'none';
+}
 
-      if (nextBtn) nextBtn.addEventListener('click', function(){
-        if (step < total - 1) step++;
-        else if (typeof window.saveSurvey === 'function') window.saveSurvey();
-        else saveSurvey() //alert('미리보기: 설문 완료');
-        updateView();
-      });
+const btnCloseModal = document.getElementById('btnCloseModal');
+if (btnCloseModal) {
+  btnCloseModal.addEventListener('click', closeModal);
+}
 
-      // A-step UX: 3개 제한
-      const boxes = document.querySelectorAll('#surveyWizard #symptomList input[type="checkbox"]');
-      const hint = document.getElementById('symptomCountHint');
-      function updateSymptom(){
-        if (!boxes.length) return;
-        const cnt = Array.from(boxes).filter(b=>b.checked).length;
-        if (hint) hint.textContent = cnt + '/3 선택됨';
-        if (cnt >= 3){
-          boxes.forEach(b=>{ if(!b.checked){ b.disabled = true; b.parentElement.style.opacity = .6; } });
-        } else {
-          boxes.forEach(b=>{ b.disabled = false; b.parentElement.style.opacity = 1; });
-        }
-      }
-      boxes.forEach(b => b.addEventListener('change', updateSymptom));
-      updateSymptom();
+     function validateStep(idx) {
+  const section = steps[idx];
 
+  if (idx === 0) {
+    const region = section.querySelector('input[name="region_si"]').value.trim();
+    const policy = section.querySelector('input[name="policy"]:checked');
+    const loan = section.querySelector('select[name="loan_range"]').value;
+
+    if (!region) { showModal('지역을 입력해 주세요.'); return false; }
+    if (!policy) { showModal('정책자금 대상 여부를 선택해 주세요.'); return false; }
+    if (!loan) { showModal('희망 대출 규모를 선택해 주세요.'); return false; }
+  }
+
+  if (idx === 1) {
+    const floorArea = section.querySelector('input[name="floor_area"]').value.trim();
+    const usableArea = section.querySelector('input[name="usable_area"]').value.trim();
+    const ceilHeight = section.querySelector('input[name="ceil_height"]').value.trim();
+    const pillarInfo = section.querySelector('input[name="pillar_info"]').value.trim();
+    const entrancePath = section.querySelector('input[name="entrance_path"]').value.trim();
+
+    const electricPower = section.querySelector('input[name="electric_power"]').value.trim();
+    const electricPowerKnown = section.querySelector('input[name="electric_power_known"]:checked');
+    const electricPhase = section.querySelector('input[name="electric_phase"]:checked');
+
+    const panelLocation = section.querySelector('input[name="panel_location"]').value.trim();
+    const panelLocationKnown = section.querySelector('input[name="panel_location_known"]:checked');
+
+    const waterSupply = section.querySelector('input[name="water_supply"]:checked');
+    const waterLocation = section.querySelector('input[name="water_location"]').value.trim();
+    const waterLocationKnown = section.querySelector('input[name="water_location_known"]:checked');
+
+    const ventilation = section.querySelector('input[name="ventilation"]:checked');
+
+    const workHours = section.querySelector('select[name="work_hours"]').value;
+    const workType = section.querySelector('input[name="work_type"]:checked');
+    const familyStaff = section.querySelector('input[name="family_staff"]').value.trim();
+
+    if (!floorArea) { showModal('전용 면적을 입력해 주세요.'); return false; }
+    if (!usableArea) { showModal('실제 사용 가능 면적을 입력해 주세요.'); return false; }
+    if (!ceilHeight) { showModal('층고를 입력해 주세요.'); return false; }
+    if (!pillarInfo) { showModal('기둥 간격 또는 위치를 입력해 주세요.'); return false; }
+    if (!entrancePath) { showModal('출입 동선을 입력해 주세요.'); return false; }
+
+    if (!electricPower && !electricPowerKnown) { showModal('계약 전력을 입력하거나 모르겠음을 선택해 주세요.'); return false; }
+    if (!electricPhase) { showModal('전기 설비 항목을 선택해 주세요.'); return false; }
+
+    if (!panelLocation && !panelLocationKnown) { showModal('분전반 위치를 입력하거나 모르겠음을 선택해 주세요.'); return false; }
+
+    if (!waterSupply) { showModal('급·배수 가능 여부를 선택해 주세요.'); return false; }
+    if (!waterLocation && !waterLocationKnown) { showModal('급·배수 위치를 입력하거나 모르겠음을 선택해 주세요.'); return false; }
+
+    if (!ventilation) { showModal('환기 또는 배기 방식 선택이 필요합니다.'); return false; }
+
+    if (!workHours) { showModal('주당 근무 가능 시간을 선택해 주세요.'); return false; }
+    if (!workType) { showModal('상근 여부를 선택해 주세요.'); return false; }
+    if (!familyStaff) { showModal('함께 일하는 인원 수를 입력해 주세요.'); return false; }
+  }
+
+  if (idx === 2) {
+    const profit = section.querySelector('select[name="profit_goal"]').value;
+    const distributionChecked = section.querySelector('input[name="distribution"]:checked');
+    const distributionEtc = section.querySelector('input[name="distribution_etc"]').value.trim();
+
+    if (!profit) { showModal('목표 월 수익을 선택해 주세요.'); return false; }
+    if (!distributionChecked && !distributionEtc) { showModal('유통 경로를 선택하거나 기타 항목을 입력해 주세요.'); return false; }
+  }
+
+  return true;
+}
+
+function collectSmartFarmSurvey() {
+  const getVal = (name) =>
+    (form.querySelector(`[name="${name}"]`)?.value || '').trim();
+
+  const getRadio = (name) => {
+    const el = form.querySelector(`input[name="${name}"]:checked`);
+    return el ? el.value : '';
+  };
+
+  const getMulti = (name) =>
+    Array.from(form.querySelectorAll(`input[name="${name}"]:checked`))
+      .map(i => i.value);
+
+  return {
+    createdAt: new Date().toISOString(),
+
+    // STEP 1: 기본 정보
+    step1: {
+      user_type: getRadio('user_type'),
+      region_si: getVal('region_si'),
+      // region_climate 필드는 설문에 없으니까 제거
+      policy: getRadio('policy'),
+      loan_range: getVal('loan_range'),
+      own_capital: getVal('own_capital')
+    },
+
+    // STEP 2: 환경/공간/인프라
+    step2: {
+      facility: getRadio('facility'),
+
+      // 공간 스펙
+      floor_area: getVal('floor_area'),        // 전용 면적(㎡)
+      usable_area: getVal('usable_area'),      // 실제 사용 가능 면적(㎡)
+      ceil_height: getVal('ceil_height'),      // 층고(m)
+      pillar_info: getVal('pillar_info'),      // 기둥 간격/위치
+      entrance_path: getVal('entrance_path'),  // 출입 동선
+
+      // 인프라 - 전기
+      electric_power: getVal('electric_power'),           // 계약 전력(kW)
+      electric_power_known: getRadio('electric_power_known'), // 모름 여부
+      electric_phase: getRadio('electric_phase'),         // 단상/3상/모름
+
+      // 인프라 - 분전반
+      panel_location: getVal('panel_location'),
+      panel_location_known: getRadio('panel_location_known'),
+
+      // 인프라 - 급·배수
+      water_supply: getRadio('water_supply'),             // 가능/불가/모름
+      water_location: getVal('water_location'),
+      water_location_known: getRadio('water_location_known'),
+
+      // 인프라 - 환기/배기
+      ventilation: getRadio('ventilation'),               // window/duct/none
+
+      // 운영 조건
+      work_hours: getVal('work_hours'),
+      work_type: getRadio('work_type'),
+      family_staff: getVal('family_staff')
+    },
+
+    // STEP 3: 목표/리스크/유통
+    step3: {
+      profit_goal: getVal('profit_goal'),
+      risk: getRadio('risk'),
+      distribution: getMulti('distribution'),
+      distribution_etc: getVal('distribution_etc')
+    }
+  };
+}
+
+btnPrev.addEventListener('click', () => {
+  if (current > 0) {
+    // 1단계 이후부터는 그냥 이전 스텝으로 이동
+    current--;
+    updateView();
+  } else {
+    // current === 0 일 때는 terms.html로 이동
+    window.location.assign('terms.html');
+  }
+});
+
+btnNext.addEventListener('click', () => {
+  // 1) 현재 단계 유효성 검사
+  if (!validateStep(current)) return;
+
+  // 2) 마지막 단계 전이면 다음 스텝으로 이동
+  if (current < total - 1) {
+    current++;
+    updateView();
+  } else {
+    // 3) 마지막 단계면 설문 데이터 저장 후 추천 페이지로 이동
+    const surveyData = collectSmartFarmSurvey();
+    localStorage.setItem('eprang-survey-latest', JSON.stringify(surveyData));
+    window.location.assign('reco-intro.html');
+  }
+});
+
+      // Init
       updateView();
     })();
   </script>

@@ -1,44 +1,47 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#ffffff" />
-  <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="stylesheet" href="style.css" />
-  <title>IpiCare</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+	<meta name="theme-color" content="#ffffff" />
+	<link rel="manifest" href="manifest.webmanifest" />
+	<link rel="stylesheet" href="style.css" />
+	<title>이피랑</title>
 </head>
+<style>
+.intro{ display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: calc(100dvh - 56px); padding: 40px 3px; text-align: center;}
+.intro h2{ margin: 0 0 18px; font-size: 24px; line-height: 1.38; font-weight: 800; color: var(--text); letter-spacing: -0.02em;}
+.intro .line{ display: block; opacity: 0; transform: translateY(10px); filter: blur(2px); animation: lineIn .7s ease forwards;}
+.intro .headline-strong{position: relative; display: inline-block; padding: 0 4px;}
+.intro .headline-strong::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 0.6em; background: rgba(22, 163, 74, 0.12); border-radius: 999px; z-index: -1;}
+.intro h2 .line:nth-of-type(2){ animation-delay: .25s; font-size: 13px; font-weight: 500; color: var(--muted); line-height: 1.7; margin-top:28px;}
+@keyframes lineIn{to{opacity:1;transform:translateY(0);filter:blur(0)}}
+@media (prefers-reduced-motion: reduce){ .line{opacity:1;transform:none;filter:none;animation:none} }
+.intro-actions { display: inline-block; padding: 10px 103px; border-radius: 999px; font-weight: 700; font-size: 15px; background: var(--acc); color: #fff; margin-top: 190px;}
+</style>
 <body data-page="intro">
-  <div class="app">
-    <header>
-  <div class="bar">
-    <h1 style="cursor:pointer" ><a href="intro.html" style="all:unset;cursor:pointer">IpiCare</a></h1>
-  </div>
-</header>
-    <main>
-      
-<section class="view active" id="view-intro">
-  <div class="intro">
-    <h2>
-      <span class="line">나만을 위한 맞춤 건강,</span>
-      <span class="line">자연이 길러주는 나만의 건강 루틴</span>
-    </h2>
-    <div>
-      <a class="btn acc intro-actions" href="terms.html">시작하기</a>
-      <div class="login-text">이미 계정이 있나요?<a class="login-link" href="login.html">로그인</a></div>
-    </div>
-  </div>
-</section>
-
-    </main>
-  </div>
-  <div id="overlay" class="overlay" onclick="closeModal && closeModal(event)"></div>
-<div id="modal" class="modal" style="display:none"></div>
-<div id="recOverlay" class="overlay"></div>
-<div id="recModal" class="modal" style="display:none"></div>
-<div id="toast" class="toast">처리되었습니다</div>
-  </script>
-</script>
-<script src="app.js" defer>
+	<div class="app">
+		<header>
+			<div class="bar">
+				<div class="logo"><a href="intro.html" style="all:unset;cursor:pointer"><img src="img/logo.png" alt="이피랑 로고"></a></div>
+			</div>
+		</header>
+		
+		<main>      
+			<section class="view active" id="view-intro">
+				<div class="intro">
+					<h2>
+						<span class="line">실내 공간에 최적화된 설계, <span class="headline-strong">견적은 정확하게</span></span>
+						<span class="line">나의 조건을 기반으로,<br>가장 맞는 실내 스마트팜 설계안을<br>자동으로 추천해드려요.</span>
+					</h2>
+					<div>
+						<a class="btn acc intro-actions" href="terms.html">시작하기</a>
+						<div class="login-text">이미 계정이 있나요?<a class="login-link" href="login.html">로그인</a></div>
+					</div>
+				</div>
+			</section>
+		</main>
+	</div>
+	<script src="app.js" defer>
 </body>
 </html>
