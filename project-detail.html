@@ -10,6 +10,7 @@
   <title>이피랑 - 프로젝트 상세</title>
  <style>
     /* 기본 레이아웃 유지 */
+	:root { --primary:#16a34a; --text-sub:#4a5568;}
     body[data-page="project-detail"] main { padding: 20px 16px 120px; width: 100%; max-width: 520px; margin: 0 auto; background-color: #f8fafc; }
     body[data-page="project-detail"] .pd-section { width: 100%; margin-bottom: 24px; }
     
@@ -569,17 +570,25 @@
               </h3>
             </div>
             <p class="pd-memo-hint">수확량, 에너지 비용, 문제점, 개선사항 등을 자유롭게 적어두면, 추후 설계 변경이나 확장 논의에 바로 활용할 수 있어요.</p>
-            <textarea class="pd-memo-textarea" placeholder="예: 2025-01~02 겨울철 전기요금 상승, LED 조도/운영 시간 재조정 필요 등"></textarea>
+            <textarea id="pdMemo" class="pd-memo-textarea" placeholder="예: 2025-01~02 겨울철 전기요금 상승, LED 조도/운영 시간 재조정 필요 등"></textarea>
           </div>
         </div>
       </section>
     </main>
 
     <!-- 하단 버튼 바 -->
-    <div class="bottom-bar">
+    <!--<div class="bottom-bar">
       <button type="button" class="btn ghost" id="pdBtnBackProjects">홈으로</button>
       <button type="button" class="btn acc" id="pdBtnContactGreen">상담</button>
-    </div>
+    </div>-->
+<nav class="tabs">
+      <ul>
+        <li><button id="tab-home" onclick="window.location.assign('home.html')"><i class="fa-solid fa-house"></i><small>홈</small></button></li>
+        <li><button id="tab-records" onclick="window.location.assign('records.html')" class="active"><i class="fas fa-list-check"></i><small>기록</small></button></li>
+        <li><button id="tab-reco" onclick="window.location.assign('deals.html')"><i class="fas fa-file-signature"></i><small>견적</small></button></li>
+        <li><button id="tab-my" onclick="window.location.assign('settings.html')"><i class="fa-solid fa-user"></i><small>마이</small></button></li>
+      </ul>
+    </nav>
   </div>
 
   <!-- 공통 모달/토스트 레이어 -->
@@ -809,6 +818,32 @@
           }
         });
       }
+	  
+	        // ---- 운영 메모 로드 & 저장 ----
+      var memoEl = document.getElementById('pdMemo');
+      if (memoEl) {
+        // 1) 로딩 시, 기존 메모 있으면 채워주기
+        memoEl.value = project.memo || '';
+
+        // 2) 포커스 빠질 때마다 저장 (자동 저장 느낌)
+        memoEl.addEventListener('blur', function () {
+          var newMemo = memoEl.value || '';
+
+          // 현재 프로젝트를 배열에서 다시 찾아서 업데이트
+          var idx = projects.findIndex(function (p) {
+            return p.id === project.id;
+          });
+          if (idx === -1) return;
+
+          projects[idx].memo = newMemo;
+          localStorage.setItem(key, JSON.stringify(projects));
+
+          if (typeof toast === 'function') {
+            toast('운영 메모를 저장했어요.');
+          }
+        });
+      }
+
     });
   </script>
 </body>

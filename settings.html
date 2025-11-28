@@ -9,218 +9,85 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <title>이피랑 - 설정</title>
 
-  <style>
-  body[data-page="settings"] main{
-    padding:16px 14px 100px;
-    width:100%;
-    max-width:480px;
-    margin:0 auto;
-  }
-
-  body[data-page="settings"] .st-card{
-    border-radius:18px;
-    background:#ffffff;
-    border:1px solid #e5e7eb;
-    box-shadow:0 4px 12px rgba(15,23,42,0.04);
-    width:100%;
-    padding:18px 16px;
-    margin-bottom:14px;
-  }
-
-  body[data-page="settings"] .st-title{
-    margin:0 0 8px;
-    font-size:18px;
-    font-weight:800;
-    color:#111827;
-    display:flex;
-    align-items:center;
-    gap:6px;
-  }
-
-  body[data-page="settings"] .st-title i{
-    color:var(--acc);
-  }
-
-  body[data-page="settings"] .st-sub{
-    margin:0 0 8px;
-    font-size:13px;
-    color:#6b7280;
-    line-height:1.6;
-  }
-
-  body[data-page="settings"] .st-caption{
-    margin:4px 0 0;
-    font-size:11px;
-    color:#9ca3af;
-  }
-
-  body[data-page="settings"] .st-section-title{
-    margin:0 0 6px;
-    font-size:14px;
-    font-weight:700;
-    color:#111827;
-    display:flex;
-    align-items:center;
-    gap:6px;
-  }
-
-  body[data-page="settings"] .st-section-title i{
-    font-size:13px;
-    color:#9ca3af;
-  }
-
-  /* 폼 요소 */
-  body[data-page="settings"] .st-field-group{
-    margin-bottom:10px;
-  }
-
-  body[data-page="settings"] .st-label{
-    display:block;
-    margin-bottom:4px;
-    font-size:13px;
-    font-weight:600;
-    color:#374151;
-  }
-
-  body[data-page="settings"] .st-input,
-  body[data-page="settings"] .st-textarea{
-    width:100%;
-    border-radius:10px;
-    border:1px solid #e5e7eb;
-    padding:8px 9px;
-    font-size:13px;
-    color:#111827;
-    background:#f9fafb;
-  }
-
-  body[data-page="settings"] .st-textarea{
-    resize:vertical;
-    min-height:60px;
-  }
-
-  body[data-page="settings"] .st-input:focus,
-  body[data-page="settings"] .st-textarea:focus{
-    outline:none;
-    border-color:rgba(22,163,74,0.6);
-    background:#ffffff;
-    box-shadow:0 0 0 1px rgba(22,163,74,0.15);
-  }
-
-  body[data-page="settings"] .st-radio-row,
-  body[data-page="settings"] .st-check-row{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    font-size:13px;
-    color:#4b5563;
-  }
-
-  body[data-page="settings"] .st-radio-item,
-  body[data-page="settings"] .st-check-item{
-    display:flex;
-    align-items:center;
-    gap:4px;
-  }
-
-  body[data-page="settings"] .st-radio-item input,
-  body[data-page="settings"] .st-check-item input{
-    width:14px;
-    height:14px;
-  }
-
-  body[data-page="settings"] .st-hint{
-    margin-top:2px;
-    font-size:11px;
-    color:#9ca3af;
-  }
-
-  /* 알림 시간 */
-  body[data-page="settings"] .st-time-row{
-    display:flex;
-    align-items:center;
-    gap:6px;
-    font-size:13px;
-  }
-
-  body[data-page="settings"] .st-time-input{
-    width:90px;
-    border-radius:999px;
-    border:1px solid #e5e7eb;
-    padding:6px 8px;
-    font-size:13px;
-    background:#f9fafb;
-  }
-
-  body[data-page="settings"] .st-time-input:focus{
-    outline:none;
-    border-color:rgba(22,163,74,0.6);
-    background:#ffffff;
-  }
-
-  /* 약관/계정 관리 */
-  body[data-page="settings"] .st-list{
-    list-style:none;
-    padding:0;
-    margin:4px 0 0;
-    font-size:13px;
-    color:#4b5563;
-  }
-
-  body[data-page="settings"] .st-list li{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:6px 0;
-    border-top:1px solid #f3f4f6;
-  }
-
-  body[data-page="settings"] .st-list li:first-child{
-    border-top:none;
-  }
-
-  body[data-page="settings"] .st-list-label{
-    display:flex;
-    flex-direction:column;
-    gap:2px;
-  }
-
-  body[data-page="settings"] .st-list-label span:first-child{
-    font-weight:600;
-  }
-
-  body[data-page="settings"] .st-list-label span:last-child{
-    font-size:11px;
-    color:#9ca3af;
-  }
-
-  body[data-page="settings"] .st-link{
-    font-size:12px;
-    color:#2563eb;
-    text-decoration:underline;
-    cursor:pointer;
-  }
-
-  /* 위험 영역 */
-  body[data-page="settings"] .st-danger{
-    border-color:#fee2e2;
-    background:#fef2f2;
-  }
-
-  body[data-page="settings"] .st-danger-title{
-    color:#b91c1c;
-  }
-
-  body[data-page="settings"] .btn.danger{
-    background:#ef4444;
-    border-color:#ef4444;
-    color:#ffffff;
-  }
-
-  body[data-page="settings"] .btn.danger.outline{
-    background:#ffffff;
-    border-color:#fecaca;
-    color:#b91c1c;
-  }
+  <style>:root { --text-sub:#4a5568; --primary:#16a34a; --st-primary: #16a34a; --st-primary-soft: #ecfdf5; --st-primary-deep: #15803d; --st-border: #f1f5f9; --st-soft: #f8fafc; --st-text: #1e293b; --st-sub: #64748b; --st-radius-lg: 24px; --st-radius: 20px; --st-radius-sm: 14px; --st-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04); --st-shadow: 0 10px 40px rgba(0, 0, 0, 0.12); --st-transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1); }
+body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; background-color: #f8fafc; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; color: var(--st-text); }
+body[data-page="settings"] main { padding: 20px 16px 120px; width: 100%; max-width: 520px; margin: 0 auto; box-sizing: border-box; }
+body[data-page="settings"] .st-card { border-radius: var(--st-radius); background: #ffffff; border: none; box-shadow: var(--st-shadow-sm); width: 100%; padding: 24px 20px; margin-bottom: 16px; box-sizing: border-box; transition: var(--st-transition); }
+body[data-page="settings"] .st-hero { background: #ffffff; position: relative; padding-bottom: 28px; box-shadow: 0 4px 20px rgba(22, 163, 74, 0.08); }
+body[data-page="settings"] .st-hero::after { content: ""; position: absolute; right: -20px; top: -20px; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(220, 252, 231, 0.8) 0%, rgba(255, 255, 255, 0) 70%); opacity: 0.6; pointer-events: none; }
+body[data-page="settings"] .st-hero-title { margin: 0 0 8px; font-size: 22px; font-weight: 800; color: var(--st-text); display: flex; align-items: center; gap: 10px; position: relative; z-index: 1; }
+body[data-page="settings"] .st-hero-title i { color: var(--st-primary); background: var(--st-primary-soft); padding: 8px; border-radius: 12px; font-size: 18px; }
+body[data-page="settings"] .st-section-title { margin: 0 0 16px; font-size: 16px; font-weight: 700; color: #334155; display: flex; align-items: center; gap: 8px; }
+body[data-page="settings"] .st-section-title i { font-size: 16px; color: #94a3b8; }
+body[data-page="settings"] .profile-mini { display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 16px; border-radius: var(--st-radius-sm); background: #f8fafc; border: 1px solid transparent; transition: var(--st-transition); }
+body[data-page="settings"] .profile-mini:hover, body[data-page="settings"] .profile-mini:active { background: #ffffff; border-color: var(--st-primary); box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15); transform: translateY(-2px); }
+body[data-page="settings"] .profile-mini-left { display: flex; flex-direction: column; gap: 4px; }
+body[data-page="settings"] .profile-mini-name { font-size: 17px; font-weight: 700; color: var(--st-text); }
+body[data-page="settings"] .profile-mini-role { font-size: 13px; color: var(--st-sub); font-weight: 500; }
+body[data-page="settings"] .profile-mini-meta { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+body[data-page="settings"] .profile-mini i { font-size: 16px; color: #cbd5e1; transition: color 0.2s; }
+body[data-page="settings"] .profile-mini:hover i { color: var(--st-primary); }
+body[data-page="settings"] .arrow-row { display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 16px; border-radius: var(--st-radius-sm); background: #ffffff; border: 1px solid var(--st-border); transition: var(--st-transition); }
+body[data-page="settings"] .arrow-row:hover, body[data-page="settings"] .arrow-row:active { background: #f8fafc; border-color: #cbd5e1; transform: translateX(4px); }
+body[data-page="settings"] .arrow-row-main { display: flex; flex-direction: column; gap: 4px; }
+body[data-page="settings"] .arrow-title { font-size: 15px; font-weight: 600; color: var(--st-text); }
+body[data-page="settings"] .arrow-sub { font-size: 12px; color: #94a3b8; line-height: 1.4; }
+body[data-page="settings"] .arrow-row i { font-size: 14px; color: #cbd5e1; }
+body[data-page="settings"] .st-list { list-style: none; padding: 0; margin: 8px 0 0; }
+body[data-page="settings"] .st-list li { display: flex; justify-content: space-between; align-items: flex-start; padding: 14px 0; border-top: 1px solid #f1f5f9; gap: 16px; }
+body[data-page="settings"] .st-list li:first-child { border-top: none; padding-top: 0; }
+body[data-page="settings"] .st-list-label { display: flex; flex-direction: column; gap: 3px; }
+body[data-page="settings"] .st-list-label span:first-child { font-weight: 600; font-size: 14px; color: #334155; }
+body[data-page="settings"] .st-link { font-size: 13px; color: var(--st-sub); font-weight: 500; text-decoration: none; cursor: pointer; white-space: nowrap; padding: 4px 8px; border-radius: 6px; background: #f1f5f9; transition: 0.2s; }
+body[data-page="settings"] .st-link:hover { background: #e2e8f0; color: #0f172a; }
+body[data-page="settings"] .st-danger { background: #fff; border: 1px solid #fee2e2; box-shadow: none; }
+body[data-page="settings"] .st-danger .st-section-title { color: #dc2626; }
+body[data-page="settings"] .st-danger .st-section-title i { color: #fca5a5; }
+body[data-page="settings"] .st-danger .arrow-row { background: #fef2f2; border-color: #fecaca; }
+body[data-page="settings"] .st-danger .arrow-row:hover { background: #fee2e2; }
+body[data-page="settings"] .st-danger .arrow-title { color: #991b1b; }
+body[data-page="settings"] .st-danger .arrow-sub { color: #b91c1c; opacity: 0.8; }
+.bottom-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); padding: 16px 20px 24px; box-shadow: 0 -4px 20px rgba(0,0,0,0.05); display: flex; gap: 12px; box-sizing: border-box; z-index: 100; }
+.bottom-bar .btn { flex: 1; height: 52px; border-radius: 16px; font-size: 16px; font-weight: 700; cursor: pointer; border: none; transition: 0.2s; }
+.bottom-bar .btn.ghost { background: #f1f5f9; color: #64748b; }
+.bottom-bar .btn.ghost:hover { background: #e2e8f0; color: #0f172a; }
+.bottom-bar .btn.acc { background: var(--st-primary); color: white; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3); }
+.bottom-bar .btn.acc:hover { background: var(--st-primary-deep); transform: translateY(-2px); }
+#overlay { display: none; align-items: center; justify-content: center; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 55; }
+#overlay.show { display: flex; }
+#modal { background: #ffffff; padding: 28px 24px; border-radius: 28px; width: 90%; max-width: 400px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2); display: none; animation: st-pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); max-height: 85vh; display: flex; flex-direction: column; }
+@keyframes st-pop-in { from { transform: scale(0.9) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+.modal-title { font-size: 20px; font-weight: 800; margin: 0 0 8px; color: #0f172a; display: flex; align-items: center; gap: 8px; }
+.modal-title i { color: var(--st-primary); }
+.modal-sub { margin: 0 0 24px; font-size: 14px; color: #64748b; line-height: 1.5; }
+.modal-section { padding: 4px 2px; overflow-y: auto; flex: 1; scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
+.modal-section::-webkit-scrollbar { width: 4px; }
+.modal-section::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+.modal-field { margin-bottom: 18px; }
+.modal-label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 700; color: #334155; }
+.modal-input, .modal-textarea, .modal-select { width: 100%; box-sizing: border-box; border-radius: 12px; border: 1px solid transparent; padding: 14px 16px; font-size: 15px; color: var(--st-text); background: #f1f5f9; transition: 0.2s; font-family: inherit; }
+.modal-input::placeholder, .modal-textarea::placeholder { color: #94a3b8; }
+.modal-textarea { resize: vertical; min-height: 100px; line-height: 1.5; }
+.modal-input:focus, .modal-textarea:focus, .modal-select:focus { outline: none; background: #ffffff; border-color: var(--st-primary); box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1); }
+.modal-radio-row, .modal-check-row { display: flex; flex-wrap: wrap; gap: 12px; }
+.modal-radio-item, .modal-check-item { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0; cursor: pointer; transition: 0.2s; font-size: 14px; color: #475569; }
+.modal-radio-item:hover, .modal-check-item:hover { background: #f1f5f9; }
+.modal-radio-item input, .modal-check-item input { accent-color: var(--st-primary); width: 16px; height: 16px; }
+.partner-box { background: #ecfdf5; border: 1px dashed #86efac; padding: 12px 16px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.partner-label { font-size: 12px; color: var(--st-primary-deep); margin-bottom: 6px; font-weight: 600; }
+.partner-code { font-family: 'SF Mono', Menlo, monospace; font-size: 16px; font-weight: 700; color: var(--st-primary-deep); letter-spacing: 1px; }
+.btn-copy { font-size: 12px; padding: 6px 12px; border-radius: 8px; border: none; background: #ffffff; color: var(--st-primary); font-weight: 700; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: 0.2s; }
+.btn-copy:hover { transform: scale(1.05); }
+.modal-actions { margin-top: 24px; display: flex; gap: 10px; }
+.modal-actions .btn { flex: 1; height: 48px; font-size: 15px; font-weight: 700; border-radius: 14px; cursor: pointer; transition: 0.2s; }
+.btn-cancel { background: #f1f5f9; color: #64748b; border: none; }
+.btn-cancel:hover { background: #e2e8f0; color: #475569; }
+.btn-primary { background: var(--st-primary); color: #ffffff; border: none; box-shadow: 0 4px 10px rgba(22, 163, 74, 0.2); }
+.btn-primary:hover { background: var(--st-primary-deep); transform: translateY(-2px); }
+.btn-danger { background: #ef4444; color: #ffffff; border: none; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); }
+.btn-outline { background: #ffffff; color: #475569; border: 1px solid #cbd5e1; }
+.btn-outline:hover { background: #f8fafc; border-color: #94a3b8; }
+@media (max-width:360px){ body[data-page="settings"] main{padding:16px 12px 100px;} body[data-page="settings"] .st-card{padding:20px 16px;} .modal-radio-row { gap: 8px; } .modal-radio-item { font-size: 13px; padding: 8px 10px; } }
   </style>
 </head>
 
@@ -229,7 +96,7 @@
     <header>
       <div class="bar">
         <div class="logo">
-          <a href="intro.html" style="all:unset;cursor:pointer">
+          <a href="home.html" style="all:unset;cursor:pointer">
             <img src="img/logo.png" alt="이피랑 로고" />
           </a>
         </div>
@@ -237,133 +104,37 @@
     </header>
 
     <main>
-      <!-- 상단 개요 -->
+
+      <!-- 프로필 요약 카드 -->
       <section class="st-card">
-        <h3 class="st-title">
+	  <h3 class="st-hero-title">
           <i class="fa-solid fa-gear"></i>
           <span>설정</span>
         </h3>
-        <p class="st-sub">
-          계정·농장/사업자 정보, 알림, 파트너 코드, 약관 동의 내역 등을 한 곳에서 관리하는 화면입니다.
-        </p>
-        <p class="st-caption">
-          입력하신 정보는 향후 정책자금 연계, (주)그린 견적/계약, 데이터 리포트 제공 시 참고용으로 사용됩니다.
-        </p>
-      </section>
-
-      <!-- 프로필 / 농장 정보 -->
-      <section class="st-card">
-        <h3 class="st-section-title">
-          <i class="fa-regular fa-id-card"></i>
-          <span>프로필 / 농장 정보</span>
-        </h3>
-
-        <div class="st-field-group">
-          <label class="st-label">구분</label>
-          <div class="st-radio-row">
-            <label class="st-radio-item">
-              <input type="radio" name="stType" value="personal" checked />
-              <span>개인</span>
-            </label>
-            <label class="st-radio-item">
-              <input type="radio" name="stType" value="corporate" />
-              <span>법인</span>
-            </label>
+        <div class="profile-mini" onclick="openProfileModal()">
+          <div class="profile-mini-left">
+			<div style="display:flex; align-items:center; gap:6px;">
+				<i class="fa-regular fa-id-card"></i> <span class="profile-mini-name" id="stProfileName">이름 미등록</span>
+			</div>
+            <span class="profile-mini-role" id="stProfileRole">농장 이름</span>
+            <span class="profile-mini-meta" id="stProfileMeta">연락처 / 이메일</span>
           </div>
-        </div>
-
-        <div class="st-field-group">
-          <label for="stName" class="st-label">상호 / 농장 이름</label>
-          <input id="stName" class="st-input" type="text" placeholder="예: 김포 엽채 스마트팜" />
-        </div>
-
-        <div class="st-field-group">
-          <label for="stBizNo" class="st-label">사업자등록번호</label>
-          <input id="stBizNo" class="st-input" type="text" placeholder="예: 123-45-67890" />
-          <div class="st-hint">개인 농장일 경우 필수가 아니며, 정책자금 연계 시 필요할 수 있습니다.</div>
-        </div>
-
-        <div class="st-field-group">
-          <label for="stAddress" class="st-label">주소</label>
-          <textarea id="stAddress" class="st-textarea" placeholder="예: 경기도 김포시 ○○로 123, 지식산업센터 3층"></textarea>
-        </div>
-
-        <div class="st-field-group">
-          <label for="stManager" class="st-label">담당자 이름</label>
-          <input id="stManager" class="st-input" type="text" placeholder="예: 홍길동" />
-        </div>
-
-        <div class="st-field-group">
-          <label for="stPhone" class="st-label">담당자 연락처</label>
-          <input id="stPhone" class="st-input" type="tel" placeholder="예: 010-0000-0000" />
-        </div>
-
-        <div class="st-field-group">
-          <label for="stEmail" class="st-label">이메일</label>
-          <input id="stEmail" class="st-input" type="email" placeholder="예: farm@example.com" />
-          <div class="st-hint">견적서·계약서 안내, 데이터 리포트 제공 시 사용됩니다.</div>
+          <i class="fa-solid fa-chevron-right"></i>
         </div>
       </section>
 
-      <!-- 알림 설정 -->
+      <!-- 알림 설정 요약 카드 -->
       <section class="st-card">
         <h3 class="st-section-title">
           <i class="fa-regular fa-bell"></i>
           <span>알림 설정</span>
         </h3>
-
-        <div class="st-field-group">
-          <label class="st-label">받을 알림 종류</label>
-          <div class="st-check-row">
-            <label class="st-check-item">
-              <input type="checkbox" id="stNotiPolicy" />
-              <span>정책자금</span>
-            </label>
-            <label class="st-check-item">
-              <input type="checkbox" id="stNotiQuote" />
-              <span>견적/계약</span>
-            </label>
-            <label class="st-check-item">
-              <input type="checkbox" id="stNotiBuild" />
-              <span>시공</span>
-            </label>
-            <label class="st-check-item">
-              <input type="checkbox" id="stNotiOps" />
-              <span>운영 초기</span>
-            </label>
+        <div class="arrow-row" onclick="openNotiModal()">
+          <div class="arrow-row-main">
+            <span class="arrow-title" id="stNotiTitle">알림 받는 항목이 없습니다</span>
+            <span class="arrow-sub" id="stNotiSub">알림 종류와 받기 좋은 시간대를 설정해 주세요.</span>
           </div>
-          <div class="st-hint">향후 실제 알림 채널(앱 알림/SMS/이메일) 연동 시 이 설정이 기준이 됩니다.</div>
-        </div>
-
-        <div class="st-field-group">
-          <label class="st-label">알림 받기 좋은 시간대</label>
-          <div class="st-time-row">
-            <span>주로</span>
-            <select id="stNotiTime" class="st-time-input">
-              <option value="morning">오전 (09:00 ~ 12:00)</option>
-              <option value="afternoon">오후 (13:00 ~ 18:00)</option>
-              <option value="evening">저녁 (18:00 ~ 21:00)</option>
-              <option value="any">상관없음</option>
-            </select>
-            <span>에 알림 받기</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- 파트너 코드 -->
-      <section class="st-card">
-        <h3 class="st-section-title">
-          <i class="fa-solid fa-user-group"></i>
-          <span>파트너 코드</span>
-        </h3>
-
-        <div class="st-field-group">
-          <label for="stPartnerCode" class="st-label">파트너 코드</label>
-          <input id="stPartnerCode" class="st-input" type="text" placeholder="예: EPGREEN-001" />
-          <div class="st-hint">
-            (주)이피랑–(주)그린 내부에서 프로젝트를 공유하거나, 특정 파트너 채널을 구분할 때 사용하는 코드입니다.
-            일반 사용자라면 비워 두셔도 됩니다.
-          </div>
+          <i class="fa-solid fa-chevron-right"></i>
         </div>
       </section>
 
@@ -378,21 +149,18 @@
           <li>
             <div class="st-list-label">
               <span>서비스 이용약관</span>
-              <span>설문 시작 시 동의한 이용약관입니다.</span>
             </div>
             <span class="st-link" id="stLinkTerms">보기</span>
           </li>
           <li>
             <div class="st-list-label">
               <span>개인정보 수집·이용 동의</span>
-              <span>설문·프로젝트 관리에 필요한 최소 범위입니다.</span>
             </div>
             <span class="st-link" id="stLinkPrivacy">보기</span>
           </li>
           <li>
             <div class="st-list-label">
               <span>데이터 활용 동의(선택)</span>
-              <span>익명화된 데이터로 정책·연구·제품 기획에 활용될 수 있습니다.</span>
             </div>
             <span class="st-link" id="stLinkData">보기</span>
           </li>
@@ -401,63 +169,56 @@
 
       <!-- 계정 삭제 / 데이터 다운로드 -->
       <section class="st-card st-danger">
-        <h3 class="st-section-title st-danger-title">
+        <h3 class="st-section-title">
           <i class="fa-regular fa-circle-xmark"></i>
           <span>계정 삭제 / 데이터 다운로드</span>
         </h3>
 
-        <p class="st-sub" style="font-size:12px;color:#7f1d1d;">
-          데이터 비즈니스·신뢰 확보를 위해, 내 프로젝트·설문·설계 데이터를 한 번에 내려받거나 삭제할 수 있는 기능을 제공합니다.
-          실제 운영 시에는 본인 확인 절차와 별도 문의 채널을 통해 처리될 수 있습니다.
-        </p>
-
-        <div class="st-field-group">
-          <button type="button" class="btn danger outline" id="stBtnExport">데이터 다운로드 (로컬 기기)</button>
-        </div>
-        <div class="st-field-group">
-          <button type="button" class="btn danger" id="stBtnDelete">계정 / 데이터 삭제 요청</button>
-          <div class="st-hint">
-            현재는 이 기기에 저장된 설문·프로젝트 데이터를 초기화하는 수준으로 동작합니다.
-            실제 서비스에서는 별도 본인 인증 후 처리됩니다.
+        <div class="arrow-row" onclick="openDeleteModal()">
+          <div class="arrow-row-main">
+            <span class="arrow-title">이 기기 데이터 관리</span>
           </div>
+          <i class="fa-solid fa-chevron-right"></i>
         </div>
       </section>
     </main>
 
     <!-- 하단 버튼 바 -->
-    <div class="bottom-bar">
+    <!--<div class="bottom-bar">
       <button type="button" class="btn ghost" id="stBtnHome">홈으로</button>
       <button type="button" class="btn acc" id="stBtnSave">설정 저장</button>
-    </div>
+    </div>-->
+<nav class="tabs">
+      <ul>
+        <li><button id="tab-home" onclick="window.location.assign('home.html')"><i class="fa-solid fa-house"></i><small>홈</small></button></li>
+        <li><button id="tab-records" onclick="window.location.assign('records.html')"><i class="fas fa-list-check"></i><small>기록</small></button></li>
+        <li><button id="tab-reco" onclick="window.location.assign('deals.html')"><i class="fas fa-file-signature"></i><small>견적</small></button></li>
+        <li><button id="tab-my" onclick="window.location.assign('settings.html')" class="active"><i class="fa-solid fa-user"></i><small>마이</small></button></li>
+      </ul>
+    </nav>
   </div>
 
-  <!-- 공통 모달/토스트 -->
+  <!-- 공통 모달/토스트 (app.js의 closeModal / openTerms와 공유) -->
   <div id="overlay" class="overlay" onclick="closeModal && closeModal(event)"></div>
   <div id="modal" class="modal" style="display:none"></div>
   <div id="toast" class="toast">처리되었습니다</div>
 
   <script src="app.js" defer></script>
   <script>
-  document.addEventListener('DOMContentLoaded',function(){
-    // 하단 버튼
-    var btnHome=document.getElementById('stBtnHome');
-    var btnSave=document.getElementById('stBtnSave');
-    if(btnHome){
-      btnHome.addEventListener('click',function(){window.location.assign('home.html');});
-    }
-
-    // 키 정의
-    var settingsKey=(window.K && K.SETTINGS) || 'ep-settings';
+  (function(){
+    var settingsKey = (window.K && K.SETTINGS) || 'ep-settings';
+    var projectsKey = (window.K && K.PROJECTS) || 'ep-projects';
+    var settings = {};
 
     function safeRead(key, fallback){
       try{
-        if(typeof read==='function'){
-          return read(key,fallback);
+        if (typeof read === 'function') {
+          return read(key, fallback);
         }
-        var raw=localStorage.getItem(key);
-        if(!raw) return fallback;
-        var parsed=JSON.parse(raw);
-        return (parsed===null || parsed===undefined)?fallback:parsed;
+        var raw = localStorage.getItem(key);
+        if (!raw) return fallback;
+        var parsed = JSON.parse(raw);
+        return (parsed === null || parsed === undefined) ? fallback : parsed;
       }catch(e){
         return fallback;
       }
@@ -465,194 +226,435 @@
 
     function safeWrite(key, value){
       try{
-        if(typeof write==='function'){
-          write(key,value);
-        }else{
-          localStorage.setItem(key,JSON.stringify(value));
+        if (typeof save === 'function') {
+          save(key, value);
+        } else {
+          localStorage.setItem(key, JSON.stringify(value));
         }
       }catch(e){
-        console.error('settings save error',e);
+        console.error('settings save error', e);
       }
     }
 
-    // 요소 모음
-    var elName=document.getElementById('stName');
-    var elBizNo=document.getElementById('stBizNo');
-    var elAddr=document.getElementById('stAddress');
-    var elManager=document.getElementById('stManager');
-    var elPhone=document.getElementById('stPhone');
-    var elEmail=document.getElementById('stEmail');
-
-    var elNotiPolicy=document.getElementById('stNotiPolicy');
-    var elNotiQuote=document.getElementById('stNotiQuote');
-    var elNotiBuild=document.getElementById('stNotiBuild');
-    var elNotiOps=document.getElementById('stNotiOps');
-    var elNotiTime=document.getElementById('stNotiTime');
-    var elPartner=document.getElementById('stPartnerCode');
-
-    // 기존 값 로드
-    var settings=safeRead(settingsKey,{}) || {};
-    var profile=settings.profile || {};
-    var noti=settings.notifications || {};
-    var partner=settings.partner || {};
-
-    // 프로필
-    if(profile.type){
-      var radios=document.querySelectorAll('input[name="stType"]');
-      radios.forEach(function(r){
-        r.checked=(r.value===profile.type);
-      });
-    }
-    if(elName && profile.name) elName.value=profile.name;
-    if(elBizNo && profile.bizNo) elBizNo.value=profile.bizNo;
-    if(elAddr && profile.address) elAddr.value=profile.address;
-    if(elManager && profile.manager) elManager.value=profile.manager;
-    if(elPhone && profile.phone) elPhone.value=profile.phone;
-    if(elEmail && profile.email) elEmail.value=profile.email;
-
-    // 알림
-    if(elNotiPolicy) elNotiPolicy.checked=!!noti.policy;
-    if(elNotiQuote) elNotiQuote.checked=!!noti.quote;
-    if(elNotiBuild) elNotiBuild.checked=!!noti.build;
-    if(elNotiOps) elNotiOps.checked=!!noti.ops;
-    if(elNotiTime && noti.time){
-      elNotiTime.value=noti.time;
+    // 파트너 코드 생성 (처음 한 번)
+    function ensurePartnerCode(obj){
+      obj.partner = obj.partner || {};
+      if (!obj.partner.code) {
+        var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        var code = 'EP-';
+        for (var i = 0; i < 6; i++){
+          code += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        obj.partner.code = code;
+      }
+      return obj;
     }
 
-    // 파트너
-    if(elPartner && partner.code) elPartner.value=partner.code;
+    function applySettingsToUI(){
+      var profile = settings.profile || {};
+      var noti    = settings.notifications || {};
+      var partner = settings.partner || {};
 
-    // 저장
-    if(btnSave){
-      btnSave.addEventListener('click',function(){
-        var type='personal';
-        var radios=document.querySelectorAll('input[name="stType"]');
-        radios.forEach(function(r){
-          if(r.checked) type=r.value;
-        });
+      var elName = document.getElementById('stProfileName');
+      var elRole = document.getElementById('stProfileRole');
+      var elMeta = document.getElementById('stProfileMeta');
 
-        var newSettings={
-          profile:{
-            type:type,
-            name:elName ? elName.value.trim() : '',
-            bizNo:elBizNo ? elBizNo.value.trim() : '',
-            address:elAddr ? elAddr.value.trim() : '',
-            manager:elManager ? elManager.value.trim() : '',
-            phone:elPhone ? elPhone.value.trim() : '',
-            email:elEmail ? elEmail.value.trim() : ''
-          },
-          notifications:{
-            policy:elNotiPolicy ? elNotiPolicy.checked : false,
-            quote:elNotiQuote ? elNotiQuote.checked : false,
-            build:elNotiBuild ? elNotiBuild.checked : false,
-            ops:elNotiOps ? elNotiOps.checked : false,
-            time:elNotiTime ? elNotiTime.value : 'morning'
-          },
-          partner:{
-            code:elPartner ? elPartner.value.trim() : ''
-          }
+      var typeLabel = (profile.type === 'corporate') ? '법인' : (profile.type === 'personal' ? '개인' : '구분 미선택');
+      var name = profile.name || '이름 미등록';
+      var farm = profile.name || '농장 이름 미등록';
+      var phone = profile.phone || '연락처 미등록';
+      var email = profile.email || '이메일 미등록';
+
+      if (elName) elName.textContent = name;
+      if (elRole) elRole.textContent = farm;
+      if (elMeta) elMeta.textContent = phone + ' · ' + email;
+
+      // 알림 요약
+      var elNotiTitle = document.getElementById('stNotiTitle');
+      var elNotiSub   = document.getElementById('stNotiSub');
+
+      var active = [];
+      if (noti.policy) active.push('정책자금');
+      if (noti.quote)  active.push('견적/계약');
+      if (noti.build)  active.push('시공');
+      if (noti.ops)    active.push('운영 초기');
+
+      if (elNotiTitle){
+        if (active.length === 0){
+          elNotiTitle.textContent = '알림 받는 항목이 없습니다';
+        } else {
+          elNotiTitle.textContent = active.join(' · ') + ' 알림 받는 중';
+        }
+      }
+
+      if (elNotiSub){
+        var timeMap = {
+          morning: '오전 (09~12)',
+          afternoon: '오후 (13~18)',
+          evening: '저녁 (18~21)',
+          any: '언제든지'
         };
-
-        safeWrite(settingsKey,newSettings);
-        if(typeof toast==='function'){
-          toast('설정이 저장되었습니다.');
-        }else{
-          alert('설정이 저장되었습니다.');
-        }
-      });
+        var timeLabel = timeMap[noti.time || 'morning'] || '오전 (09~12)';
+        elNotiSub.textContent = '주로 ' + timeLabel + '에 알림을 보내드려요.';
+      }
     }
 
-    // 약관 링크 (지금은 terms.html / privacy.html 같은 곳으로 연결 가정)
-    var linkTerms=document.getElementById('stLinkTerms');
-    var linkPrivacy=document.getElementById('stLinkPrivacy');
-    var linkData=document.getElementById('stLinkData');
+    function openSettingsModal(innerHtml){
+      var ov = document.getElementById('overlay');
+      var m  = document.getElementById('modal');
+      if (!ov || !m) return;
 
-    if(linkTerms){
-      linkTerms.addEventListener('click',function(){
-        window.location.assign('terms.html');
-      });
-    }
-    if(linkPrivacy){
-      linkPrivacy.addEventListener('click',function(){
-        window.location.assign('privacy.html'); // 없으면 terms.html로 바꿔도 됨
-      });
-    }
-    if(linkData){
-      linkData.addEventListener('click',function(){
-        if(typeof openTerms==='function'){
-          openTerms('데이터 활용 동의(예시)','익명화된 실내 스마트팜 운영 데이터가 정책·연구·제품 기획에 활용될 수 있습니다.\n\n실제 서비스에서는 별도 전문을 제공합니다.');
-        }else{
-          alert('데이터 활용 동의 전문은 추후 제공될 예정입니다.');
-        }
-      });
+      ov.classList.add('show');
+      m.style.display = 'block';
+      m.innerHTML = innerHtml;
     }
 
-    // 데이터 다운로드 (단순 JSON export)
-    var btnExport=document.getElementById('stBtnExport');
-    if(btnExport){
-      btnExport.addEventListener('click',function(){
+    // 파트너 코드 복사 (프로필 모달 안에서 사용)
+    function copyPartnerCode(){
+      var codeEl = document.getElementById('mdPartnerCode');
+      if (!codeEl) return;
+      var text = codeEl.textContent || codeEl.innerText;
+      if (!navigator.clipboard){
         try{
-          var keyProj=(window.K && K.PROJECTS) || 'ep-projects';
-          var projects=safeRead(keyProj,[]);
-          var data={
-            exportedAt:new Date().toISOString(),
-            settings:safeRead(settingsKey,{}),
-            projects:projects
-          };
-          var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-          var url=URL.createObjectURL(blob);
-          var a=document.createElement('a');
-          a.href=url;
-          a.download='eprang-data-export.json';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-          if(typeof toast==='function'){
-            toast('데이터 파일을 다운로드했습니다.');
-          }
-        }catch(e){
-          console.error(e);
-          if(typeof toast==='function'){
-            toast('데이터 다운로드 중 오류가 발생했습니다.');
-          }else{
-            alert('데이터 다운로드 중 오류가 발생했습니다.');
-          }
-        }
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }catch(e){}
+      }else{
+        navigator.clipboard.writeText(text).catch(function(){});
+      }
+      if (typeof toast === 'function'){
+        toast('파트너 코드가 복사되었습니다.');
+      }
+    }
+
+    // 프로필 모달
+    window.openProfileModal = function(){
+      var profile = settings.profile || {};
+      var partner = settings.partner || {};
+      var partnerCode = partner.code || '';
+
+      openSettingsModal(`
+        <div class="modal-title">
+          <i class="fa-regular fa-id-card"></i>
+          <span>프로필</span>
+        </div>
+        <div class="modal-section">
+          <div class="modal-field">
+            <div class="partner-label">파트너 코드 (복사만 가능)</div>
+            <div class="partner-box">
+              <span class="partner-code" id="mdPartnerCode">${partnerCode}</span>
+              <button type="button" class="btn-copy" onclick="copyPartnerCode()">복사</button>
+            </div>
+          </div>
+
+          <div class="modal-field">
+            <span class="modal-label">구분</span>
+            <div class="modal-radio-row">
+              <label class="modal-radio-item">
+                <input type="radio" name="mdType" value="personal" ${profile.type !== 'corporate' ? 'checked' : ''} />
+                <span>개인</span>
+              </label>
+              <label class="modal-radio-item">
+                <input type="radio" name="mdType" value="corporate" ${profile.type === 'corporate' ? 'checked' : ''} />
+                <span>법인</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="modal-field">
+            <label class="modal-label" for="mdName">상호 / 농장 이름</label>
+            <input id="mdName" class="modal-input" type="text" placeholder="예: 김포 엽채 스마트팜" value="${profile.name || ''}" />
+          </div>
+
+          <div class="modal-field">
+            <label class="modal-label" for="mdBizNo">사업자등록번호</label>
+            <input id="mdBizNo" class="modal-input" type="text" placeholder="예: 123-45-67890" value="${profile.bizNo || ''}" />
+          </div>
+
+          <div class="modal-field">
+            <label class="modal-label" for="mdAddress">주소</label>
+            <textarea id="mdAddress" class="modal-textarea" placeholder="예: 경기도 김포시 ○○로 123, 지식산업센터 3층">${profile.address || ''}</textarea>
+          </div>
+
+          <div class="modal-field">
+            <label class="modal-label" for="mdManager">담당자 이름</label>
+            <input id="mdManager" class="modal-input" type="text" placeholder="예: 홍길동" value="${profile.manager || ''}" />
+          </div>
+
+          <div class="modal-field">
+            <label class="modal-label" for="mdPhone">담당자 연락처</label>
+            <input id="mdPhone" class="modal-input" type="tel" placeholder="예: 010-0000-0000" value="${profile.phone || ''}" />
+          </div>
+
+          <div class="modal-field">
+            <label class="modal-label" for="mdEmail">이메일</label>
+            <input id="mdEmail" class="modal-input" type="email" placeholder="예: farm@example.com" value="${profile.email || ''}" />
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-cancel" onclick="closeModal && closeModal({target: document.getElementById('overlay')})">취소</button>
+          <button type="button" class="btn btn-primary" onclick="saveProfileFromModal()">저장</button>
+        </div>
+      `);
+    };
+
+    window.saveProfileFromModal = function(){
+      var type = 'personal';
+      var radios = document.querySelectorAll('input[name="mdType"]');
+      radios.forEach(function(r){
+        if (r.checked) type = r.value;
       });
+
+      var profile = {
+        type   : type,
+        name   : (document.getElementById('mdName')    || {}).value || '',
+        bizNo  : (document.getElementById('mdBizNo')   || {}).value || '',
+        address: (document.getElementById('mdAddress') || {}).value || '',
+        manager: (document.getElementById('mdManager') || {}).value || '',
+        phone  : (document.getElementById('mdPhone')   || {}).value || '',
+        email  : (document.getElementById('mdEmail')   || {}).value || ''
+      };
+
+      settings.profile = profile;
+      safeWrite(settingsKey, settings);
+      applySettingsToUI();
+
+      if (typeof toast === 'function'){
+        toast('프로필 / 농장 정보가 저장되었습니다.');
+      }
+      if (typeof closeModal === 'function'){
+        closeModal({target: document.getElementById('overlay')});
+      }
+    };
+
+    // 알림 설정 모달
+    window.openNotiModal = function(){
+      var noti = settings.notifications || {};
+      var time = noti.time || 'morning';
+
+      openSettingsModal(`
+        <div class="modal-title">
+          <i class="fa-regular fa-bell"></i>
+          <span>알림 설정</span>
+        </div>
+        <p class="modal-sub">
+          정책자금, 견적/계약, 시공, 운영 초기까지 놓치기 쉬운 알림을 관리합니다.
+        </p>
+        <div class="modal-section">
+          <div class="modal-field">
+            <span class="modal-label">받을 알림 종류</span>
+            <div class="modal-check-row">
+              <label class="modal-check-item">
+                <input type="checkbox" id="mdNotiPolicy" ${noti.policy ? 'checked' : ''} />
+                <span>정책자금</span>
+              </label>
+              <label class="modal-check-item">
+                <input type="checkbox" id="mdNotiQuote" ${noti.quote ? 'checked' : ''} />
+                <span>견적/계약</span>
+              </label>
+              <label class="modal-check-item">
+                <input type="checkbox" id="mdNotiBuild" ${noti.build ? 'checked' : ''} />
+                <span>시공</span>
+              </label>
+              <label class="modal-check-item">
+                <input type="checkbox" id="mdNotiOps" ${noti.ops ? 'checked' : ''} />
+                <span>운영 초기</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="modal-field">
+            <label class="modal-label" for="mdNotiTime">알림 받기 좋은 시간대</label>
+            <select id="mdNotiTime" class="modal-select">
+              <option value="morning"   ${time === 'morning'   ? 'selected' : ''}>오전 (09:00 ~ 12:00)</option>
+              <option value="afternoon" ${time === 'afternoon' ? 'selected' : ''}>오후 (13:00 ~ 18:00)</option>
+              <option value="evening"   ${time === 'evening'   ? 'selected' : ''}>저녁 (18:00 ~ 21:00)</option>
+              <option value="any"       ${time === 'any'       ? 'selected' : ''}>상관없음</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-cancel" onclick="closeModal && closeModal({target: document.getElementById('overlay')})">취소</button>
+          <button type="button" class="btn btn-primary" onclick="saveNotiFromModal()">저장</button>
+        </div>
+      `);
+    };
+
+    window.saveNotiFromModal = function(){
+      var noti = {
+        policy: !!(document.getElementById('mdNotiPolicy') && document.getElementById('mdNotiPolicy').checked),
+        quote : !!(document.getElementById('mdNotiQuote')  && document.getElementById('mdNotiQuote').checked),
+        build : !!(document.getElementById('mdNotiBuild')  && document.getElementById('mdNotiBuild').checked),
+        ops   : !!(document.getElementById('mdNotiOps')    && document.getElementById('mdNotiOps').checked),
+        time  : (document.getElementById('mdNotiTime')     || {}).value || 'morning'
+      };
+
+      settings.notifications = noti;
+      safeWrite(settingsKey, settings);
+      applySettingsToUI();
+
+      if (typeof toast === 'function'){
+        toast('알림 설정이 저장되었습니다.');
+      }
+      if (typeof closeModal === 'function'){
+        closeModal({target: document.getElementById('overlay')});
+      }
+    };
+
+    // 데이터 다운로드
+    function exportData(){
+      try{
+        var projects = safeRead(projectsKey, []);
+        var data = {
+          exportedAt: new Date().toISOString(),
+          settings  : safeRead(settingsKey, {}),
+          projects  : projects
+        };
+        var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+        var url  = URL.createObjectURL(blob);
+        var a    = document.createElement('a');
+        a.href = url;
+        a.download = 'eprang-data-export.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        if (typeof toast === 'function'){
+          toast('데이터 파일을 다운로드했습니다.');
+        }
+      }catch(e){
+        console.error(e);
+        if (typeof toast === 'function'){
+          toast('데이터 다운로드 중 오류가 발생했습니다.');
+        }
+      }
     }
 
     // 계정/데이터 삭제 (로컬 초기화 수준)
-    var btnDelete=document.getElementById('stBtnDelete');
-    if(btnDelete){
-      btnDelete.addEventListener('click',function(){
-        var ok=confirm('이 기기에 저장된 설문·프로젝트·설정 데이터를 삭제하시겠습니까?\n실제 서비스에서는 별도 본인 확인 절차가 필요합니다.');
-        if(!ok) return;
-        try{
-          var keyProj=(window.K && K.PROJECTS) || 'ep-projects';
-          if(typeof write==='function'){
-            write(keyProj,[]);
-            write(settingsKey,{});
-          }else{
-            localStorage.removeItem(keyProj);
-            localStorage.removeItem(settingsKey);
-          }
-          if(typeof toast==='function'){
-            toast('이 기기에 저장된 데이터가 초기화되었습니다.');
-          }else{
-            alert('이 기기에 저장된 데이터가 초기화되었습니다.');
-          }
-        }catch(e){
-          console.error(e);
-          if(typeof toast==='function'){
-            toast('데이터 삭제 중 오류가 발생했습니다.');
-          }else{
-            alert('데이터 삭제 중 오류가 발생했습니다.');
-          }
+    function deleteData(){
+      var ok = confirm('이 기기에 저장된 설문·프로젝트·설정 데이터를 삭제하시겠습니까?\n실제 서비스에서는 별도 본인 확인 절차가 필요합니다.');
+      if (!ok) return;
+      try{
+        if (typeof save === 'function'){
+          save(projectsKey, []);
+          save(settingsKey, {});
+        }else{
+          localStorage.removeItem(projectsKey);
+          localStorage.removeItem(settingsKey);
         }
-      });
+        settings = ensurePartnerCode({});
+        safeWrite(settingsKey, settings);
+        applySettingsToUI();
+        if (typeof toast === 'function'){
+          toast('이 기기에 저장된 데이터가 초기화되었습니다.');
+        }
+      }catch(e){
+        console.error(e);
+        if (typeof toast === 'function'){
+          toast('데이터 삭제 중 오류가 발생했습니다.');
+        }
+      }
     }
-  });
+
+    // 계정 삭제/다운로드 모달
+    window.openDeleteModal = function(){
+      openSettingsModal(`
+        <div class="modal-title">
+          <i class="fa-regular fa-circle-xmark"></i>
+          <span>계정 삭제 / 데이터 다운로드</span>
+        </div>
+
+        <div class="modal-section">
+          <div class="modal-field">
+            <span class="modal-label">데이터 다운로드</span>
+            <p class="modal-sub" style="margin-bottom:8px;">
+              내 설문 응답, 프로젝트, 설정 정보를 하나의 JSON 파일로 내려받습니다.
+            </p>
+            <button type="button" class="btn btn-outline" style="width:100%;height:40px;border-radius:12px;line-height:0.1rem;" onclick="exportData()">
+              데이터 다운로드 (로컬 기기)
+            </button>
+          </div>
+
+          <div class="modal-field" style="margin-top:16px;">
+            <span class="modal-label" style="color:#b91c1c;">계정 / 데이터 삭제</span>
+            <p class="modal-sub" style="margin-bottom:8px;color:#7f1d1d;">
+              이 기기에 저장된 모든 설문 · 프로젝트 · 설정 데이터가 삭제됩니다.
+              실제 서비스에서는 되돌릴 수 없으므로 신중히 진행해 주세요.
+            </p>
+            <button type="button" class="btn btn-danger" style="width:100%;height:40px;border-radius:12px;line-height:0.1rem;" onclick="deleteData()">
+              계정 / 데이터 삭제 (이 기기)
+            </button>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-cancel" onclick="closeModal && closeModal({target: document.getElementById('overlay')})">닫기</button>
+        </div>
+      `);
+    };
+
+    // 초기화
+    document.addEventListener('DOMContentLoaded', function(){
+      // 홈 버튼
+      var btnHome = document.getElementById('stBtnHome');
+      if (btnHome){
+        btnHome.addEventListener('click', function(){
+          window.location.assign('home.html');
+        });
+      }
+
+      // 저장 버튼 (실제 값은 모달에서 저장되므로 토스트만)
+      var btnSave = document.getElementById('stBtnSave');
+      if (btnSave){
+        btnSave.addEventListener('click', function(){
+          if (typeof toast === 'function'){
+            toast('설정이 저장되었습니다.');
+          }
+        });
+      }
+
+      // 기존 설정 읽기 + 파트너 코드 생성
+      settings = safeRead(settingsKey, {}) || {};
+      settings = ensurePartnerCode(settings);
+      safeWrite(settingsKey, settings);
+      applySettingsToUI();
+
+      // 약관 링크
+      var linkTerms   = document.getElementById('stLinkTerms');
+      var linkPrivacy = document.getElementById('stLinkPrivacy');
+      var linkData    = document.getElementById('stLinkData');
+
+      if (linkTerms){
+        linkTerms.addEventListener('click', function(){
+          //window.location.assign('terms.html');
+        });
+      }
+      if (linkPrivacy){
+        linkPrivacy.addEventListener('click', function(){
+          //window.location.assign('privacy.html'); // 없으면 terms.html로 교체 가능
+        });
+      }
+      if (linkData){
+        linkData.addEventListener('click', function(){
+          if (typeof openTerms === 'function'){
+            openTerms(
+              '데이터 활용 동의',
+              '익명화된 실내 스마트팜 운영 데이터가 정책·연구·제품 기획에 활용될 수 있습니다. 실제 서비스에서는 별도 전문을 제공합니다.'
+            );
+          }else{
+            alert('데이터 활용 동의 전문은 추후 제공될 예정입니다.');
+          }
+        });
+      }
+    });
+
+  })();
   </script>
 </body>
 </html>

@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <title>운영 기록 · 이피랑</title>
+
+  <style>
+    :root { --primary:#16a34a; --primary-light:#dcfce7; --primary-dark:#15803d; --bg-soft:#ffffff; --text-main:#1a202c; --text-sub:#4a5568; --card-bg:#ffffff; --border-light:#e2e8f0; --shadow-sm:0 1px 3px rgba(0,0,0,0.08); --shadow-md:0 4px 12px rgba(0,0,0,0.1); --radius-lg:20px; --radius-md:14px; --radius-sm:10px; --transition-ease:all 0.3s ease; }
+body[data-page="records"] main { padding:20px 16px 100px; max-width:520px; margin:0 auto; width:100%; align-items:stretch; }
+body[data-page="records"] .rec-section { margin-bottom:24px; width:100%; }
+body[data-page="records"] .rec-summary { position:relative; border-radius:var(--radius-lg); padding:22px 20px 24px; background:linear-gradient(135deg,#ecfdf3 0%,#f9fffb 100%); box-shadow:var(--shadow-md); border:1px solid var(--border-light); overflow:hidden; }
+body[data-page="records"] .rec-summary-chip { display:inline-flex; align-items:center; gap:8px; padding:6px 12px; font-size:13px; font-weight:700; color:var(--primary-dark); margin-bottom:10px; border-radius:999px; background-color:#dcfce7; }
+body[data-page="records"] .rec-summary-chip i { font-size:14px; }
+body[data-page="records"] .rec-summary-title { margin:0 0 6px; font-size:22px; font-weight:800; color:var(--text-main); }
+body[data-page="records"] .rec-summary-sub { margin:0 0 10px; font-size:14px; color:var(--text-sub); line-height:1.6; }
+body[data-page="records"] .rec-summary-bg { position:absolute; right:-34px; bottom:-40px; width:100px; height:100px; border-radius:999px; background:radial-gradient(circle at 30% 30%,rgba(34,197,94,0.9),rgba(15,118,110,0.1)); opacity:0.25; }
+body[data-page="records"] .rec-timeline { margin-top:20px; padding:20px; border-radius:16px; background:#ffffff; border:none; box-shadow: 0 8px 20px rgba(22, 163, 74, 0.08); max-height:400px; overflow-y:auto; position: relative; z-index: 1; }
+body[data-page="records"] .rec-timeline-title { font-size:15px; font-weight:800; color:var(--text-main); margin:0 0 12px; display:flex; align-items:center; gap:8px; padding-bottom: 12px; border-bottom: 2px solid #f1f5f9; }
+body[data-page="records"] .rec-timeline-title i { font-size:16px; color:var(--primary); }
+body[data-page="records"] .rec-timeline-list { list-style:none; margin:0; padding:0; }
+body[data-page="records"] .rec-timeline-item { display:flex; flex-direction:column; gap:5px; padding:12px 0 12px 24px; border-top:1px solid #f3f4f6; position: relative; }
+body[data-page="records"] .rec-timeline-item:first-child { border-top:none; padding-top: 4px; }
+body[data-page="records"] .rec-timeline-item::before { content: ''; position: absolute; left: 2px; top: 18px; width: 10px; height: 10px; background-color: var(--primary); border-radius: 50%; box-shadow: 0 0 0 3px var(--primary-light); z-index: 1; }
+body[data-page="records"] .rec-timeline-item > div:first-child { font-size: 14px; font-weight: 700; color: #333333; line-height: 1.45; }
+body[data-page="records"] .rec-timeline-meta { font-size:12px; color:#94a3b8; font-weight: 500; }
+body[data-page="records"] .rec-filter { margin-top:20px; display:flex; flex-direction:column; gap:10px; }
+body[data-page="records"] .rec-filter-label { font-size:13px; color:var(--text-sub); font-weight:600; }
+body[data-page="records"] .rec-filter-chips { display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; }
+body[data-page="records"] .rec-chip { flex:0 0 auto; padding:6px 12px; border-radius:999px; border:1px solid var(--border-light); background:#f9fafb; font-size:12px; color:var(--text-sub); cursor:pointer; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; transition:var(--transition-ease); }
+body[data-page="records"] .rec-chip i { font-size:12px; color:#9ca3af; }
+body[data-page="records"] .rec-chip.active { background:#dcfce7; border-color:#16a34a; color:#065f46; }
+body[data-page="records"] .rec-project-list { margin-top:10px; display:grid; gap:12px; }
+body[data-page="records"] .rec-project-card { background:var(--card-bg); border-radius:var(--radius-md); border:1px solid var(--border-light); box-shadow:var(--shadow-sm); padding:16px 14px 12px; transition:var(--transition-ease); }
+body[data-page="records"] .rec-project-card:hover { transform:translateY(-1px); box-shadow:var(--shadow-md); }
+body[data-page="records"] .rec-project-header { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:8px; }
+body[data-page="records"] .rec-project-title { margin:0; font-size:15px; font-weight:700; color:var(--text-main); line-height:1.5; }
+body[data-page="records"] .rec-project-status { font-size:12px; padding:4px 10px; border-radius:999px; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; font-weight:600; white-space:nowrap; }
+body[data-page="records"] .rec-project-meta { display:flex; flex-wrap:wrap; gap:10px; font-size:12px; color:var(--text-sub); margin-bottom:8px; }
+body[data-page="records"] .rec-project-meta span { display:inline-flex; align-items:center; gap:4px; }
+body[data-page="records"] .rec-project-meta i { font-size:11px; color:#9ca3af; }
+body[data-page="records"] .rec-log-label { font-size:12px; font-weight:600; color:#6b7280; margin-bottom:4px; }
+body[data-page="records"] .rec-log-list { list-style:none; margin:0; padding-left:0; font-size:12px; color:#4b5563; line-height:1.5; }
+body[data-page="records"] .rec-log-list li { position:relative; padding-left:12px; margin-bottom:3px; }
+body[data-page="records"] .rec-log-list li::before { content:'•'; position:absolute; left:0; top:0; color:#cbd5e1; }
+body[data-page="records"] .rec-project-footer { display:flex; justify-content:flex-end; margin-top:10px; }
+body[data-page="records"] .rec-project-open { font-size:12px; padding:6px 10px; border-radius:999px; border:1px solid #e5e7eb; background:#f9fafb; color:#4b5563; display:inline-flex; align-items:center; gap:4px; }
+body[data-page="records"] .rec-project-open i { font-size:11px; color:#9ca3af; }
+body[data-page="records"] .rec-empty { padding:24px; border-radius:var(--radius-md); background:var(--card-bg); border:1px dashed #d1d5db; text-align:center; font-size:14px; color:var(--text-sub); line-height:1.6; box-shadow:var(--shadow-sm); margin-top:18px; }
+body[data-page="records"] .rec-empty strong { display:block; margin-bottom:8px; font-size:16px; color:var(--text-main); }
+body[data-page="records"] .rec-empty .btn { margin-top:14px; width:100%; max-width:260px; font-size:14px; font-weight:700; height:44px; border-radius:var(--radius-sm); background-color:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; box-shadow:var(--shadow-sm); transition:var(--transition-ease); }
+body[data-page="records"] .rec-empty .btn:hover { background-color:#dbeafe; transform:translateY(-2px); box-shadow:var(--shadow-md); }
+  </style>
+</head>
+
+<body data-page="records">
+  <div class="app">
+    <header>
+      <div class="bar">
+        <div class="logo">
+          <a href="home.html" style="all:unset;cursor:pointer">
+            <img src="img/logo.png" alt="이피랑 로고" />
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- 상단 요약 + 최근 활동 타임라인 -->
+      <section class="rec-section">
+        <div class="rec-summary">
+          <div class="rec-summary-chip">
+            <i class="fas fa-list-check"></i>
+            <span>프로젝트 활동 기록</span>
+          </div>
+          <h1 class="rec-summary-title">여러 프로젝트의 흐름을 한눈에</h1>
+
+          <!-- 최근 활동 타임라인 -->
+          <div class="rec-timeline" id="recTimeline" style="display:none;">
+            <div class="rec-timeline-title">
+              <i class="fa-regular fa-clock"></i>
+              <span>최근 활동</span>
+            </div>
+            <ul class="rec-timeline-list" id="recTimelineList"></ul>
+          </div>
+
+          <div class="rec-summary-bg"></div>
+        </div>
+
+        <!-- 프로젝트 필터 -->
+        <div class="rec-filter" id="recFilterSection" style="display:none;">
+          <div class="rec-filter-label">어떤 프로젝트 기록을 볼까요?</div>
+          <div class="rec-filter-chips" id="recFilterChips">
+            <!-- JS에서 "전체" + 각 프로젝트명 chip 생성 -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 프로젝트별 활동 카드 리스트 -->
+      <section class="rec-section" id="recListSection">
+        <div class="rec-project-list" id="recProjectList">
+          <!-- JS로 채움 -->
+        </div>
+
+        <!-- 프로젝트 없을 때 -->
+        <div class="rec-empty" id="recEmptyState" style="display:none;">
+          <strong>아직 기록이 쌓인 스마트팜 프로젝트가 없어요.</strong>
+          홈에서 설문을 완료하고 설계안을 저장하면<br>
+          여기에서 프로젝트별 활동 이력이 모이게 됩니다.
+          <button type="button" class="btn" onclick="window.location.assign('home.html')">
+            첫 프로젝트 만들러 가기
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- 하단 탭바 -->
+<nav class="tabs">
+      <ul>
+        <li><button id="tab-home" onclick="window.location.assign('home.html')"><i class="fa-solid fa-house"></i><small>홈</small></button></li>
+        <li><button id="tab-records" onclick="window.location.assign('records.html')" class="active"><i class="fas fa-list-check"></i><small>기록</small></button></li>
+        <li><button id="tab-reco" onclick="window.location.assign('deals.html')"><i class="fas fa-file-signature"></i><small>견적</small></button></li>
+        <li><button id="tab-my" onclick="window.location.assign('settings.html')"><i class="fa-solid fa-user"></i><small>마이</small></button></li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- 공통 모달/토스트 -->
+  <div id="overlay" class="overlay" onclick="closeModal && closeModal(event)"></div>
+  <div id="modal" class="modal" style="display:none"></div>
+  <div id="toast" class="toast">처리되었습니다</div>
+
+  <script src="app.js" defer></script>
+
+  <script>
+    if (typeof window.navigate !== 'function') {
+      window.navigate = function (page) {
+        switch (page) {
+          case 'home':    window.location.assign('home.html'); break;
+          case 'records': window.location.assign('records.html'); break;
+          case 'reco':    window.location.assign('survey.html'); break;
+          case 'my':      window.location.assign('settings.html'); break;
+        }
+      };
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof read !== 'function') {
+        console.warn('read()가 정의되어 있지 않습니다. app.js를 확인하세요.');
+        return;
+      }
+
+      var PROJECT_KEY = 'ep-projects';
+      var projects = read(PROJECT_KEY, []) || [];
+
+      var listEl      = document.getElementById('recProjectList');
+      var emptyEl     = document.getElementById('recEmptyState');
+      var filterWrap  = document.getElementById('recFilterSection');
+      var filterChips = document.getElementById('recFilterChips');
+      var timelineBox = document.getElementById('recTimeline');
+      var timelineList= document.getElementById('recTimelineList');
+
+      if (!projects.length) {
+        if (emptyEl) emptyEl.style.display = 'block';
+        if (listEl) listEl.innerHTML = '';
+        if (filterWrap) filterWrap.style.display = 'none';
+        if (timelineBox) timelineBox.style.display = 'none';
+        return;
+      }
+
+      function facilityTypeFromReco(reco) {
+        if (!reco) return '실내 스마트팜';
+        var label = reco.facilityLabel || '';
+        var title = reco.title || '';
+        var base  = label || title;
+
+        if (!base) return '실내 스마트팜';
+        if (base.includes('육묘')) return '실내 육묘장';
+        if (base.includes('조경') || base.includes('쇼룸')) return '실내용 조경 스마트팜';
+        return '실내 스마트팜';
+      }
+
+      function statusLabel(status) {
+        switch (status) {
+          case 'draft':            return '설계중';
+          case 'quote_requested':  return '견적요청';
+          case 'quote_review':     return '견적검토';
+          case 'contracted':       return '계약체결';
+          case 'construction':     return '시공';
+          case 'operating':        return '운영중';
+          case 'done':
+          case 'complete':         return '완료';
+          default:                 return '진행 중';
+        }
+      }
+
+      function formatDate(val) {
+        if (!val) return '';
+        try {
+          var d = (typeof val === 'number' || typeof val === 'string') ? new Date(val) : val;
+          if (isNaN(d.getTime())) return '';
+          var y = d.getFullYear();
+          var m = String(d.getMonth() + 1).padStart(2, '0');
+          var dd= String(d.getDate()).padStart(2, '0');
+          return y + '-' + m + '-' + dd;
+        } catch (e) {
+          return '';
+        }
+      }
+
+      function buildProjectName(p) {
+        var survey = p.survey || {};
+        var s1 = survey.step1 || {};
+        var s2 = survey.step2 || {};
+        var reco = p.reco || {};
+
+        var region = s1.region_si || '';
+        if (region) {
+          var parts = region.split(/\s+/);
+          if (parts.length >= 2) region = parts[1];
+        }
+
+        var facilityBase = '';
+        switch (s2.facility) {
+          case 'biz_center':     facilityBase = '지식산업센터'; break;
+          case 'panel_factory':  facilityBase = '판넬형 창고·공장'; break;
+          case 'retail_space':   facilityBase = '상가/근린생활시설'; break;
+          default:               facilityBase = '실내 공간'; break;
+        }
+
+        var cropSource = (reco.cropType || reco.title || '');
+        var cropWord = '스마트팜';
+        if (cropSource.includes('엽채')) cropWord = '엽채 스마트팜';
+        else if (cropSource.includes('허브')) cropWord = '허브 스마트팜';
+        else if (cropSource.includes('육묘')) cropWord = '육묘장';
+        else if (cropSource.includes('조경') || cropSource.includes('쇼룸')) cropWord = '조경 스마트팜';
+
+        var arr = [];
+        if (region) arr.push(region);
+        if (facilityBase) arr.push(facilityBase);
+        if (cropWord) arr.push(cropWord);
+
+        var name = arr.join(' ');
+        return name || reco.title || '이름 없는 프로젝트';
+      }
+
+      function buildActivityLines(p) {
+        var lines = [];
+        var created = formatDate(p.createdAt);
+        if (created) {
+          lines.push('프로젝트 생성일: ' + created);
+        } else {
+          lines.push('프로젝트가 생성되어 설계안이 저장되었습니다.');
+        }
+
+        switch (p.status) {
+          case 'draft':
+          default:
+            lines.push('현재 단계: 설계 초안 검토 중');
+            lines.push('다음 단계: (주)그린에 견적을 요청해 보세요.');
+            break;
+          case 'quote_requested':
+            lines.push('현재 단계: (주)그린 견적 회신 대기 중');
+            break;
+          case 'quote_review':
+            lines.push('현재 단계: 견적 조건 검토 및 협의 중');
+            break;
+          case 'contracted':
+            lines.push('현재 단계: 계약 체결 완료, 착공 일정 조율 중');
+            break;
+          case 'construction':
+            lines.push('현재 단계: 시공 진행 중 · 공정별 점검 필요');
+            break;
+          case 'operating':
+            lines.push('현재 단계: 운영 중 · 수확/비용/이슈를 기록해 보세요.');
+            break;
+          case 'done':
+          case 'complete':
+            lines.push('현재 단계: 프로젝트 완료 · 운영 데이터 아카이브 상태');
+            break;
+        }
+
+        if (p.memo && String(p.memo).trim()) {
+          lines.push('운영 메모가 작성되어 있습니다.');
+        }
+        return lines;
+      }
+
+      // === 상단 타임라인: 여러 프로젝트의 최근 활동 모음 ===
+      (function renderTimeline(){
+        if (!timelineBox || !timelineList) return;
+
+        var events = [];
+
+        projects.forEach(function(p){
+          var name = buildProjectName(p);
+          var created = formatDate(p.createdAt);
+          var statusText = statusLabel(p.status || 'draft');
+
+          if (created) {
+            events.push({
+              date: created,
+              project: name,
+              text: '프로젝트 생성 (' + statusText + ')'
+            });
+          } else {
+            events.push({
+              date: '',
+              project: name,
+              text: '프로젝트 생성 및 설계안 저장'
+            });
+          }
+
+          if (p.memo && String(p.memo).trim()) {
+            events.push({
+              date: created || '',
+              project: name,
+              text: '운영 메모가 작성되었습니다.'
+            });
+          }
+        });
+
+        if (!events.length) {
+          timelineBox.style.display = 'none';
+          return;
+        }
+
+        // 날짜 내림차순 정렬 (문자열 기준이지만 YYYY-MM-DD라서 대략 잘 맞음)
+        events.sort(function(a,b){
+          if (a.date < b.date) return 1;
+          if (a.date > b.date) return -1;
+          return 0;
+        });
+
+        var sliced = events.slice(0, 6);
+        timelineList.innerHTML = '';
+        sliced.forEach(function(ev){
+          var li = document.createElement('li');
+          li.className = 'rec-timeline-item';
+          li.innerHTML = `
+            <div>${ev.text}</div>
+            <div class="rec-timeline-meta">
+              ${ev.date ? ev.date + ' · ' : ''}${ev.project}
+            </div>
+          `;
+          timelineList.appendChild(li);
+        });
+
+        timelineBox.style.display = 'block';
+      })();
+
+      // === 필터 칩 ===
+      var selectedProjectId = 'all';
+
+      function renderFilterChips() {
+        if (!filterChips) return;
+        filterChips.innerHTML = '';
+
+        var chipAll = document.createElement('button');
+        chipAll.type = 'button';
+        chipAll.className = 'rec-chip' + (selectedProjectId === 'all' ? ' active' : '');
+        chipAll.dataset.id = 'all';
+        chipAll.innerHTML = '<i class="fa-solid fa-layer-group"></i><span>전체 프로젝트</span>';
+        chipAll.addEventListener('click', function () {
+          selectedProjectId = 'all';
+          renderFilterChips();
+          renderProjectCards();
+        });
+        filterChips.appendChild(chipAll);
+
+        projects.forEach(function (p) {
+          var chip = document.createElement('button');
+          chip.type = 'button';
+          chip.className = 'rec-chip' + (selectedProjectId === p.id ? ' active' : '');
+          chip.dataset.id = p.id;
+          chip.innerHTML = '<i class="fa-regular fa-note-sticky"></i><span>' + buildProjectName(p) + '</span>';
+          chip.addEventListener('click', function () {
+            selectedProjectId = p.id;
+            renderFilterChips();
+            renderProjectCards();
+          });
+          filterChips.appendChild(chip);
+        });
+
+        filterWrap.style.display = 'block';
+      }
+
+      // === 프로젝트 카드 렌더링 ===
+      function renderProjectCards() {
+        if (!listEl) return;
+        listEl.innerHTML = '';
+
+        var targetProjects = projects;
+        if (selectedProjectId !== 'all') {
+          targetProjects = projects.filter(function (p) { return p.id === selectedProjectId; });
+        }
+
+        targetProjects.forEach(function (p) {
+          var reco = p.reco || {};
+          var statusText = statusLabel(p.status || 'draft');
+          var facilityText = facilityTypeFromReco(reco);
+          var name = buildProjectName(p);
+          var lines = buildActivityLines(p);
+          var created = formatDate(p.createdAt);
+
+          var card = document.createElement('article');
+          card.className = 'rec-project-card';
+
+          var createdBadge = created
+            ? '<span><i class="fa-regular fa-calendar"></i>' + created + '</span>'
+            : '';
+
+          card.innerHTML = `
+            <div class="rec-project-header">
+              <h2 class="rec-project-title">${name}</h2>
+              <span class="rec-project-status">${statusText}</span>
+            </div>
+            <div class="rec-project-meta">
+              <span><i class="far fa-building"></i>${facilityText}</span>
+              ${createdBadge}
+            </div>
+            <div class="rec-log">
+              <div class="rec-log-label">최근 활동 요약</div>
+              <ul class="rec-log-list">
+                ${lines.slice(0, 3).map(function (t) { return '<li>' + t + '</li>'; }).join('')}
+              </ul>
+            </div>
+            <div class="rec-project-footer">
+              <button type="button" class="rec-project-open">
+                <span>프로젝트 상세</span>
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+          `;
+
+          // 버튼만 상세로 이동 (카드 전체는 기록 보기용)
+          var openBtn = card.querySelector('.rec-project-open');
+          if (openBtn) {
+            openBtn.addEventListener('click', function (ev) {
+              ev.stopPropagation();
+              try {
+                localStorage.setItem('ep-current-project-id', p.id);
+              } catch (e) {}
+              window.location.assign('project-detail.html');
+            });
+          }
+
+          listEl.appendChild(card);
+        });
+      }
+
+      renderFilterChips();
+      renderProjectCards();
+    });
+  </script>
+</body>
+</html>

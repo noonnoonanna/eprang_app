@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+	<meta name="theme-color" content="#ffffff" />
+	<link rel="manifest" href="manifest.webmanifest" />
+	<link rel="stylesheet" href="style.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<title>이피랑</title>
+</head>
+<style>
+body[data-page="reco-intro"] main{padding:16px 14px 100px;width:100%;max-width:480px;margin:0 auto;}
+body[data-page="reco-intro"] .card{border-radius:18px;background:#fff;border:1px solid #e5e7eb;box-shadow:0 4px 12px rgba(15,23,42,0.04);width:100%;padding:18px;}
+body[data-page="reco-intro"] #summaryCard{margin-bottom:16px;}
+body[data-page="reco-intro"] #summaryGrid,
+body[data-page="reco-intro"] .grid-3{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+@media (max-width: 340px){
+  body[data-page="reco-intro"] #summaryGrid,
+  body[data-page="reco-intro"] .grid-3{grid-template-columns:1fr;}
+}
+body[data-page="reco-intro"] .mini-card{padding:10px 12px;border-radius:12px;background:#f9fafb;border:1px solid #e5e7eb;display:flex;flex-direction:column;gap:4px;}
+body[data-page="reco-intro"] .mini-label{font-size:13px;font-weight:600;color:#6b7280;}
+body[data-page="reco-intro"] .mini-value{font-size:14px;font-weight:700;color:#111827;line-height:1.4;margin:2px 0 5px 0;}
+body[data-page="reco-intro"] .mini-value i{margin-right:4px;font-size:14px;color:#6b7280;}
+body[data-page="reco-intro"] .card-list{display:grid;gap:12px;}
+body[data-page="reco-intro"] .reco-card{display:flex;gap:12px;padding:14px;border-radius:16px;border:1px solid var(--line);background:#ffffff;box-shadow:0 4px 16px rgba(15,23,42,0.06);transition:0.15s;}
+body[data-page="reco-intro"] .reco-icon{flex:0 0 30px;width:30px;height:30px;border-radius:14px;background:rgba(22,163,74,0.08);display:flex;align-items:center;justify-content:center;color:var(--acc);font-size:18px;}
+body[data-page="reco-intro"] .reco-card:hover{border-color:rgba(22,163,74,0.35);box-shadow:0 6px 18px rgba(22,163,74,0.12);}
+body[data-page="reco-intro"] .reco-card.selected{border-color:rgba(22,163,74,0.6);background:linear-gradient(135deg,#f0fdf4 0%,#ecfdf3 100%);box-shadow:0 10px 26px rgba(22,163,74,0.18);}
+body[data-page="reco-intro"] .reco-info h4{margin:0 0 6px;font-size:14px;font-weight:800;}
+body[data-page="reco-intro"] .reco-info p{margin:2px 0 4px;font-size:13px;color:#4b5563;line-height:1.7;}
+body[data-page="reco-intro"] .reco-meta{list-style:none;padding:0;margin:4px 0 0;display:grid;gap:3px;font-size:12px;color:#6b7280;}
+body[data-page="reco-intro"] .reco-meta i{margin-right:4px;font-size:13px;color:#9ca3af;}
+body[data-page="reco-intro"] .info-box{display:flex;align-items:flex-start;gap:8px;margin-top:16px;padding:10px 12px;background:#f1f5f9;border:1px solid #cbd5f5;border-radius:12px;font-size:12px;color:#1e293b;line-height:1.5;}
+body[data-page="reco-intro"] .info-box i{font-size:14px;margin-top:2px;color:#1d4ed8;}
+body[data-page="reco-intro"] .badge-green{background:#e6f9ea;border-color:#86efac;color:#15803d;}
+body[data-page="reco-intro"] .badge-gray{background:#f3f4f6;border-color:#d1d5db;color:#4b5563;}
+body[data-page="reco-intro"] .badge{flex-shrink:0;white-space:nowrap;height:22px;line-height:22px;padding:0 10px;display:inline-flex;align-items:center;}
+body[data-page="reco-intro"] .reco-header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:4px 8px;}
+body[data-page="reco-intro"] .reco-header h4{flex:1 1 auto;min-width:0;}
+body[data-page="reco-intro"] .badge {flex:0 0 auto;display:inline-flex;align-items:center;white-space:nowrap;height:22px;line-height:22px;padding:0 10px;}
+.section-title {margin-top:0;}
+.section-subtitle {font-size:12px;}
+</style>
+<body data-page="reco-intro">
+<div class="app">
+	<header>
+		<div class="bar">
+			<div class="logo">
+        <a href="intro.html" style="all:unset;cursor:pointer">
+          <img src="img/logo.png" alt="이피랑 로고">
+        </a>
+      </div>
+		</div>
+	</header>
+
+  <main class="container" id="recoMain" style="padding-bottom: 80px;">
+    <!-- 요약 -->
+    <section class="card" id="summaryCard" style="margin-bottom: 16px;">
+      <h3 class="section-title"><i class="fa-solid fa-star"></i> 결과 요약</h3>
+      <div class="grid-3" id="summaryGrid">
+        <!-- JS로 채움 -->
+      </div>
+    </section>
+
+    <!-- 추천 설계안 -->
+    <section class="card">
+      <h3 class="section-title"><i class="fa-solid fa-lightbulb"></i> 추천 설계안</h3>
+      <p class="section-subtitle">
+        입력하신 조건을 바탕으로 실내 스마트팜 설계안 3개를 제안드려요.<br>
+        마음에 드는 설계안을 선택하고, 나중에 다시 이어서 보정할 수 있습니다.
+      </p>
+      <div id="recoList" class="card-list">
+        <!-- JS로 카드 렌더링 -->
+      </div>
+
+      <div class="info-box" style="margin-top:16px;">
+        <i class="fa-solid fa-circle-info"></i>
+        <span>
+          추천 설계안들은 모두 <strong>실내 공간 전용</strong> 기준입니다. 실제 자재·공사비·운영비는 (주)그린의 상세 설계 및 견적 산출 과정에서 최종 확정됩니다.
+        </span>
+      </div>
+    </section>
+  </main>
+
+  <!-- 하단 버튼 바 -->
+  <div class="bottom-bar">
+    <button type="button" class="btn ghost" id="btnBackSurvey">설문 다시 하기</button>
+    <button type="button" class="btn acc" id="btnSaveProject">
+      저장하기
+    </button>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const raw = localStorage.getItem('eprang-survey-latest');
+    if (!raw) {
+      alert('설문 데이터가 없습니다. 처음부터 다시 진행해 주세요.');
+      window.location.assign('survey.html');
+      return;
+    }
+
+    const survey = JSON.parse(raw);
+
+    // ===== 1. 요약 박스 =====
+    function renderSummary() {
+      const box = document.getElementById('summaryGrid');
+      if (!box) return;
+
+      const s1 = survey.step1 || {};
+      const s2 = survey.step2 || {};
+      const s3 = survey.step3 || {};
+	  
+	  const usableArea = s2.usable_area || s2.floor_area;
+	  const areaText = usableArea ? `${usableArea}㎡` : '면적 미입력';
+
+      const userTypeLabel = {
+        young: '청년농',
+        successor: '후계농',
+        return: '귀농 예정',
+        other: '일반 창업자'
+      }[s1.user_type] || '미선택';
+
+      const facilityLabel = {
+        biz_center: '지식산업센터',
+        retail_space: '상가/근린생활시설',
+        panel_factory: '판넬형 창고·공장',
+        etc: '기타 실내 공간'
+      }[s2.facility] || '미선택';
+
+      const workHoursLabel = {
+        '': '미선택',
+        lt10: '주 10시간 미만',
+        '10_20': '주 10~20시간',
+        '20_40': '주 20~40시간',
+        gt40: '주 40시간 이상'
+      }[s2.work_hours || ''] || '미선택';
+
+      const workTypeLabel = {
+        fulltime: '상근(풀타임)',
+        parttime: '부업/겸업'
+      }[s2.work_type] || '미선택';
+
+      const profitLabel = {
+        '': '미설정',
+        '100': '월 100만 원 미만',
+        '300': '월 100~300만 원',
+        '500': '월 300~500만 원',
+        high: '월 500만 원 이상'
+      }[s3.profit_goal || ''] || '미설정';
+
+      const familyStaffText = s2.family_staff
+        ? `${s2.family_staff}명`
+        : '없음/미입력';
+
+      const distMap = {
+        wholesale: '도매',
+        horeca_retail: '식당/카페/리테일',
+        experience_edu_landscape: '체험·교육·조경',
+        mixed_use: '복합(생산+체험/조경)'
+      };
+      const distArr = Array.isArray(s3.distribution) ? s3.distribution : [];
+      const distLabels = distArr.map(v => distMap[v]).filter(Boolean);
+      if (s3.distribution_etc && s3.distribution_etc.trim()) {
+        distLabels.push(s3.distribution_etc.trim());
+      }
+      const distributionText = distLabels.length ? distLabels.join(', ') : '미선택';
+
+      box.innerHTML = `
+        <div class="mini-card">
+          <div class="mini-label"><i class="fa-solid fa-user"></i> 유형</div>
+          <div class="mini-value">${userTypeLabel}</div>
+          <div class="mini-label"><i class="fa-solid fa-map-location-dot"></i> 지역</div>
+          <div class="mini-value">${s1.region_si}</div>
+        </div>
+        <div class="mini-card">
+          <div class="mini-label"><i class="fa-solid fa-warehouse"></i> 시설 유형</div>
+          <div class="mini-value">${facilityLabel}</div>
+          <div class="mini-label"><i class="fa-solid fa-border-all"></i> 실내 면적</div>
+          <div class="mini-value">${areaText}</div>
+        </div>
+        <div class="mini-card">
+          <div class="mini-label"><i class="fa-solid fa-clock"></i> 근무 시간</div>
+          <div class="mini-value">${workHoursLabel}</div>
+          <div class="mini-label"><i class="fa-solid fa-users"></i> 근무 인원</div>
+          <div class="mini-value">${familyStaffText}</div>
+        </div>
+        <div class="mini-card">
+          <div class="mini-label"><i class="fa-solid fa-chart-line"></i> 목표 수익</div>
+          <div class="mini-value">${profitLabel}</div>
+          <div class="mini-label"><i class="fa-solid fa-coins"></i> 유통</div>
+          <div class="mini-value">${distributionText}</div>
+        </div>
+      `;
+    }
+
+    // ===== 2. 추천 설계안 생성 (항상 3개) =====
+   // ===== 2. 추천 설계안 생성 (항상 3개) =====
+function buildRecoList() {
+  const s1 = survey.step1 || {};
+  const s2 = survey.step2 || {};
+  const s3 = survey.step3 || {};
+
+  const facility = s2.facility;
+  const risk = s3.risk;
+  const distArr = Array.isArray(s3.distribution) ? s3.distribution : [];
+
+  const isBiz = facility === 'biz_center';
+  const isRetail = facility === 'retail_space';
+  const isPanel = facility === 'panel_factory';
+  const wantsExperience = distArr.includes('experience_edu_landscape');
+  const wantsMixed = distArr.includes('mixed_use');
+
+  // 대략적인 투자 범위 산정
+  function investRange(type) {
+    const loan = s1.loan_range;
+    const own = s1.own_capital;
+
+    if (type === 'small') return '1~2억대(소규모 패키지)';
+
+    if (loan === '100_300' || own === '100_300') return '2~4억대';
+    if (loan === 'gt300' || own === 'gt300') return '4억 이상';
+    if (loan === 'lt100' || own === '30_100') return '1~2억대';
+
+    return '규모는 상담 후 조정';
+  }
+
+  const facilityBase =
+    isBiz ? '지식산업센터' :
+    isPanel ? '판넬형 창고·공장' :
+    isRetail ? '상가/근린생활시설' :
+    '실내 공간';
+
+  const list = [];
+
+  // 1) 엽채류 기본형
+  list.push({
+    id: 'leafy_basic',
+    title: `${facilityBase} – 엽채류 수직 스마트팜(기본형)`,
+    desc: '상추·바질·허브 등 회전율 높은 작물 중심의 기본형 설계입니다. 적정 랙 수와 동선을 반영한 안정적인 입문 포트폴리오입니다.',
+    cropType: '상추·바질·케일 등 엽채류',
+    facilityLabel: `${facilityBase} 실내 수직농장`,
+    invest: investRange('standard'),
+    staff: '상근 1명 + 보조 0.5명',
+    estimatable: true
+  });
+
+  // 2) 포트폴리오형 (리스크 기반)
+  if (risk === 'high') {
+    list.push({
+      id: 'highvalue',
+      title: `${facilityBase} – 고부가 특용작물 스마트팜`,
+      desc: '고부가가치 특용작물 중심의 성장형 포트폴리오입니다. 단가가 높은 허브·식용꽃 등으로 구성하며 초기 시장성 검토가 필요합니다.',
+      cropType: '특수 허브·식용꽃·프리미엄 작물',
+      facilityLabel: `${facilityBase} 특용작물형`,
+      invest: '시장조사 후 확정',
+      staff: '상근 1~2명',
+      estimatable: false
+    });
+  } else {
+    list.push({
+      id: 'balanced',
+      title: `${facilityBase} – 안정형+고수익 혼합형`,
+      desc: '엽채류 기반에 일부 고수익 작물을 혼합한 균형형 포트폴리오입니다. 운영 난이도는 낮고 수익 안정성이 높습니다.',
+      cropType: '엽채류 + 특용작물 일부',
+      facilityLabel: `${facilityBase} 혼합형`,
+      invest: investRange('standard'),
+      staff: '상근 1명',
+      estimatable: true
+    });
+  }
+
+  // 3) 시설/유통 목적에 따라 구분된 특화형
+  if (isPanel || wantsMixed) {
+    list.push({
+      id: 'nursery_mix',
+      title: `${facilityBase} – 육묘장 + 생산 복합형`,
+      desc: '육묘존과 생산존을 분리한 복합형 구조입니다. 계절별 수요에 맞춰 육묘·생산 비중을 조절할 수 있습니다.',
+      cropType: '육묘 + 엽채류 생산',
+      facilityLabel: `${facilityBase} 복합형`,
+      invest: '4~5억대(복합 기준)',
+      staff: '상근 1~2명',
+      estimatable: false
+    });
+  } else if (isRetail || wantsExperience) {
+    list.push({
+      id: 'showroom',
+      title: `${facilityBase} – 조경·체험형 쇼룸 스마트팜`,
+      desc: '방문객 경험·교육 중심의 쇼룸형 스마트팜입니다. 생산량보다는 공간 연출과 브랜드 경험에 초점을 둡니다.',
+      cropType: '관엽·플랜테리어·체험작물',
+      facilityLabel: `${facilityBase} 쇼룸형`,
+      invest: investRange('small'),
+      staff: '0.5~1명',
+      estimatable: true
+    });
+  } else {
+    list.push({
+      id: 'starter',
+      title: `${facilityBase} – 컴팩트 스타터 패키지`,
+      desc: '초기 자본·근무시간이 적을 때 적합한 소형 구성입니다. 최소 랙 구성으로 시작해 점진적으로 확장할 수 있습니다.',
+      cropType: '엽채류 소규모 구성',
+      facilityLabel: `${facilityBase} 소형 패키지`,
+      invest: investRange('small'),
+      staff: '0.5~1명',
+      estimatable: true
+    });
+  }
+
+  return list.slice(0, 3);
+}
+
+
+    let recoList = buildRecoList();
+    let selectedIndex = 0;
+
+    function renderRecoCards() {
+      const wrap = document.getElementById('recoList');
+      if (!wrap) return;
+
+      if (!recoList.length) {
+        wrap.innerHTML = '<p>추천 설계안을 생성할 수 없습니다. 설문을 다시 진행해 주세요.</p>';
+        return;
+      }
+
+      wrap.innerHTML = '';
+      recoList.forEach((r, idx) => {
+        const card = document.createElement('div');
+        card.className = 'reco-card selectable-card' + (idx === selectedIndex ? ' selected' : '');
+        card.dataset.index = idx;
+
+        const badge = r.estimatable
+          ? '<span class="badge badge-green">실내 전용 · 견적 연계 가능</span>'
+          : '<span class="badge badge-gray">정보 보완 후 · 추가 상담 필요</span>';
+
+        card.innerHTML = `
+  <div class="reco-icon"><i class="fa-solid fa-seedling"></i></div>
+  <div class="reco-info">
+    <div class="reco-header">
+      <h4>${r.title}</h4>
+      ${
+        r.estimatable
+          ? '<span class="badge badge-green">실내 전용 · 견적 연계 가능</span>'
+          : '<span class="badge badge-gray">추가 상담 필요</span>'
+      }
+    </div>
+    <p>${r.desc}</p>
+    <ul class="reco-meta">
+      <li><i class="fa-solid fa-leaf"></i> 주요 작목: ${r.cropType}</li>
+      <li><i class="fa-solid fa-warehouse"></i> 시설 유형: ${r.facilityLabel}</li>
+      <li><i class="fa-solid fa-coins"></i> 예상 투자 규모: ${r.invest}</li>
+      <li><i class="fa-solid fa-users"></i> 적정 인력: ${r.staff}</li>
+    </ul>
+  </div>
+`;
+
+
+        card.addEventListener('click', () => {
+          selectedIndex = idx;
+          document.querySelectorAll('.selectable-card').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+        });
+        wrap.appendChild(card);
+      });
+    }
+
+    // ===== 3. 프로젝트 저장 =====
+    function saveProject() {
+      if (!recoList.length) {
+        alert('저장할 설계안이 없습니다.');
+        return;
+      }
+      const selected = recoList[selectedIndex] || recoList[0];
+
+      const key = 'ep-projects'; 
+      const existing = JSON.parse(localStorage.getItem(key) || '[]');
+
+      const project = {
+        id: 'prj-' + Date.now(),
+        createdAt: new Date().toISOString(),
+        survey,
+        reco: selected,
+        status: 'draft'
+      };
+
+      existing.push(project);
+      localStorage.setItem(key, JSON.stringify(existing));
+
+      window.location.assign('home.html');
+    }
+
+    // ===== 4. 버튼 이벤트 =====
+    document.getElementById('btnBackSurvey').addEventListener('click', () => {
+      window.location.assign('survey_new.html');
+    });
+    document.getElementById('btnSaveProject').addEventListener('click', saveProject);
+
+    // 초기 렌더
+    renderSummary();
+    renderRecoCards();
+  })();
+</script>
+</body>
+</html>

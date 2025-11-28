@@ -451,7 +451,7 @@ function buildProjectName(p) {
         ${
           reco.estimatable === false
             ? '<span class="badge badge-gray">추가 상담 필요</span>'
-            : '<span class="badge badge-green">실내 전용</span><span class="badge badge-gray">견적 연계 가능</span>'
+            : '<span class="badge badge-green">실내 전용</span><span class="badge badge-blue">견적 연계 가능</span>'
         }
       </div></a>
     `;
@@ -485,7 +485,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btnNew && btnNew.addEventListener('click', () => {
       // 새 설문 시작
-      window.location.href = 'survey.html';
+      window.location.href = 'survey_new.html';
     });
 
     btnFirst && btnFirst.addEventListener('click', () => {

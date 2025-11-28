@@ -12,9 +12,10 @@
 form label {display: block;margin-bottom: 14px;}
 form input {width: 100%;padding: 10px 12px;border: 1px solid var(--line);border-radius: 8px;font-size: 15px;}
 .btn-row { display: flex; align-items: center; justify-content: space-between; gap: 12px;}
-.btn-row .btn { flex: 1; padding:13px 53px;}
+.btn-row .btn { flex: 1; padding:13px 53px; word-break:auto-phrase}
 main .grid { width: 100%; max-width: 420px; margin: 0 auto; }
 .card { width: 100%;  max-width: none; }
+.hint {font-size:14px;}
 </style>
 <body data-page="login">
   <div class="app">
@@ -33,12 +34,12 @@ main .grid { width: 100%; max-width: 420px; margin: 0 auto; }
         <label><input type="text" name="userid" required placeholder="이메일(아이디)" autocomplete="username"></label>
         <label><input type="password" name="password" required placeholder="비밀번호" autocomplete="current-password"></label>
         <div class="btn-row" style="margin-top:8px">
-          <button type="button" class="btn ghost" onclick="navigate('intro')">이전</button>
+          <button type="button" class="btn ghost" onclick="window.location.assign('intro.html')">이전</button>
           <button type="submit" class="btn acc">로그인</button>
         </div>
       </form>
     </div>
-    <div class="card pad hint">아직 계정이 없나요? <span class="login-link" onclick="navigate('terms')">회원가입</span></div>
+    <div class="card pad hint">아직 계정이 없나요? <span class="login-link" onclick="window.location.assign('terms.html')">회원가입</span></div>
   </div>
 </section>
 

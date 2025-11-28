@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <title>이피랑 - 설비 레시피</title>
 <style>
+	:root { --primary:#16a34a; --text-sub:#4a5568}
   body[data-page="recipe"] main {
     padding: 24px 16px 120px;
     width: 100%;
@@ -287,14 +288,11 @@
           <i class="fa-solid fa-flask"></i>
           <span>설비 레시피 카탈로그</span>
         </h3>
-        <p class="section-subtitle">
-          “이 조건·이 공간에서는 이런 설비 조합이 많이 쓰인다”는
-          <strong>실내 스마트팜·육묘장·조경 시설 설비 조합 레시피</strong>를 모아 둔 화면입니다.
-          나중에 제조 플랫폼의 표준 모듈 설계와 (주)그린 설계 인사이트로도 활용할 수 있어요.
-        </p>
+        <p class="section-subtitle"> 공간별로 많이 쓰이는 <strong>설비 조합</strong>을 확인해 보세요. </p>
         <p class="section-caption">
-          설문으로 저장된 내 프로젝트와는 독립된, <strong>표준 설비 패턴 카탈로그</strong>입니다.
-        </p>
+  지금 진행 중인 프로젝트와는 별도로 살펴볼 수 있는 <strong>설비 조합 참고 카탈로그</strong>입니다.
+</p>
+
       </section>
 
       <!-- 필터 영역 -->
@@ -303,10 +301,6 @@
           <i class="fa-solid fa-filter"></i>
           <span>조건으로 설비 레시피 찾기</span>
         </h3>
-        <p class="section-subtitle">
-          자주 등장하는 <strong>공간 유형·용도·작목</strong>을 조합해서
-          내 공간과 비슷한 설비 레시피를 골라볼 수 있습니다. (필터는 아직 예시용이며, 추후 실제 데이터와 연동 예정)
-        </p>
 
         <div class="recipe-filter">
           <!-- 공간 유형 -->
@@ -424,7 +418,6 @@
                 <div class="pill-check"><i class="fa-solid fa-check"></i></div>
               </label>
             </div>
-            <p class="section-caption">필요하면 ‘기타’ 작목이나 특수 용도는 추후 메모로 추가할 수 있어요.</p>
           </div>
         </div>
       </section>
@@ -435,10 +428,6 @@
           <i class="fa-solid fa-layer-group"></i>
           <span>표준 설비 패턴</span>
         </h3>
-        <p class="section-subtitle">
-          실제 현장에서 자주 쓰이는 <strong>설비 조합 레시피</strong>를 유형별로 정리했습니다.
-          각 레시피는 랙 구조, 층수, LED, 양액, 제어 수준 등을 한 눈에 볼 수 있게 요약되어 있습니다.
-        </p>
 
         <div class="recipe-list">
           <!-- 카드 1 -->
@@ -520,10 +509,14 @@
       </section>
     </main>
 
-    <!-- 하단 버튼 바 -->
-    <div class="bottom-bar">
-      <button type="button" class="btn ghost" id="btnRecipeHome">홈으로</button>
-    </div>
+<nav class="tabs">
+      <ul>
+        <li><button id="tab-home" onclick="window.location.assign('home.html')"><i class="fa-solid fa-house"></i><small>홈</small></button></li>
+        <li><button id="tab-records" onclick="window.location.assign('records.html')"><i class="fas fa-list-check"></i><small>기록</small></button></li>
+        <li><button id="tab-reco" onclick="window.location.assign('deals.html')"><i class="fas fa-file-signature"></i><small>견적</small></button></li>
+        <li><button id="tab-my" onclick="window.location.assign('settings.html')"><i class="fa-solid fa-user"></i><small>마이</small></button></li>
+      </ul>
+    </nav>
   </div>
 
   <!-- 공통 모달/토스트 레이어 -->

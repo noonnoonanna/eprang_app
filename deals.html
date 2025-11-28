@@ -10,7 +10,7 @@
   <title>이피랑 - 견적/계약</title>
 
   <style>
-
+	:root { --primary:#16a34a; --text-sub:#4a5568}
   /* [디자인 개선] 카드 스타일 (Canvas Look) */
   body[data-page="deals"] .dl-card {
     border-radius: 24px;
@@ -41,14 +41,6 @@
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     font-size: 16px;
-  }
-
-  body[data-page="deals"] .dl-sub {
-    margin: 0 0 16px;
-    font-size: 14px;
-    color: #475569;
-    line-height: 1.6;
-    word-break: keep-all;
   }
 
   body[data-page="deals"] .dl-caption {
@@ -292,10 +284,6 @@
           <i class="fa-solid fa-file-contract"></i>
           <span>견적/계약 현황</span>
         </h3>
-        <p class="dl-sub">
-          지금까지 내가 (주)그린에 요청해 둔 견적과, 받은 견적·진행 중인 계약 현황을 한 번에 모아서 보는 화면입니다.
-          어떤 프로젝트가 <strong>견적 요청 중인지, 견적이 도착했는지</strong> 탭으로 쉽게 확인하세요.
-        </p>
         <div class="dl-caption">
           공급사는 '농업회사법인 (주)그린' 기준으로 표기됩니다.
         </div>
@@ -337,10 +325,18 @@
     </main>
 
     <!-- 하단 버튼 바 -->
-    <div class="bottom-bar">
+    <!--<div class="bottom-bar">
       <button type="button" class="btn ghost" id="dlBtnHome">홈으로</button>
       <button type="button" class="btn acc" id="dlBtnProjects">프로젝트 목록</button>
-    </div>
+    </div>-->
+<nav class="tabs">
+      <ul>
+        <li><button id="tab-home" onclick="window.location.assign('home.html')"><i class="fa-solid fa-house"></i><small>홈</small></button></li>
+        <li><button id="tab-records" onclick="window.location.assign('records.html')"><i class="fas fa-list-check"></i><small>기록</small></button></li>
+        <li><button id="tab-reco" onclick="window.location.assign('deals.html')" class="active"><i class="fas fa-file-signature"></i><small>견적</small></button></li>
+        <li><button id="tab-my" onclick="window.location.assign('settings.html')"><i class="fa-solid fa-user"></i><small>마이</small></button></li>
+      </ul>
+    </nav>
   </div>
 
   <!-- 공통 모달/토스트 -->

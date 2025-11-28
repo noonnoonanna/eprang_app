@@ -10,151 +10,238 @@
   <title>이피랑 - 데이터 브리핑</title>
 
   <style>
+  :root {
+    --primary:#16a34a;
+    --primary-light:#dcfce7;
+    --primary-dark:#15803d;
+    --bg-soft:#f8fafc; /* 눈이 편안한 연한 배경색 */
+    --text-main:#1e293b;
+    --text-sub:#64748b;
+    --text-caption:#94a3b8;
+    --card-bg:#ffffff;
+    --border-light:#f1f5f9;
+    --shadow-sm:0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md:0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.025);
+    --radius-lg:24px;
+    --radius-md:16px;
+    --radius-sm:12px;
+  }
+
+  body {
+    background-color: var(--bg-soft);
+  }
+
   body[data-page="briefing"] main{
-    padding:16px 14px 100px;
+    padding:24px 20px 120px;
     width:100%;
-    max-width:480px;
+    max-width:560px; /* 레코드 페이지와 폭 통일 */
     margin:0 auto;
   }
 
+  /* 카드 디자인 전면 개선: 입체감 있는 플로팅 카드 스타일 */
   body[data-page="briefing"] .br-card{
-    border-radius:18px;
-    background:#ffffff;
-    border:1px solid #e5e7eb;
-    box-shadow:0 4px 12px rgba(15,23,42,0.04);
+    border-radius:var(--radius-lg);
+    background:var(--card-bg);
+    border:1px solid rgba(0,0,0,0.02); /* 테두리를 거의 없애고 그림자로 구분 */
+    box-shadow:var(--shadow-md);
     width:100%;
-    padding:18px 16px;
-    margin-bottom:14px;
+    padding:26px 22px;
+    margin-bottom:20px;
+    transition: transform 0.2s ease;
   }
 
+  body[data-page="briefing"] .br-card:hover {
+    transform: translateY(-2px); /* 호버 시 살짝 떠오르는 효과 */
+  }
+
+  /* 섹션 타이틀 가독성 강화 */
   body[data-page="briefing"] .br-title{
-    margin:0 0 8px;
-    font-size:18px;
+    margin:0 0 12px;
+    font-size:19px;
     font-weight:800;
-    color:#111827;
+    color:var(--text-main);
     display:flex;
     align-items:center;
-    gap:6px;
+    gap:8px;
+    letter-spacing: -0.5px;
   }
 
   body[data-page="briefing"] .br-title i{
-    color:var(--acc);
+    color:var(--primary);
+    font-size: 18px;
+    background: var(--primary-light);
+    padding: 8px;
+    border-radius: 10px;
   }
 
+  /* 설명 텍스트 */
   body[data-page="briefing"] .br-sub{
-    margin:0 0 8px;
-    font-size:13px;
-    color:#6b7280;
+    margin:0 0 12px;
+    font-size:14px;
+    color:var(--text-sub);
     line-height:1.6;
+    word-break: keep-all;
+  }
+
+  body[data-page="briefing"] .br-sub strong {
+    color: var(--text-main);
+    font-weight: 700;
   }
 
   body[data-page="briefing"] .br-caption{
-    margin:4px 0 0;
-    font-size:11px;
-    color:#9ca3af;
+    margin:12px 0 0;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border-light);
+    font-size:12px;
+    color:var(--text-caption);
+    line-height: 1.5;
   }
 
-  /* KPI 영역 */
+  /* KPI 그리드 영역 디자인 */
   body[data-page="briefing"] .br-kpi-grid{
     display:grid;
     grid-template-columns:repeat(3,minmax(0,1fr));
-    gap:8px;
-    margin-top:8px;
+    gap:10px;
+    margin-top:20px;
+    margin-bottom: 8px;
   }
 
-  @media (max-width:360px){
+  @media (max-width:380px){
     body[data-page="briefing"] .br-kpi-grid{
-      grid-template-columns:1fr;
+      grid-template-columns:1fr; /* 작은 화면에서는 한 줄로 */
+      gap: 12px;
     }
   }
 
+  /* KPI 개별 박스 */
   body[data-page="briefing"] .br-kpi{
-    border-radius:14px;
-    border:1px solid #e5e7eb;
-    background:#f9fafb;
-    padding:8px 9px;
+    border-radius:var(--radius-md);
+    border:1px solid var(--border-light);
+    background:#f8fafc;
+    padding:16px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  
+  body[data-page="briefing"] .br-kpi:hover {
+    background: #ffffff;
+    box-shadow: var(--shadow-sm);
+    border-color: var(--primary-light);
   }
 
   body[data-page="briefing"] .br-kpi-label{
-    font-size:11px;
-    color:#6b7280;
-    margin-bottom:2px;
+    font-size:12px;
+    font-weight: 600;
+    color:var(--text-sub);
+    margin-bottom:6px;
+    letter-spacing: -0.3px;
   }
 
   body[data-page="briefing"] .br-kpi-value{
-    font-size:14px;
+    font-size:20px;
     font-weight:800;
-    color:#111827;
+    color:var(--primary-dark);
+    margin-bottom: 4px;
   }
 
   body[data-page="briefing"] .br-kpi-hint{
-    margin-top:2px;
     font-size:11px;
-    color:#9ca3af;
+    color:var(--text-caption);
+    letter-spacing: -0.5px;
   }
 
-  /* 인사이트 블록 */
+  /* 인사이트 블록 스타일 */
   body[data-page="briefing"] .br-block{
-    margin-top:6px;
+    margin-top:20px;
+    padding: 16px;
+    background-color: #fcfcfc;
+    border-radius: var(--radius-md);
+    border: 1px solid #f1f5f9;
   }
 
   body[data-page="briefing"] .br-block-title{
-    font-size:14px;
+    font-size:15px;
     font-weight:700;
-    color:#111827;
-    margin:0 0 4px;
+    color:var(--text-main);
+    margin:0 0 8px;
     display:flex;
     align-items:center;
-    gap:6px;
+    gap:8px;
   }
 
   body[data-page="briefing"] .br-block-title i{
-    font-size:13px;
-    color:#9ca3af;
+    font-size:14px;
+    color:#64748b;
   }
 
   body[data-page="briefing"] .br-block-body{
-    font-size:13px;
-    color:#4b5563;
-    line-height:1.6;
+    font-size:14px;
+    color:var(--text-sub);
+    line-height:1.65;
+    word-break: keep-all;
   }
 
   body[data-page="briefing"] .br-block-body strong{
     font-weight:700;
-    color:#111827;
+    color:var(--primary-dark);
+    background: linear-gradient(180deg, rgba(255,255,255,0) 60%, rgba(220, 252, 231, 0.6) 60%);
   }
 
+  /* 리스트 스타일 개선 */
   body[data-page="briefing"] .br-list{
-    margin:4px 0 0;
-    padding-left:16px;
-    font-size:13px;
-    color:#4b5563;
+    margin:10px 0 0;
+    padding-left:0;
+    list-style: none;
+    font-size:14px;
+    color:var(--text-sub);
     line-height:1.6;
   }
 
   body[data-page="briefing"] .br-list li{
-    margin-bottom:2px;
+    margin-bottom:8px;
+    position: relative;
+    padding-left: 20px;
   }
 
+  /* 리스트 불릿 커스텀 */
+  body[data-page="briefing"] .br-list li::before {
+    content: '•';
+    color: var(--primary);
+    position: absolute;
+    left: 4px;
+    font-weight: bold;
+    top: 0;
+  }
+
+  /* 칩 스타일 (태그) */
   body[data-page="briefing"] .br-chip-row{
     display:flex;
     flex-wrap:wrap;
-    gap:6px;
-    margin-top:6px;
+    gap:8px;
+    margin-top:12px;
+    padding-left: 4px;
   }
 
   body[data-page="briefing"] .br-chip{
-    font-size:11px;
-    border-radius:999px;
-    padding:3px 8px;
-    background:#f3f4f6;
-    color:#6b7280;
+    font-size:12px;
+    font-weight: 600;
+    border-radius:100px;
+    padding:6px 12px;
+    background:#ffffff;
+    border: 1px solid #e2e8f0;
+    color:#475569;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
   }
 
   body[data-page="briefing"] .br-empty{
-    font-size:12px;
-    color:#9ca3af;
-    margin-top:6px;
+    font-size:13px;
+    color:var(--text-caption);
+    margin-top:12px;
+    text-align: center;
+    padding: 20px 0;
   }
   </style>
 </head>
@@ -200,19 +287,19 @@
 
         <div class="br-kpi-grid">
           <div class="br-kpi">
-            <div class="br-kpi-label">저장된 프로젝트 수</div>
+            <div class="br-kpi-label">저장된 프로젝트</div>
             <div class="br-kpi-value" id="brKpiProjects">0개</div>
-            <div class="br-kpi-hint" id="brKpiProjectsHint">설문·설계안 저장 기준</div>
+            <div class="br-kpi-hint" id="brKpiProjectsHint">설문·설계안 기준</div>
           </div>
           <div class="br-kpi">
-            <div class="br-kpi-label">엽채류 중심 설계 비율</div>
+            <div class="br-kpi-label">엽채류 중심 설계</div>
             <div class="br-kpi-value" id="brKpiLeafy">-</div>
-            <div class="br-kpi-hint">추천 설계안 중 엽채류 비중</div>
+            <div class="br-kpi-hint">추천 설계안 비중</div>
           </div>
           <div class="br-kpi">
-            <div class="br-kpi-label">지식산업센터 비중</div>
+            <div class="br-kpi-label">지식산업센터</div>
             <div class="br-kpi-value" id="brKpiBiz">-</div>
-            <div class="br-kpi-hint">공간 유형 기준</div>
+            <div class="br-kpi-hint">공간 유형 비중</div>
           </div>
         </div>
 
@@ -314,11 +401,14 @@
       </section>
     </main>
 
-    <!-- 하단 버튼 바 -->
-    <div class="bottom-bar">
-      <button type="button" class="btn ghost" id="brBtnHome">홈으로</button>
-      <button type="button" class="btn acc" id="brBtnProject">프로젝트 상세</button>
-    </div>
+<nav class="tabs">
+      <ul>
+        <li><button id="tab-home" onclick="window.location.assign('home.html')"><i class="fa-solid fa-house"></i><small>홈</small></button></li>
+        <li><button id="tab-records" onclick="window.location.assign('records.html')"><i class="fas fa-list-check"></i><small>기록</small></button></li>
+        <li><button id="tab-reco" onclick="window.location.assign('deals.html')"><i class="fas fa-file-signature"></i><small>견적</small></button></li>
+        <li><button id="tab-my" onclick="window.location.assign('settings.html')"><i class="fa-solid fa-user"></i><small>마이</small></button></li>
+      </ul>
+    </nav>
   </div>
 
   <!-- 공통 모달/토스트 -->
@@ -427,7 +517,7 @@
       if(total===0){
         elPatternSentence.textContent='아직 저장된 프로젝트가 없어, 기본적인 설계 패턴 예시만 보여주고 있습니다. 설문을 완료하고 설계안을 저장하면 내 조건에 맞는 문구로 바뀝니다.';
       }else{
-        var base='지금까지 저장된 내 프로젝트 기준으로, ';
+        var base='지금까지 저장된 내 프로젝트 기준으로, ';\
         if(bizCount/ (total||1) >= 0.5 && leafyCount/(total||1) >= 0.5){
           elPatternSentence.textContent = base +
             '지식산업센터·엽채류 중심 조건에서 수직 랙형 스마트팜 설계를 선택한 비중이 높은 편입니다.';

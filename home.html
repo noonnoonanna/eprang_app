@@ -87,13 +87,6 @@ body[data-page="dashboard"] .notice-body{margin:0 0 12px;font-size:14px;color:va
 body[data-page="dashboard"] .notice-meta{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--text-sub);}
 body[data-page="dashboard"] .notice-tag{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;background:#e0f2fe;border:1px solid #90cdf4;color:#2b6cb0;font-weight:600;}
 body[data-page="dashboard"] .notice-date{color:#94a3b8;display:inline-flex;align-items:center;gap:4px;}
-.tabs{position:fixed;bottom:0;left:0;width:100%;background-color:var(--card-bg);border-top:1px solid var(--border-light);box-shadow:var(--shadow-md);z-index:100;padding:8px 0;}
-.tabs ul{display:flex;justify-content:space-around;list-style:none;margin:0;padding:0;}
-.tabs li{flex:1;text-align:center;}
-.tabs button{background:none;border:none;color:var(--text-sub);font-size:20px;padding:8px 0;width:100%;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:var(--transition-ease);}
-.tabs button small{font-size:11px;font-weight:600;color:var(--text-sub);transition:var(--transition-ease);}
-.tabs button:hover,.tabs button.active{color:var(--primary);}
-.tabs button:hover small,.tabs button.active small{color:var(--primary);}
 #overlay,#recOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:none;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(2px);}
 #modal,#recModal{background:white;padding:24px;border-radius:20px;width:85%;max-width:320px;text-align:center;animation:popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);}
 @keyframes popIn{from{transform:scale(0.8);opacity:0;}to{transform:scale(1);opacity:1;}}
@@ -103,6 +96,25 @@ body[data-page="dashboard"] .notice-date{color:#94a3b8;display:inline-flex;align
 #toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background-color:rgba(0,0,0,0.75);color:white;padding:10px 20px;border-radius:999px;font-size:14px;z-index:1000;opacity:0;visibility:hidden;transition:opacity 0.3s ease, transform 0.3s ease;}
 #toast.show{opacity:1;visibility:visible;transform:translateX(-50%) translateY(-10px);}
 #noticeSection {margin-bottom:0}
+
+body[data-page="dashboard"] .feature-section { margin-top: -30px; margin-bottom: 50px; }
+body[data-page="dashboard"] .feature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+body[data-page="dashboard"] .feature-card { position: relative; aspect-ratio: 1.15 / 1; border-radius: 24px; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); min-height: auto; border: 1px solid transparent; overflow: hidden; }
+body[data-page="dashboard"] .feature-card:active { transform: scale(0.95); }
+body[data-page="dashboard"] .feature-card:hover { transform: translateY(-4px); }
+body[data-page="dashboard"] .feature-card:nth-of-type(1) { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-color: #a7f3d0; color: #065f46; }
+body[data-page="dashboard"] .feature-card:nth-of-type(1) .feature-icon { background: #10b981; color: #ffffff; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
+body[data-page="dashboard"] .feature-card:nth-of-type(2) { background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-color: #fde68a; color: #92400e; }
+body[data-page="dashboard"] .feature-card:nth-of-type(2) .feature-icon { background: #f59e0b; color: #ffffff; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3); }
+body[data-page="dashboard"] .feature-card:nth-of-type(3) { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-color: #bfdbfe; color: #1e40af; }
+body[data-page="dashboard"] .feature-card:nth-of-type(3) .feature-icon { background: #3b82f6; color: #ffffff; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); }
+body[data-page="dashboard"] .feature-card:nth-of-type(4) { background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); border-color: #ddd6fe; color: #5b21b6; }
+body[data-page="dashboard"] .feature-card:nth-of-type(4) .feature-icon { background: #8b5cf6; color: #ffffff; box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3); }
+body[data-page="dashboard"] .feature-icon { width: 52px; height: 52px; border-radius: 18px; font-size: 24px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; transition: transform 0.3s ease; }
+body[data-page="dashboard"] .feature-card:hover .feature-icon { transform: scale(1.1) rotate(5deg); }
+body[data-page="dashboard"] .feature-title { margin: 0; font-size: 15px; font-weight: 800; letter-spacing: -0.5px; text-align: center; }
+body[data-page="dashboard"] .feature-desc, body[data-page="dashboard"] .feature-tags { display: none; }
+@media (max-width:380px){body[data-page="dashboard"] .feature-grid { grid-template-columns: repeat(2, 1fr); }}
   </style>
 </head>
 
@@ -205,6 +217,62 @@ body[data-page="dashboard"] .notice-date{color:#94a3b8;display:inline-flex;align
           </div>
         </div>
       </section>
+	  
+	  <section class="dash-section feature-section" id="featureSection">
+        <div class="feature-grid">
+          <!-- 4. 설비 레시피 -->
+          <article class="feature-card" onclick="location.href='recipes.html'">
+            <div class="feature-icon"><i class="fas fa-layer-group"></i></div>
+            <h3 class="feature-title">설비 레시피</h3>
+            <p class="feature-desc">
+              내 공간·용도·작목에 많이 쓰이는
+              설비 조합 패턴을 한눈에.
+            </p>
+            <div class="feature-tags">
+              <span class="badge badge-gray">표준 설비 패턴</span>
+            </div>
+          </article>
+
+          <!-- 5. 리마인더 -->
+          <article class="feature-card" onclick="location.href='reminder.html'">
+            <div class="feature-icon"><i class="fas fa-bell"></i></div>
+            <h3 class="feature-title">리마인더</h3>
+            <p class="feature-desc">
+              정책자금·견적·시공·운영 초기까지
+              놓치기 쉬운 일정을 자동으로 챙겨줘요.
+            </p>
+            <div class="feature-tags">
+              <span class="badge badge-green">알림/일정 관리</span>
+            </div>
+          </article>
+
+          <!-- 6. 견적/계약 -->
+          <article class="feature-card" onclick="location.href='deals.html'">
+            <div class="feature-icon"><i class="fas fa-file-signature"></i></div>
+            <h3 class="feature-title">견적 / 계약</h3>
+            <p class="feature-desc">
+              (주)그린과 주고받은
+              모든 견적과 계약 현황을 모아서.
+            </p>
+            <div class="feature-tags">
+              <span class="badge badge-gray">견적·계약 현황</span>
+            </div>
+          </article>
+
+          <!-- 7. 데이터 브리핑 -->
+          <article class="feature-card" onclick="location.href='briefing.html'">
+            <div class="feature-icon"><i class="fas fa-chart-bar"></i></div>
+            <h3 class="feature-title">데이터 브리핑</h3>
+            <p class="feature-desc">
+              나와 비슷한 조건의 사용자 설계 패턴과
+              비용·수익 경향을 브리핑으로.
+            </p>
+            <div class="feature-tags">
+              <span class="badge badge-blue">인사이트 리포트</span>
+            </div>
+          </article>
+        </div>
+      </section>
 
       <!-- 정책자금 · 교육 · 세미나 공지 -->
       <section class="dash-section" id="noticeSection">
@@ -213,11 +281,11 @@ body[data-page="dashboard"] .notice-date{color:#94a3b8;display:inline-flex;align
             <i class="fas fa-bullhorn"></i>
             <span>정책자금 · 교육 · 세미나</span>
           </h2>
-          <!-- 버튼 디자인 통일 및 더보기 버튼 추가 -->
-          <button type="button" class="btn acc">
+          
+          <!--<button type="button" class="btn acc">
             <i class="fas fa-arrow-right"></i>
             <span>더보기</span>
-          </button>
+          </button>-->
         </div>
 
         <div class="notice-list" id="noticeList">
@@ -251,10 +319,10 @@ body[data-page="dashboard"] .notice-date{color:#94a3b8;display:inline-flex;align
     <!-- 하단 탭바 (공통) -->
     <nav class="tabs">
       <ul>
-        <li><button id="tab-home" onclick="navigate('home')" class="active">🏠<small>홈</small></button></li>
-        <li><button id="tab-records" onclick="navigate('records')">📝<small>기록</small></button></li>
-        <li><button id="tab-reco" onclick="navigate('reco')">✨<small>추천</small></button></li>
-        <li><button id="tab-my" onclick="navigate('my')">👤<small>마이</small></button></li>
+        <li><button id="tab-home" onclick="window.location.assign('home.html')" class="active"><i class="fa-solid fa-house"></i><small>홈</small></button></li>
+        <li><button id="tab-records" onclick="window.location.assign('records.html')"><i class="fas fa-list-check"></i><small>기록</small></button></li>
+        <li><button id="tab-reco" onclick="window.location.assign('deals.html')"><i class="fas fa-file-signature"></i><small>견적</small></button></li>
+        <li><button id="tab-my" onclick="window.location.assign('settings.html')"><i class="fa-solid fa-user"></i><small>마이</small></button></li>
       </ul>
     </nav>
   </div>

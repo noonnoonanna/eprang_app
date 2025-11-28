@@ -10,6 +10,7 @@
   <title>이피랑 - 리마인더</title>
 
   <style>
+  	:root { --primary:#16a34a; --text-sub:#4a5568}
   body[data-page="reminder"] main{
     padding:16px 14px 100px;
     width:100%;
@@ -333,10 +334,18 @@
     </main>
 
     <!-- 하단 버튼 바 -->
-    <div class="bottom-bar">
+    <!--<div class="bottom-bar">
       <button type="button" class="btn ghost" id="rmBtnHome">홈으로</button>
       <button type="button" class="btn acc" id="rmBtnProjects">프로젝트 목록</button>
-    </div>
+    </div>-->
+<nav class="tabs">
+      <ul>
+        <li><button id="tab-home" onclick="window.location.assign('home.html')"><i class="fa-solid fa-house"></i><small>홈</small></button></li>
+        <li><button id="tab-records" onclick="window.location.assign('records.html')"><i class="fas fa-list-check"></i><small>기록</small></button></li>
+        <li><button id="tab-reco" onclick="window.location.assign('deals.html')"><i class="fas fa-file-signature"></i><small>견적</small></button></li>
+        <li><button id="tab-my" onclick="window.location.assign('settings.html')"><i class="fa-solid fa-user"></i><small>마이</small></button></li>
+      </ul>
+    </nav>
   </div>
 
   <!-- 공통 모달/토스트 레이어 -->
