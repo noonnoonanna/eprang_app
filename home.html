@@ -3,119 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#ffffff" />
-  <link rel="manifest" href="manifest.webmanifest" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="style.css" />
-  <!-- Font Awesome 아이콘 사용을 위해 추가합니다 -->
+  <link rel="stylesheet" href="home.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <title>이피랑</title>
-  <style>
-:root{--primary:#16a34a;--primary-light:#dcfce7;--primary-dark:#15803d;--bg-soft:#ffffff;--text-main:#1a202c;--text-sub:#4a5568;--card-bg:#ffffff;--border-light:#e2e8f0;--shadow-sm:0 1px 3px rgba(0,0,0,0.08);--shadow-md:0 4px 12px rgba(0,0,0,0.1);--radius-lg:20px;--radius-md:14px;--radius-sm:10px;--transition-ease:all 0.3s ease;}
-body{font-family: 'Pretendard', sans-serif;background-color:var(--bg-soft);margin:0;padding:0;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
-body[data-page="dashboard"] main{padding:20px 16px 100px;max-width:520px;margin:0 auto;}
-body[data-page="dashboard"] .dash-section{margin-bottom:70px; width:98%}
-body[data-page="dashboard"] .summary-banner{position:relative;border-radius:var(--radius-lg);padding:17px 20px 20px;background:linear-gradient(135deg,#f0fff4 0%,#f9fffa 100%);box-shadow:var(--shadow-md);overflow:hidden;border:1px solid var(--border-light);}
-body[data-page="dashboard"] .summary-chip{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;font-size:15px;font-weight:700;color:var(--primary-dark);margin-bottom:10px;}
-body[data-page="dashboard"] .summary-chip i{font-size:14px;}
-body[data-page="dashboard"] .summary-title{margin:0 0 6px;font-size:24px;font-weight:800;color:var(--text-main);}
-body[data-page="dashboard"] .summary-subtitle{margin:0 0 18px;font-size:14px;color:var(--text-sub);line-height:1.6;font-weight:500;}
-body[data-page="dashboard"] .summary-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;}
-body[data-page="dashboard"] .stat-item{padding:14px;border-radius:var(--radius-md);background:var(--card-bg);border:1px solid var(--border-light);box-shadow:var(--shadow-sm);transition:var(--transition-ease);}
-body[data-page="dashboard"] .stat-label{font-size:12px;color:var(--text-sub);margin-bottom:6px;font-weight:600;}
-body[data-page="dashboard"] .stat-value{font-size:18px;font-weight:800;color:var(--primary-dark);}
-body[data-page="dashboard"] .summary-bg-icon{position:absolute;right:-34px;bottom:-40px;width:100px;height:100px;border-radius:999px;background:radial-gradient(circle at 30% 30%,rgba(34,197,94,0.9),rgba(15,118,110,0.1));opacity:0.25;}
-body[data-page="dashboard"] .section-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;}
-body[data-page="dashboard"] .section-title{margin:0;font-size:20px;font-weight:800;color:var(--text-main);display:flex;align-items:center;gap:8px;min-width:0;}
-body[data-page="dashboard"] .section-title i{font-size:16px;color:var(--primary);}
-body[data-page="dashboard"] .section-header .btn{flex:0 0 auto;padding:0 11px;font-size:13px;height:33px;display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:999px;box-shadow:var(--shadow-sm);transition:var(--transition-ease);font-weight:500;background-color:var(--primary);color:white;}
-body[data-page="dashboard"] .section-header .btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);background-color:var(--primary-dark);}
-body[data-page="dashboard"] .section-header .btn i{font-size:14px;}
-body[data-page="dashboard"] .empty-state{padding:24px;border-radius:var(--radius-md);background:var(--card-bg);border:1px dashed #d1d5db;text-align:center;font-size:14px;color:var(--text-sub);line-height:1.5;box-shadow:var(--shadow-sm);}
-body[data-page="dashboard"] .empty-state strong{display:block;margin-bottom:8px;font-size:16px;color:var(--text-main);}
-body[data-page="dashboard"] .empty-state .btn{margin-top:16px;width:100%;max-width:300px;font-size:14px;font-weight:700;height:44px;border-radius:var(--radius-sm);background-color:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;box-shadow:var(--shadow-sm);transition:var(--transition-ease);}
-body[data-page="dashboard"] .empty-state .btn:hover{background-color:#dbeafe;transform:translateY(-2px);box-shadow:var(--shadow-md);}
-body[data-page="dashboard"] .project-list{margin-top:16px;display:grid;gap:12px;}
-.project-card a {
-  text-decoration: none !important;   /* 밑줄 제거 */
-  color: inherit !important;          /* 부모 글자색 따라감 */
-  display: block;
-  cursor: pointer;
-}
-/* 프로젝트 카드 레이아웃 변경: 배지를 아래로 내려서 메인 콘텐츠에 가로 공간을 최대한 확보합니다. */
-body[data-page="dashboard"] .project-card{
-    background:var(--card-bg);
-    border-radius:var(--radius-md);
-    border:1px solid var(--border-light);
-    box-shadow:var(--shadow-sm);
-    padding:25px 16px;
-    display: block; /* 그리드 대신 블록으로 변경 */
-    transition:var(--transition-ease);
-	margin-bottom:10px;
-}
-body[data-page="dashboard"] .project-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
-body[data-page="dashboard"] .project-main{
-    min-width:0;
-    margin-bottom: 12px; /* 태그와의 간격 추가 */
-}
-body[data-page="dashboard"] .project-name{font-size:16px;font-weight:600;color:var(--text-main);margin:0 0 12px;line-height:1.5;}
-body[data-page="dashboard"] .project-meta{display:flex;flex-wrap:wrap;gap:72px;align-items:center;margin-bottom:8px;}
-body[data-page="dashboard"] .project-meta span{font-size:14px;color:var(--text-sub);display:inline-flex;align-items:center;gap:5px;}
-body[data-page="dashboard"] .project-meta i{font-size:12px;color:#94a3b8;}
-body[data-page="dashboard"] .project-next{font-size:14px;color:#4a5568;line-height:1.6;}
-
-/* 태그 영역 스타일 변경: 가로로 나열하며 줄 바꿈 허용 */
-body[data-page="dashboard"] .project-tags{
-    display:flex;
-    flex-direction: row; /* 가로 나열 */
-    flex-wrap: wrap; /* 줄 바꿈 허용 */
-    align-items: center;
-    gap:8px;
-    padding-top: 23px; /* 경계선 위쪽 패딩 */
-    border-top: 1px dashed var(--border-light); /* 메인 정보와 구분선 추가 */
-}
-body[data-page="dashboard"] .project-tags .badge{font-size:12px;height:24px;line-height:24px;padding-inline:12px;white-space:nowrap;border-radius:999px;font-weight:600;}
-
-.badge-green{background:#e6fffa;color:#0d7a5b;}
-.badge-gray{background:#f3f4f6;color:#374151;}
-.badge-blue{background:#eff6ff;color:#1e40af;}
-.badge-orange{background:#fff7ed;color:#b45309;}
-body[data-page="dashboard"] .notice-list{display:grid;gap:12px;}
-body[data-page="dashboard"] .notice-card{background:var(--card-bg);border-radius:var(--radius-md);border:1px solid var(--border-light);padding:16px;box-shadow:var(--shadow-sm);transition:var(--transition-ease);margin-bottom:15px;}
-body[data-page="dashboard"] .notice-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
-body[data-page="dashboard"] .notice-title{margin:0 0 15px;font-size:16px;font-weight:700;color:var(--text-main);}
-body[data-page="dashboard"] .notice-body{margin:0 0 12px;font-size:14px;color:var(--text-sub);line-height:1.6;}
-body[data-page="dashboard"] .notice-meta{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--text-sub);}
-body[data-page="dashboard"] .notice-tag{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;background:#e0f2fe;border:1px solid #90cdf4;color:#2b6cb0;font-weight:600;}
-body[data-page="dashboard"] .notice-date{color:#94a3b8;display:inline-flex;align-items:center;gap:4px;}
-#overlay,#recOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:none;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(2px);}
-#modal,#recModal{background:white;padding:24px;border-radius:20px;width:85%;max-width:320px;text-align:center;animation:popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);}
-@keyframes popIn{from{transform:scale(0.8);opacity:0;}to{transform:scale(1);opacity:1;}}
-.modal-title{font-size:1.1rem;font-weight:800;margin-bottom:8px;}
-.modal-msg{color:var(--text-sub);margin-bottom:20px;font-size:0.95rem;}
-.modal-btn{width:100%;padding:12px;background:var(--primary);color:white;border:none;border-radius:12px;font-weight:700;cursor:pointer;}
-#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background-color:rgba(0,0,0,0.75);color:white;padding:10px 20px;border-radius:999px;font-size:14px;z-index:1000;opacity:0;visibility:hidden;transition:opacity 0.3s ease, transform 0.3s ease;}
-#toast.show{opacity:1;visibility:visible;transform:translateX(-50%) translateY(-10px);}
-#noticeSection {margin-bottom:0}
-
-body[data-page="dashboard"] .feature-section { margin-top: -30px; margin-bottom: 50px; }
-body[data-page="dashboard"] .feature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
-body[data-page="dashboard"] .feature-card { position: relative; aspect-ratio: 1.15 / 1; border-radius: 24px; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); min-height: auto; border: 1px solid transparent; overflow: hidden; }
-body[data-page="dashboard"] .feature-card:active { transform: scale(0.95); }
-body[data-page="dashboard"] .feature-card:hover { transform: translateY(-4px); }
-body[data-page="dashboard"] .feature-card:nth-of-type(1) { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-color: #a7f3d0; color: #065f46; }
-body[data-page="dashboard"] .feature-card:nth-of-type(1) .feature-icon { background: #10b981; color: #ffffff; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
-body[data-page="dashboard"] .feature-card:nth-of-type(2) { background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-color: #fde68a; color: #92400e; }
-body[data-page="dashboard"] .feature-card:nth-of-type(2) .feature-icon { background: #f59e0b; color: #ffffff; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3); }
-body[data-page="dashboard"] .feature-card:nth-of-type(3) { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-color: #bfdbfe; color: #1e40af; }
-body[data-page="dashboard"] .feature-card:nth-of-type(3) .feature-icon { background: #3b82f6; color: #ffffff; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); }
-body[data-page="dashboard"] .feature-card:nth-of-type(4) { background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); border-color: #ddd6fe; color: #5b21b6; }
-body[data-page="dashboard"] .feature-card:nth-of-type(4) .feature-icon { background: #8b5cf6; color: #ffffff; box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3); }
-body[data-page="dashboard"] .feature-icon { width: 52px; height: 52px; border-radius: 18px; font-size: 24px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; transition: transform 0.3s ease; }
-body[data-page="dashboard"] .feature-card:hover .feature-icon { transform: scale(1.1) rotate(5deg); }
-body[data-page="dashboard"] .feature-title { margin: 0; font-size: 15px; font-weight: 800; letter-spacing: -0.5px; text-align: center; }
-body[data-page="dashboard"] .feature-desc, body[data-page="dashboard"] .feature-tags { display: none; }
-@media (max-width:380px){body[data-page="dashboard"] .feature-grid { grid-template-columns: repeat(2, 1fr); }}
-  </style>
 </head>
 
 <!-- data-page는 dashboard로 유지 -->
@@ -170,43 +62,6 @@ body[data-page="dashboard"] .feature-desc, body[data-page="dashboard"] .feature-
         
         <!-- 프로젝트 리스트 (예시 카드 추가) -->
         <div class="project-list" id="projectList">
-          <!-- 예시 카드 1 -->
-          <article class="project-card">
-            <div class="project-main">
-              <h3 class="project-name">김포 지식산업센터 3층 엽채 스마트팜</h3>
-              <div class="project-meta">
-                <span><i class="far fa-building"></i> 실내 스마트팜</span>
-                <span><i class="fas fa-chart-line"></i> 설계중</span>
-              </div>
-              <div class="project-next">
-                다음 단계: (주)그린 현장 방문 예정 10/12
-              </div>
-            </div>
-            <!-- project-tags가 project-main 아래로 배치되도록 HTML은 그대로 유지 -->
-            <div class="project-tags">
-              <span class="badge badge-green">실내 전용</span>
-              <span class="badge badge-gray">견적 연계 가능</span>
-            </div>
-          </article>
-          
-          <!-- 예시 카드 2 (완료) -->
-          <article class="project-card">
-            <div class="project-main">
-              <h3 class="project-name">수원 농업기술센터 연구용 스마트팜</h3>
-              <div class="project-meta">
-                <span><i class="fas fa-flask"></i> 연구용</span>
-                <span><i class="fas fa-check-circle"></i> 완료</span>
-              </div>
-              <div class="project-next">
-                완료: 2024-08-01
-              </div>
-            </div>
-            <div class="project-tags">
-              <span class="badge badge-blue">수경 재배</span>
-              <span class="badge badge-orange">기술 지원</span>
-            </div>
-          </article>
-
           <!-- 프로젝트가 없는 경우에만 이 요소가 보입니다 (JS로 제어) -->
           <div class="empty-state" id="projectEmptyState" style="display:none;">
             <strong>아직 저장된 스마트팜 프로젝트가 없어요.</strong>
@@ -289,27 +144,61 @@ body[data-page="dashboard"] .feature-desc, body[data-page="dashboard"] .feature-
         </div>
 
         <div class="notice-list" id="noticeList">
-          <article class="notice-card">
-            <h3 class="notice-title">청년농 정책자금 1차 신청 안내</h3>
+<article class="notice-card">
+            <h3 class="notice-title">2026년 하반기 후계농업경영인 육성자금 및 귀농창업자금 안내</h3>
             <p class="notice-body">
-              청년·귀농 예정자 대상 실내 스마트팜 시설자금 신청 기간입니다.
-              신청 조건과 준비 서류를 확인해 주세요.
+              농림축산식품부 주관 최대 5억 원 한도(연리 1.5%, 5년 거치 20년 상환) 정책자금 대출입니다. 
+              7~8월 중 지자체별 하반기 잔여 예산 추가 배정 및 대출 실행 심사가 집중되오니, 사업계획서 검토를 미리 신청하세요.
             </p>
             <div class="notice-meta">
-              <span class="notice-tag">정책자금</span>
-              <span class="notice-date"><i class="far fa-calendar-alt"></i> ~ 2026-03-31</span>
+              <span class="notice-tag" style="background-color: #fef3c7; color: #d97706;">정책자금</span>
+              <span class="notice-date"><i class="far fa-calendar-alt"></i> 2026-08 마감 예정을 위한 준비 필요</span>
             </div>
           </article>
 
           <article class="notice-card">
-            <h3 class="notice-title">초기 창업자 대상 스마트팜 입문 세미나</h3>
+            <h3 class="notice-title">제9기 스마트팜 청년창업 보육과정(20인 이상) 최종 선발 및 교육 개시</h3>
             <p class="notice-body">
-              실내 수직농장, 육묘장, 조경·체험형 스마트팜까지<br>
-              유형별 장단점과 실제 사례를 한 번에 정리해 드립니다.
+              농림수산식품교육문화정보원(농정원) 주관 2026년도 정규 보육과정 신청자 대상, 7~8월 교육생 선발 후 9월부터 전국 4개 보육센터(전북 김제, 전남 고흥, 경북 상주, 경남 밀양)에서 20개월 장기 전문 교육이 공식 개시됩니다.
             </p>
             <div class="notice-meta">
-              <span class="notice-tag">세미나</span>
-              <span class="notice-date"><i class="far fa-calendar-alt"></i> 2026-04-10 예정</span>
+              <span class="notice-tag" style="background-color: #dcfce7; color: #16a34a;">의무교육</span>
+              <span class="notice-date"><i class="far fa-calendar-alt"></i> 2026-09-01 교육 개시</span>
+            </div>
+          </article>
+
+          <article class="notice-card">
+            <h3 class="notice-title">하반기 귀농창업 및 주말농장 온·오프라인 연계 교육 (100시간 인정)</h3>
+            <p class="notice-body">
+              정부 정책자금(귀농창업자금 등) 신청 시 필수 조건인 '귀농 교육 100시간 이수'를 채울 수 있는 마지막 정규 기수입니다. 
+              귀농귀촌종합센터 이러닝 및 지역별 농업기술센터 대면 실습 일정이 10월에 집중 배정되어 있습니다.
+            </p>
+            <div class="notice-meta">
+              <span class="notice-tag" style="background-color: #dcfce7; color: #16a34a;">필수이수</span>
+              <span class="notice-date"><i class="far fa-calendar-alt"></i> 2026-10-15 순차 개강</span>
+            </div>
+          </article>
+
+          <article class="notice-card">
+            <h3 class="notice-title">2026 대한민국 국제첨단농업기술 박람회 & 스마트팜 비즈니스 세미나</h3>
+            <p class="notice-body">
+              산업통상자원부 및 농식품부 후원, 국내외 스마트팜 시공사 및 ICT 기자재 기업이 총출동하는 하반기 최대 네트워킹 행사입니다. 
+              이피랑 회원 대상 11월 중순 코엑스(COEX) 3층 컨퍼런스룸에서 진행되는 '실내 수직형 농장 수익 모델 분석' 세미나 무료 초청권을 배포합니다.
+            </p>
+            <div class="notice-meta">
+              <span class="notice-tag" style="background-color: #e0f2fe; color: #0284c7;">국제세미나</span>
+              <span class="notice-date"><i class="far fa-calendar-alt"></i> 2026-11-12 ~ 11-14 예정</span>
+            </div>
+          </article>
+
+          <article class="notice-card">
+            <h3 class="notice-title">2027년도 대비 지자체별 스마트팜 ICT 융복합 확산 시범사업 사전 수요조사</h3>
+            <p class="notice-body">
+              각 시·군 농업기술센터에서 집행하는 2027년도 시설원예/내부 리모델링 스마트팜 보조금(국비 30%, 지방비 30% 선) 사업 편성을 위한 연말 사전 가반영 신청 기간입니다. 12월 중 가산점을 위한 사업계획서 초안 제출이 필요합니다.
+            </p>
+            <div class="notice-meta">
+              <span class="notice-tag" style="background-color: #fef3c7; color: #d97706;">지자체보조</span>
+              <span class="notice-date"><i class="far fa-calendar-alt"></i> 2026-12-10 예산 편성 마감</span>
             </div>
           </article>
         </div>

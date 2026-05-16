@@ -3,23 +3,40 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#ffffff" />
-  <link rel="manifest" href="manifest.webmanifest" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="style.css" />
-  <title>IpiCare</title>
+  <title>이피랑</title>
 </head>
 
 <body data-page="index">
-  <script>
-    try{
-      var a = localStorage.getItem('AUTH');
-      var logged = false;
-      try{ logged = !!(JSON.parse(a||'{}').loggedIn); }catch(e){}
-      location.replace(logged ? 'home.html' : 'intro.html');
-    }catch(e){
-      location.replace('intro.html');
-    }
-  </script>
+	<div style="display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; color: #6b7280;">
+		<p>로그인 상태를 확인 중입니다.</p>
+	</div>
+  
+	<script>	
+		async function checkAuthAndRedirect() {
+			try {
+				// Supabase 서버/로컬 세션으로부터 실제 로그인된 유저 정보를 가져옵니다.
+				const { data: { user }, error } = await supabaseClient.auth.getUser();
+		
+				if (user) {
+					// 로그인 성공 상태라면 메인 대시보드로 이동
+					localStorage.setItem('AUTH', 'true'); // 하위 호환용 플래그 유지
+					location.replace('home.html');
+				} else {
+					// 로그인이 안 되어 있거나 세션이 만료되었다면 인트로로 이동
+					localStorage.removeItem('AUTH');
+					location.replace('intro.html');
+				}
+			} catch (e) {
+				console.error('인증 체크 중 에러 발생:', e);
+				location.replace('intro.html');
+			}
+		}
+	
+		// 페이지 로드 즉시 실행
+		checkAuthAndRedirect();
+	</script>
 <script src="app.js" defer></script>
 </body>
 </html>

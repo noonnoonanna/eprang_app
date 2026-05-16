@@ -3,8 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#ffffff" />
-  <link rel="manifest" href="manifest.webmanifest" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <title>이피랑 - 설정</title>
@@ -205,456 +204,598 @@ body[data-page="settings"] .st-danger .arrow-sub { color: #b91c1c; opacity: 0.8;
 
   <script src="app.js" defer></script>
   <script>
-  (function(){
-    var settingsKey = (window.K && K.SETTINGS) || 'ep-settings';
-    var projectsKey = (window.K && K.PROJECTS) || 'ep-projects';
-    var settings = {};
+(function(){
 
-    function safeRead(key, fallback){
-      try{
-        if (typeof read === 'function') {
-          return read(key, fallback);
-        }
-        var raw = localStorage.getItem(key);
-        if (!raw) return fallback;
-        var parsed = JSON.parse(raw);
-        return (parsed === null || parsed === undefined) ? fallback : parsed;
-      }catch(e){
-        return fallback;
-      }
+  // =========================
+  // 상태
+  // =========================
+  let currentUser = null;
+  let profileData = {};
+  let notificationsData = {};
+
+  // localStorage 유지용
+  const LOCAL_KEYS = [
+    'surveyDraft',
+    'projectDraft',
+    'estimateDraft',
+    'recentProjects'
+  ];
+
+  // =========================
+  // 공통
+  // =========================
+  function showToast(msg){
+    if(typeof toast === 'function'){
+      toast(msg);
+    }else{
+      alert(msg);
     }
+  }
 
-    function safeWrite(key, value){
-      try{
-        if (typeof save === 'function') {
-          save(key, value);
-        } else {
-          localStorage.setItem(key, JSON.stringify(value));
-        }
-      }catch(e){
-        console.error('settings save error', e);
-      }
+  function closeCurrentModal(){
+    if(typeof closeModal === 'function'){
+      closeModal({target: document.getElementById('overlay')});
     }
+  }
 
-    // 파트너 코드 생성 (처음 한 번)
-    function ensurePartnerCode(obj){
-      obj.partner = obj.partner || {};
-      if (!obj.partner.code) {
-        var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-        var code = 'EP-';
-        for (var i = 0; i < 6; i++){
-          code += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        obj.partner.code = code;
-      }
-      return obj;
-    }
+  // =========================
+  // 프로필 UI 적용
+  // =========================
+  function applyProfileToUI(profile){
 
-    function applySettingsToUI(){
-      var profile = settings.profile || {};
-      var noti    = settings.notifications || {};
-      var partner = settings.partner || {};
+    document.getElementById('stProfileName').textContent =
+      profile.name || '이름 미등록';
 
-      var elName = document.getElementById('stProfileName');
-      var elRole = document.getElementById('stProfileRole');
-      var elMeta = document.getElementById('stProfileMeta');
+    document.getElementById('stProfileRole').textContent =
+      profile.farm_name || '농장 이름';
+console.log(profile.phone);
+    document.getElementById('stProfileMeta').textContent =
+      `${profile.phone || '-'} / ${profile.email || '-'}`;
+  }
 
-      var typeLabel = (profile.type === 'corporate') ? '법인' : (profile.type === 'personal' ? '개인' : '구분 미선택');
-      var name = profile.name || '이름 미등록';
-      var farm = profile.name || '농장 이름 미등록';
-      var phone = profile.phone || '연락처 미등록';
-      var email = profile.email || '이메일 미등록';
+  // =========================
+  // 알림 UI 적용
+  // =========================
+  function applyNotificationsToUI(noti){
 
-      if (elName) elName.textContent = name;
-      if (elRole) elRole.textContent = farm;
-      if (elMeta) elMeta.textContent = phone + ' · ' + email;
+    const active = [];
 
-      // 알림 요약
-      var elNotiTitle = document.getElementById('stNotiTitle');
-      var elNotiSub   = document.getElementById('stNotiSub');
+    if(noti.policy) active.push('정책자금');
+    if(noti.quote) active.push('견적/계약');
+    if(noti.build) active.push('시공');
+    if(noti.ops) active.push('운영 초기');
 
-      var active = [];
-      if (noti.policy) active.push('정책자금');
-      if (noti.quote)  active.push('견적/계약');
-      if (noti.build)  active.push('시공');
-      if (noti.ops)    active.push('운영 초기');
+    document.getElementById('stNotiTitle').textContent =
+      active.length
+        ? active.join(' · ') + ' 알림 받는 중'
+        : '알림 받는 항목이 없습니다';
 
-      if (elNotiTitle){
-        if (active.length === 0){
-          elNotiTitle.textContent = '알림 받는 항목이 없습니다';
-        } else {
-          elNotiTitle.textContent = active.join(' · ') + ' 알림 받는 중';
-        }
-      }
-
-      if (elNotiSub){
-        var timeMap = {
-          morning: '오전 (09~12)',
-          afternoon: '오후 (13~18)',
-          evening: '저녁 (18~21)',
-          any: '언제든지'
-        };
-        var timeLabel = timeMap[noti.time || 'morning'] || '오전 (09~12)';
-        elNotiSub.textContent = '주로 ' + timeLabel + '에 알림을 보내드려요.';
-      }
-    }
-
-    function openSettingsModal(innerHtml){
-      var ov = document.getElementById('overlay');
-      var m  = document.getElementById('modal');
-      if (!ov || !m) return;
-
-      ov.classList.add('show');
-      m.style.display = 'block';
-      m.innerHTML = innerHtml;
-    }
-
-    // 파트너 코드 복사 (프로필 모달 안에서 사용)
-    function copyPartnerCode(){
-      var codeEl = document.getElementById('mdPartnerCode');
-      if (!codeEl) return;
-      var text = codeEl.textContent || codeEl.innerText;
-      if (!navigator.clipboard){
-        try{
-          var ta = document.createElement('textarea');
-          ta.value = text;
-          document.body.appendChild(ta);
-          ta.select();
-          document.execCommand('copy');
-          document.body.removeChild(ta);
-        }catch(e){}
-      }else{
-        navigator.clipboard.writeText(text).catch(function(){});
-      }
-      if (typeof toast === 'function'){
-        toast('파트너 코드가 복사되었습니다.');
-      }
-    }
-
-    // 프로필 모달
-    window.openProfileModal = function(){
-      var profile = settings.profile || {};
-      var partner = settings.partner || {};
-      var partnerCode = partner.code || '';
-
-      openSettingsModal(`
-        <div class="modal-title">
-          <i class="fa-regular fa-id-card"></i>
-          <span>프로필</span>
-        </div>
-        <div class="modal-section">
-          <div class="modal-field">
-            <div class="partner-label">파트너 코드 (복사만 가능)</div>
-            <div class="partner-box">
-              <span class="partner-code" id="mdPartnerCode">${partnerCode}</span>
-              <button type="button" class="btn-copy" onclick="copyPartnerCode()">복사</button>
-            </div>
-          </div>
-
-          <div class="modal-field">
-            <span class="modal-label">구분</span>
-            <div class="modal-radio-row">
-              <label class="modal-radio-item">
-                <input type="radio" name="mdType" value="personal" ${profile.type !== 'corporate' ? 'checked' : ''} />
-                <span>개인</span>
-              </label>
-              <label class="modal-radio-item">
-                <input type="radio" name="mdType" value="corporate" ${profile.type === 'corporate' ? 'checked' : ''} />
-                <span>법인</span>
-              </label>
-            </div>
-          </div>
-
-          <div class="modal-field">
-            <label class="modal-label" for="mdName">상호 / 농장 이름</label>
-            <input id="mdName" class="modal-input" type="text" placeholder="예: 김포 엽채 스마트팜" value="${profile.name || ''}" />
-          </div>
-
-          <div class="modal-field">
-            <label class="modal-label" for="mdBizNo">사업자등록번호</label>
-            <input id="mdBizNo" class="modal-input" type="text" placeholder="예: 123-45-67890" value="${profile.bizNo || ''}" />
-          </div>
-
-          <div class="modal-field">
-            <label class="modal-label" for="mdAddress">주소</label>
-            <textarea id="mdAddress" class="modal-textarea" placeholder="예: 경기도 김포시 ○○로 123, 지식산업센터 3층">${profile.address || ''}</textarea>
-          </div>
-
-          <div class="modal-field">
-            <label class="modal-label" for="mdManager">담당자 이름</label>
-            <input id="mdManager" class="modal-input" type="text" placeholder="예: 홍길동" value="${profile.manager || ''}" />
-          </div>
-
-          <div class="modal-field">
-            <label class="modal-label" for="mdPhone">담당자 연락처</label>
-            <input id="mdPhone" class="modal-input" type="tel" placeholder="예: 010-0000-0000" value="${profile.phone || ''}" />
-          </div>
-
-          <div class="modal-field">
-            <label class="modal-label" for="mdEmail">이메일</label>
-            <input id="mdEmail" class="modal-input" type="email" placeholder="예: farm@example.com" value="${profile.email || ''}" />
-          </div>
-        </div>
-
-        <div class="modal-actions">
-          <button type="button" class="btn btn-cancel" onclick="closeModal && closeModal({target: document.getElementById('overlay')})">취소</button>
-          <button type="button" class="btn btn-primary" onclick="saveProfileFromModal()">저장</button>
-        </div>
-      `);
+    const timeMap = {
+      morning: '오전 (09~12)',
+      afternoon: '오후 (13~18)',
+      evening: '저녁 (18~21)',
+      any: '언제든지'
     };
 
-    window.saveProfileFromModal = function(){
-      var type = 'personal';
-      var radios = document.querySelectorAll('input[name="mdType"]');
-      radios.forEach(function(r){
-        if (r.checked) type = r.value;
+    document.getElementById('stNotiSub').textContent =
+      `주로 ${timeMap[noti.time || 'morning']}에 알림을 보내드려요.`;
+  }
+
+  // =========================
+  // 사용자 로드
+  // =========================
+  async function loadUser(){
+
+    try{
+
+      const {
+        data: { user },
+        error: authError
+      } = await supabaseClient.auth.getUser();
+
+      if(authError || !user){
+        showToast('로그인이 필요합니다.');
+        location.href = 'login.html';
+        return;
+      }
+
+      currentUser = user;
+
+      // profiles 조회
+      const { data, error } = await supabaseClient
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if(error && error.code !== 'PGRST116'){
+        throw error;
+      }
+
+      // profiles 없으면 생성
+      if(!data){
+
+        const defaultProfile = {
+          id: user.id,
+          email: user.email,
+          notifications: {
+            policy:false,
+            quote:false,
+            build:false,
+            ops:false,
+            time:'morning'
+          }
+        };
+
+        await supabaseClient
+          .from('profiles')
+          .insert(defaultProfile);
+
+        profileData = defaultProfile;
+
+      }else{
+        profileData = data;
+      }
+
+      notificationsData =
+        profileData.notifications || {};
+
+      applyProfileToUI(profileData);
+      applyNotificationsToUI(notificationsData);
+
+    }catch(err){
+      console.error(err);
+      showToast('유저 정보를 불러오지 못했습니다.');
+    }
+  }
+
+  // =========================
+  // 프로필 모달
+  // =========================
+  window.openProfileModal = function(){
+
+    const p = profileData || {};
+
+    openSettingsModal(`
+      <div class="modal-title">
+        <i class="fa-regular fa-id-card"></i>
+        <span>프로필</span>
+      </div>
+
+      <div class="modal-section">
+
+        <div class="modal-field">
+          <label class="modal-label">이름</label>
+          <input
+            id="mdName"
+            class="modal-input"
+            value="${p.name || ''}"
+            placeholder="이름 입력"
+          />
+        </div>
+
+        <div class="modal-field">
+          <label class="modal-label">농장 이름</label>
+          <input
+            id="mdFarm"
+            class="modal-input"
+            value="${p.farm_name || ''}"
+            placeholder="농장 이름"
+          />
+        </div>
+
+        <div class="modal-field">
+          <label class="modal-label">연락처</label>
+          <input
+            id="mdPhone"
+            class="modal-input"
+            value="${p.phone || ''}"
+            placeholder="010-0000-0000"
+          />
+        </div>
+
+        <div class="modal-field">
+          <label class="modal-label">이메일</label>
+          <input
+            id="mdEmail"
+            class="modal-input"
+            value="${p.email || currentUser.email || ''}"
+            disabled
+          />
+        </div>
+
+      </div>
+
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="btn btn-cancel"
+          onclick="closeModal({target: document.getElementById('overlay')})"
+        >
+          취소
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-primary"
+          onclick="saveProfileFromModal()"
+        >
+          저장
+        </button>
+      </div>
+    `);
+  };
+
+  // =========================
+  // 프로필 저장
+  // =========================
+  window.saveProfileFromModal = async function(){
+
+    try{
+
+      const payload = {
+        id: currentUser.id,
+        email: currentUser.email,
+        name: document.getElementById('mdName').value.trim(),
+        farm_name: document.getElementById('mdFarm').value.trim(),
+        phone: document.getElementById('mdPhone').value.trim(),
+        notifications: notificationsData
+      };
+
+      const { error } = await supabaseClient
+        .from('profiles')
+        .upsert(payload);
+
+      if(error) throw error;
+
+      profileData = payload;
+
+      applyProfileToUI(profileData);
+
+      showToast('프로필이 저장되었습니다.');
+      closeCurrentModal();
+
+    }catch(err){
+      console.error(err);
+      showToast('프로필 저장 실패');
+    }
+  };
+
+  // =========================
+  // 알림 모달
+  // =========================
+  window.openNotiModal = function(){
+
+    const n = notificationsData || {};
+
+    openSettingsModal(`
+      <div class="modal-title">
+        <i class="fa-regular fa-bell"></i>
+        <span>알림 설정</span>
+      </div>
+
+      <div class="modal-section">
+
+        <div class="modal-field">
+
+          <div class="modal-check-row">
+
+            <label class="modal-check-item">
+              <input type="checkbox" id="mdPolicy" ${n.policy ? 'checked' : ''}>
+              <span>정책자금</span>
+            </label>
+
+            <label class="modal-check-item">
+              <input type="checkbox" id="mdQuote" ${n.quote ? 'checked' : ''}>
+              <span>견적/계약</span>
+            </label>
+
+            <label class="modal-check-item">
+              <input type="checkbox" id="mdBuild" ${n.build ? 'checked' : ''}>
+              <span>시공</span>
+            </label>
+
+            <label class="modal-check-item">
+              <input type="checkbox" id="mdOps" ${n.ops ? 'checked' : ''}>
+              <span>운영 초기</span>
+            </label>
+
+          </div>
+
+        </div>
+
+        <div class="modal-field">
+
+          <label class="modal-label">알림 시간</label>
+
+          <select id="mdTime" class="modal-select">
+            <option value="morning">오전</option>
+            <option value="afternoon">오후</option>
+            <option value="evening">저녁</option>
+            <option value="any">상관없음</option>
+          </select>
+
+        </div>
+
+      </div>
+
+      <div class="modal-actions">
+
+        <button
+          type="button"
+          class="btn btn-cancel"
+          onclick="closeModal({target: document.getElementById('overlay')})"
+        >
+          취소
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-primary"
+          onclick="saveNotiFromModal()"
+        >
+          저장
+        </button>
+
+      </div>
+    `);
+
+    setTimeout(()=>{
+      document.getElementById('mdTime').value =
+        n.time || 'morning';
+    },50);
+  };
+
+  // =========================
+  // 알림 저장
+  // =========================
+  window.saveNotiFromModal = async function(){
+
+    try{
+
+      notificationsData = {
+        policy: document.getElementById('mdPolicy').checked,
+        quote: document.getElementById('mdQuote').checked,
+        build: document.getElementById('mdBuild').checked,
+        ops: document.getElementById('mdOps').checked,
+        time: document.getElementById('mdTime').value
+      };
+
+      const { error } = await supabaseClient
+        .from('profiles')
+        .update({
+          notifications: notificationsData
+        })
+        .eq('id', currentUser.id);
+
+      if(error) throw error;
+
+      applyNotificationsToUI(notificationsData);
+
+      showToast('알림 설정 저장 완료');
+      closeCurrentModal();
+
+    }catch(err){
+      console.error(err);
+      showToast('알림 저장 실패');
+    }
+  };
+
+  // =========================
+  // 모달 공통
+  // =========================
+  function openSettingsModal(innerHtml){
+
+    const overlay = document.getElementById('overlay');
+    const modal = document.getElementById('modal');
+
+    overlay.classList.add('show');
+
+    modal.style.display = 'block';
+    modal.innerHTML = innerHtml;
+  }
+
+  // =========================
+  // 데이터 다운로드
+  // =========================
+  window.exportData = async function(){
+
+    try{
+
+      const exportObj = {
+        profile: profileData,
+        notifications: notificationsData,
+        localStorage: {}
+      };
+
+      LOCAL_KEYS.forEach(key=>{
+        exportObj.localStorage[key] =
+          localStorage.getItem(key);
       });
 
-      var profile = {
-        type   : type,
-        name   : (document.getElementById('mdName')    || {}).value || '',
-        bizNo  : (document.getElementById('mdBizNo')   || {}).value || '',
-        address: (document.getElementById('mdAddress') || {}).value || '',
-        manager: (document.getElementById('mdManager') || {}).value || '',
-        phone  : (document.getElementById('mdPhone')   || {}).value || '',
-        email  : (document.getElementById('mdEmail')   || {}).value || ''
-      };
+      const blob = new Blob(
+        [JSON.stringify(exportObj, null, 2)],
+        { type:'application/json' }
+      );
 
-      settings.profile = profile;
-      safeWrite(settingsKey, settings);
-      applySettingsToUI();
+      const url = URL.createObjectURL(blob);
 
-      if (typeof toast === 'function'){
-        toast('프로필 / 농장 정보가 저장되었습니다.');
-      }
-      if (typeof closeModal === 'function'){
-        closeModal({target: document.getElementById('overlay')});
-      }
-    };
+      const a = document.createElement('a');
 
-    // 알림 설정 모달
-    window.openNotiModal = function(){
-      var noti = settings.notifications || {};
-      var time = noti.time || 'morning';
+      a.href = url;
+      a.download = 'epirang-data.json';
 
-      openSettingsModal(`
-        <div class="modal-title">
-          <i class="fa-regular fa-bell"></i>
-          <span>알림 설정</span>
-        </div>
-        <p class="modal-sub">
-          정책자금, 견적/계약, 시공, 운영 초기까지 놓치기 쉬운 알림을 관리합니다.
-        </p>
-        <div class="modal-section">
-          <div class="modal-field">
-            <span class="modal-label">받을 알림 종류</span>
-            <div class="modal-check-row">
-              <label class="modal-check-item">
-                <input type="checkbox" id="mdNotiPolicy" ${noti.policy ? 'checked' : ''} />
-                <span>정책자금</span>
-              </label>
-              <label class="modal-check-item">
-                <input type="checkbox" id="mdNotiQuote" ${noti.quote ? 'checked' : ''} />
-                <span>견적/계약</span>
-              </label>
-              <label class="modal-check-item">
-                <input type="checkbox" id="mdNotiBuild" ${noti.build ? 'checked' : ''} />
-                <span>시공</span>
-              </label>
-              <label class="modal-check-item">
-                <input type="checkbox" id="mdNotiOps" ${noti.ops ? 'checked' : ''} />
-                <span>운영 초기</span>
-              </label>
-            </div>
-          </div>
+      a.click();
 
-          <div class="modal-field">
-            <label class="modal-label" for="mdNotiTime">알림 받기 좋은 시간대</label>
-            <select id="mdNotiTime" class="modal-select">
-              <option value="morning"   ${time === 'morning'   ? 'selected' : ''}>오전 (09:00 ~ 12:00)</option>
-              <option value="afternoon" ${time === 'afternoon' ? 'selected' : ''}>오후 (13:00 ~ 18:00)</option>
-              <option value="evening"   ${time === 'evening'   ? 'selected' : ''}>저녁 (18:00 ~ 21:00)</option>
-              <option value="any"       ${time === 'any'       ? 'selected' : ''}>상관없음</option>
-            </select>
-          </div>
-        </div>
+      URL.revokeObjectURL(url);
 
-        <div class="modal-actions">
-          <button type="button" class="btn btn-cancel" onclick="closeModal && closeModal({target: document.getElementById('overlay')})">취소</button>
-          <button type="button" class="btn btn-primary" onclick="saveNotiFromModal()">저장</button>
-        </div>
-      `);
-    };
+      showToast('데이터 다운로드 완료');
 
-    window.saveNotiFromModal = function(){
-      var noti = {
-        policy: !!(document.getElementById('mdNotiPolicy') && document.getElementById('mdNotiPolicy').checked),
-        quote : !!(document.getElementById('mdNotiQuote')  && document.getElementById('mdNotiQuote').checked),
-        build : !!(document.getElementById('mdNotiBuild')  && document.getElementById('mdNotiBuild').checked),
-        ops   : !!(document.getElementById('mdNotiOps')    && document.getElementById('mdNotiOps').checked),
-        time  : (document.getElementById('mdNotiTime')     || {}).value || 'morning'
-      };
-
-      settings.notifications = noti;
-      safeWrite(settingsKey, settings);
-      applySettingsToUI();
-
-      if (typeof toast === 'function'){
-        toast('알림 설정이 저장되었습니다.');
-      }
-      if (typeof closeModal === 'function'){
-        closeModal({target: document.getElementById('overlay')});
-      }
-    };
-
-    // 데이터 다운로드
-    function exportData(){
-      try{
-        var projects = safeRead(projectsKey, []);
-        var data = {
-          exportedAt: new Date().toISOString(),
-          settings  : safeRead(settingsKey, {}),
-          projects  : projects
-        };
-        var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
-        var url  = URL.createObjectURL(blob);
-        var a    = document.createElement('a');
-        a.href = url;
-        a.download = 'eprang-data-export.json';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        if (typeof toast === 'function'){
-          toast('데이터 파일을 다운로드했습니다.');
-        }
-      }catch(e){
-        console.error(e);
-        if (typeof toast === 'function'){
-          toast('데이터 다운로드 중 오류가 발생했습니다.');
-        }
-      }
+    }catch(err){
+      console.error(err);
+      showToast('다운로드 실패');
     }
+  };
 
-    // 계정/데이터 삭제 (로컬 초기화 수준)
-    function deleteData(){
-      var ok = confirm('이 기기에 저장된 설문·프로젝트·설정 데이터를 삭제하시겠습니까?\n실제 서비스에서는 별도 본인 확인 절차가 필요합니다.');
-      if (!ok) return;
-      try{
-        if (typeof save === 'function'){
-          save(projectsKey, []);
-          save(settingsKey, {});
-        }else{
-          localStorage.removeItem(projectsKey);
-          localStorage.removeItem(settingsKey);
-        }
-        settings = ensurePartnerCode({});
-        safeWrite(settingsKey, settings);
-        applySettingsToUI();
-        if (typeof toast === 'function'){
-          toast('이 기기에 저장된 데이터가 초기화되었습니다.');
-        }
-      }catch(e){
-        console.error(e);
-        if (typeof toast === 'function'){
-          toast('데이터 삭제 중 오류가 발생했습니다.');
-        }
-      }
+  // =========================
+  // 로컬 데이터 삭제
+  // =========================
+  window.deleteData = async function(){
+
+    const ok = confirm(
+      '이 기기의 로컬 데이터를 삭제할까요?\n계정은 유지됩니다.'
+    );
+
+    if(!ok) return;
+
+    try{
+
+      LOCAL_KEYS.forEach(key=>{
+        localStorage.removeItem(key);
+      });
+
+      showToast('로컬 데이터 삭제 완료');
+
+    }catch(err){
+      console.error(err);
+      showToast('삭제 실패');
     }
+  };
 
-    // 계정 삭제/다운로드 모달
-    window.openDeleteModal = function(){
-      openSettingsModal(`
-        <div class="modal-title">
-          <i class="fa-regular fa-circle-xmark"></i>
-          <span>계정 삭제 / 데이터 다운로드</span>
+  // =========================
+  // 계정 탈퇴
+  // =========================
+  window.deleteAccount = async function(){
+
+    const ok = confirm(
+      '정말 탈퇴하시겠습니까?\n복구할 수 없습니다.'
+    );
+
+    if(!ok) return;
+
+    try{
+
+      // profiles 삭제
+      await supabaseClient
+        .from('profiles')
+        .delete()
+        .eq('id', currentUser.id);
+
+      // auth 삭제 (edge function 필요할 수 있음)
+      const { error } = await supabaseClient.auth.signOut();
+
+      if(error){
+        console.warn(error);
+      }
+
+      // localStorage 제거
+      localStorage.clear();
+
+      // 로그아웃
+      await supabaseClient.auth.signOut();
+
+      showToast('회원탈퇴 완료');
+
+      setTimeout(()=>{
+        location.href = 'login.html';
+      },1000);
+
+    }catch(err){
+      console.error(err);
+      showToast('탈퇴 실패');
+    }
+  };
+
+  // =========================
+  // 삭제 모달
+  // =========================
+  window.openDeleteModal = function(){
+
+    openSettingsModal(`
+      <div class="modal-title">
+        <i class="fa-regular fa-circle-xmark"></i>
+        <span>계정 삭제 / 데이터 다운로드</span>
+      </div>
+
+      <div class="modal-section">
+
+        <div class="modal-field">
+
+          <span class="modal-label">데이터 다운로드</span>
+
+          <button
+            type="button"
+            class="btn btn-outline"
+            style="width:100%;height:44px;border-radius:12px;"
+            onclick="exportData()"
+          >
+            데이터 다운로드
+          </button>
+
         </div>
 
-        <div class="modal-section">
-          <div class="modal-field">
-            <span class="modal-label">데이터 다운로드</span>
-            <p class="modal-sub" style="margin-bottom:8px;">
-              내 설문 응답, 프로젝트, 설정 정보를 하나의 JSON 파일로 내려받습니다.
-            </p>
-            <button type="button" class="btn btn-outline" style="width:100%;height:40px;border-radius:12px;line-height:0.1rem;" onclick="exportData()">
-              데이터 다운로드 (로컬 기기)
-            </button>
-          </div>
+        <div class="modal-field" style="margin-top:20px;">
 
-          <div class="modal-field" style="margin-top:16px;">
-            <span class="modal-label" style="color:#b91c1c;">계정 / 데이터 삭제</span>
-            <p class="modal-sub" style="margin-bottom:8px;color:#7f1d1d;">
-              이 기기에 저장된 모든 설문 · 프로젝트 · 설정 데이터가 삭제됩니다.
-              실제 서비스에서는 되돌릴 수 없으므로 신중히 진행해 주세요.
-            </p>
-            <button type="button" class="btn btn-danger" style="width:100%;height:40px;border-radius:12px;line-height:0.1rem;" onclick="deleteData()">
-              계정 / 데이터 삭제 (이 기기)
-            </button>
-          </div>
+          <span
+            class="modal-label"
+            style="color:#b91c1c;"
+          >
+            로컬 데이터 삭제
+          </span>
+
+          <button
+            type="button"
+            class="btn btn-danger"
+            style="width:100%;height:44px;border-radius:12px;"
+            onclick="deleteData()"
+          >
+            이 기기 데이터 삭제
+          </button>
+
         </div>
 
-        <div class="modal-actions">
-          <button type="button" class="btn btn-cancel" onclick="closeModal && closeModal({target: document.getElementById('overlay')})">닫기</button>
+        <div class="modal-field" style="margin-top:20px;">
+
+          <span
+            class="modal-label"
+            style="color:#991b1b;"
+          >
+            회원 탈퇴
+          </span>
+
+          <button
+            type="button"
+            class="btn btn-danger"
+            style="width:100%;height:44px;border-radius:12px;"
+            onclick="deleteAccount()"
+          >
+            회원 탈퇴
+          </button>
+
         </div>
-      `);
-    };
 
-    // 초기화
-    document.addEventListener('DOMContentLoaded', function(){
-      // 홈 버튼
-      var btnHome = document.getElementById('stBtnHome');
-      if (btnHome){
-        btnHome.addEventListener('click', function(){
-          window.location.assign('home.html');
-        });
-      }
+      </div>
 
-      // 저장 버튼 (실제 값은 모달에서 저장되므로 토스트만)
-      var btnSave = document.getElementById('stBtnSave');
-      if (btnSave){
-        btnSave.addEventListener('click', function(){
-          if (typeof toast === 'function'){
-            toast('설정이 저장되었습니다.');
-          }
-        });
-      }
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="btn btn-cancel"
+          onclick="closeModal({target: document.getElementById('overlay')})"
+        >
+          닫기
+        </button>
+      </div>
+    `);
+  };
 
-      // 기존 설정 읽기 + 파트너 코드 생성
-      settings = safeRead(settingsKey, {}) || {};
-      settings = ensurePartnerCode(settings);
-      safeWrite(settingsKey, settings);
-      applySettingsToUI();
+  // =========================
+  // 초기 실행
+  // =========================
+  document.addEventListener('DOMContentLoaded', function(){
+    loadUser();
+  });
 
-      // 약관 링크
-      var linkTerms   = document.getElementById('stLinkTerms');
-      var linkPrivacy = document.getElementById('stLinkPrivacy');
-      var linkData    = document.getElementById('stLinkData');
-
-      if (linkTerms){
-        linkTerms.addEventListener('click', function(){
-          //window.location.assign('terms.html');
-        });
-      }
-      if (linkPrivacy){
-        linkPrivacy.addEventListener('click', function(){
-          //window.location.assign('privacy.html'); // 없으면 terms.html로 교체 가능
-        });
-      }
-      if (linkData){
-        linkData.addEventListener('click', function(){
-          if (typeof openTerms === 'function'){
-            openTerms(
-              '데이터 활용 동의',
-              '익명화된 실내 스마트팜 운영 데이터가 정책·연구·제품 기획에 활용될 수 있습니다. 실제 서비스에서는 별도 전문을 제공합니다.'
-            );
-          }else{
-            alert('데이터 활용 동의 전문은 추후 제공될 예정입니다.');
-          }
-        });
-      }
-    });
-
-  })();
-  </script>
+})();
+</script>
 </body>
 </html>

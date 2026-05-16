@@ -2,40 +2,14 @@
 //  공통 키 & 유틸
 // =============================
 
-// ep- 로 요약한 로컬스토리지 키들
-const K = {
-  BASIC:    'ep-basic',     // 회원 기본 정보 (userid, pw, phone 등)
-  PROJECTS: 'ep-projects'   // 나중에 프로젝트 리스트 쓸 때 사용
-};
-
-// 인증 상태용 (index.html 에서 쓰는 AUTH 그대로 유지)
-const KA = {
-  AUTH: 'AUTH'
-};
+const supabaseClient = supabase.createClient(
+  'https://jotgygpobwvswasgbage.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvdGd5Z3BvYnd2c3dhc2diYWdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4ODU4MzIsImV4cCI6MjA5NDQ2MTgzMn0.GCPW_viKskyoR7Nd1NbrSULJbouOBSFFtJdQQi6zDBE'
+);
 
 // DOM 헬퍼
 function $(sel)  { return document.querySelector(sel); }
 function $$(sel) { return Array.from(document.querySelectorAll(sel)); }
-
-// localStorage read/save
-function read(key, fallback) {
-  try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return fallback;
-    return JSON.parse(raw);
-  } catch (e) {
-    console.warn('[read] fail', key, e);
-    return fallback;
-  }
-}
-
-function save(key, value) {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch (e) {
-    console.warn('[save] fail', key, e);
-  }
-}
 
 // 토스트 메시지
 function toast(msg) {
@@ -52,27 +26,23 @@ function toast(msg) {
 // =============================
 //  인증 상태 (AUTH)
 // =============================
-
-function setAuth(data) {
-  const prev = getAuth() || {};
-  const next = { ...prev, ...data };
-  save(KA.AUTH, next);
+// 현재 로그인 유저 정보 가져오기 (비동기)
+async function getCurrentUser() {
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  return user;
 }
 
-function getAuth() {
-  return read(KA.AUTH, null);
-}
-
+// 동기식 체크가 필요한 페이지 진입 Guard용 (선택)
 function isLoggedIn() {
-  const a = getAuth();
-  return !!(a && a.loggedIn);
+  // Supabase가 로컬스토리지에 자동으로 생성하는 세션 키를 확인하는
+  const sbKey = Object.keys(localStorage).find(key => key.startsWith('sb-'));
+  return !!sbKey;
 }
 
 // =============================
-//  로그인 처리 (login.html)
+//  로그인 처리
 // =============================
-
-function handleLogin(e) {
+async function handleLogin(e) {
   e.preventDefault();
   const id = e.target.userid.value.trim();
   const pw = e.target.password.value.trim();
@@ -82,14 +52,19 @@ function handleLogin(e) {
     return;
   }
 
-  const basic = read(K.BASIC, null);
+  try {
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email: id,
+      password: pw
+    });
 
-  if (basic && basic.userid === id && basic.pw === pw) {
-    setAuth({ loggedIn: true, userId: id });
+    if (error) throw error;
+
     toast('로그인 되었습니다.');
-    // 로그인 성공 후 대시보드(메인)로 이동
-    window.location.assign('index.html');
-  } else {
+	localStorage.setItem('AUTH', 'true');
+    window.location.assign('home.html');
+  } catch (e) {
+    console.error(e);
     toast('아이디 또는 비밀번호가 올바르지 않습니다');
   }
 }
@@ -97,13 +72,11 @@ function handleLogin(e) {
 // =============================
 //  약관 동의 (terms.html)
 // =============================
-
 const TERMS = {
   service: `서비스 이용약관 전문을 여기에 넣으세요.`,
   privacy: `개인정보 수집·이용 동의 전문을 여기에 넣으세요.`
 };
 
-// 약관 전문 모달 열기
 function openTerms(title, content) {
   const ov = document.querySelector('#overlay');
   const m  = document.querySelector('#modal');
@@ -158,19 +131,22 @@ function updateTermsNext() {
 }
 
 function handleTermsNext() {
-  const agreeService = $('#agreeService')?.checked;
-  const agreePrivacy = $('#agreePrivacy')?.checked;
+  const agreeService = $('#agreeService')?.checked || false;
+  const agreePrivacy = $('#agreePrivacy')?.checked || false;
 
   if (!agreeService || !agreePrivacy) {
-    // survey에서 쓰던 느낌 그대로 모달로 안내
-    openTerms(
-      '동의가 필요합니다',
-      '서비스 이용약관과 개인정보 수집·이용에 모두 동의해 주세요.\n\n필수 항목을 체크한 후 다음 단계로 진행할 수 있습니다.'
-    );
+    
+    const errorMsg = '서비스 이용약관과 개인정보 수집 및 이용에 모두 동의해 주세요. 필수 항목을 체크하셔야 다음 단계로 진행할 수 있습니다.';
+    
+    if (typeof openTerms === 'function') {
+      openTerms('동의가 필요합니다', errorMsg);
+    } else {
+      toast('필수 약관에 모두 동의해주세요.');
+    }
     return;
   }
 
-  // 두 개 다 체크된 경우에만 다음 페이지로 이동
+  // 두 개 다 체크된 경우에만 survey.html로 이동
   window.location.assign('survey.html');
 }
 
@@ -232,7 +208,7 @@ function filterPhone(el) {
 }
 
 // 회원가입 저장 + 로그인 상태 세팅 + 대시보드로 이동
-function saveBasic() {
+async function saveBasic() {
   const form = $('#form-basic');
   if (!form) {
     toast('폼을 찾을 수 없습니다');
@@ -255,55 +231,262 @@ function saveBasic() {
     toast('비밀번호가 일치하지 않습니다');
     return;
   }
+  
+  const email = String(f.get('userid')).trim();
+  const password = String(f.get('pw'));
+  const phone = String(f.get('phone')).trim();
+  
+  try {
+    // 1단계: Supabase 회원가입 진행
+    const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        data: { phone: phone }
+      }
+    });
 
-  const basicData = Object.fromEntries(f.entries());
+    if (authError) throw authError;
+    if (!authData.user) {
+      toast('회원가입 처리에 실패했습니다.');
+      return;
+    }
 
-  // 기본 정보 저장
-  save(K.BASIC, basicData);
+    const userId = authData.user.id; 
 
-  // 로그인 상태로 전환
-  setAuth({ loggedIn: true, userId: basicData.userid });
+    // 2단계: reco-intro에서 임시 패킹해둔 [설문+설계안] 데이터 패키지 꺼내기
+    const tempPackageRaw = localStorage.getItem('ep-temp-project-package');
 
-  toast('회원가입이 완료되었습니다.');
+    if (tempPackageRaw) {
+      const packageData = JSON.parse(tempPackageRaw);
+      const surveyData = packageData.survey;
+      const recoData = packageData.reco;
+      
+      const regionSi = surveyData.step1?.region_si || '';
+      // 선택한 설계안 이름이 있다면 제목에 반영 (예: "서울 스마트팜 프로젝트 (딸기 컴팩트형)")
+      const recoName = recoData?.title ? ` (${recoData.title})` : '';
+      const projectName = regionSi ? `${regionSi} 스마트팜 프로젝트${recoName}` : `신규 스마트팜 프로젝트${recoName}`;
 
-  // 회원가입 완료 후 메인 대시보드로 이동
-  window.location.assign('index.html');
+      // 3단계: projects 테이블에 마스터 행 추가 (선택한 설계안 정보인 recoData를 json 구조로 통째로 넣어 보관해도 좋습니다)
+      const { data: newProject, error: projectError } = await supabaseClient
+        .from('projects')
+        .insert([{ 
+          user_id: userId, 
+          name: projectName, 
+          status: 'draft'
+          // 만약 projects 테이블에 선택한 안을 저장하는 컬럼(예: selected_reco)을 만드셨다면 여기에 recoData를 넣으시면 됩니다.
+        }])
+        .select()
+        .single();
+
+      if (projectError) throw projectError;
+
+      // 4단계: project_surveys 테이블에 상세 설문 데이터 매핑하여 추가
+      const { error: surveyError } = await supabaseClient
+        .from('project_surveys')
+        .insert([
+          {
+            project_id: newProject.id,
+            user_type: surveyData.step1?.user_type || null,
+            region_si: surveyData.step1?.region_si || null,
+            policy: surveyData.step1?.policy || null,
+            loan_range: surveyData.step1?.loan_range || null,
+            own_capital: surveyData.step1?.own_capital || null,
+            facility: surveyData.step2?.facility || null,
+            floor_area: surveyData.step2?.floor_area ? Number(surveyData.step2.floor_area) : null,
+            usable_area: surveyData.step2?.usable_area ? Number(surveyData.step2.usable_area) : null,
+            ceil_height: surveyData.step2?.ceil_height ? Number(surveyData.step2.ceil_height) : null,
+            pillar_info: surveyData.step2?.pillar_info || null,
+            entrance_path: surveyData.step2?.entrance_path || null,
+            electric_power: surveyData.step2?.electric_power ? Number(surveyData.step2.electric_power) : null,
+            electric_power_known: surveyData.step2?.electric_power_known || null,
+            electric_phase: surveyData.step2?.electric_phase || null,
+            panel_location: surveyData.step2?.panel_location || null,
+            panel_location_known: surveyData.step2?.panel_location_known || null,
+            water_supply: surveyData.step2?.water_supply || null,
+            water_location: surveyData.step2?.water_location || null,
+            water_location_known: surveyData.step2?.water_location_known || null,
+            ventilation: surveyData.step2?.ventilation || null,
+            work_hours: surveyData.step2?.work_hours || null,
+            work_type: surveyData.step2?.work_type || null,
+            family_staff: surveyData.step2?.family_staff ? parseInt(surveyData.step2.family_staff, 10) : null,
+            profit_goal: surveyData.step3?.profit_goal || null,
+            risk: surveyData.step3?.risk || null,
+            distribution: surveyData.step3?.distribution || [],
+            distribution_etc: surveyData.step3?.distribution_etc || null
+          }
+        ]);
+
+      if (surveyError) throw surveyError;
+
+      // 깔끔하게 임시 데이터 청소 및 현재 프로젝트 ID 세팅
+      localStorage.removeItem('ep-temp-project-package');
+      localStorage.setItem('ep-current-project-id', newProject.id);
+    }
+
+    // 대시보드가 로그인 상태를 인식하도록 처리
+    localStorage.setItem('AUTH', 'true');
+    toast('회원가입 및 선택하신 맞춤 설계안 저장이 완료되었습니다!');
+    
+    // 가입 완료 후 대시보드(home.html) 혹은 대시보드 인트로 페이지로 이동
+    window.location.assign('home.html');
+
+  } catch (err) {
+    console.error('Supabase 비회원 데이터 통합 저장 에러:', err);
+    toast(`저장 실패: ${err.message || err}`);
+  }
 }
 
-// =============================
-//  홈 대시보드: 프로젝트 불러오기
-// =============================
-// =============================
-//  홈 대시보드: 프로젝트 불러오기
-// =============================
-function renderHomeProjects() {
-  const key = K.PROJECTS; // 'ep-projects'
-  const projects = read ? read(key, []) : JSON.parse(localStorage.getItem(key) || '[]');
+//프로젝트 추가
+async function addProject() {
+ 
+  try {
+    // reco-intro_new에서 임시 패킹해둔 [설문+설계안] 데이터 패키지 꺼내기
+    const tempPackageRaw = localStorage.getItem('ep-temp-project-package');
+	
+	const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
 
+    // 로그인이 안 되어 있을 때 예외 처리
+    if (authError || !user) {
+      toast('로그인이 필요한 서비스입니다.');
+      return;
+    }
+	
+    if (tempPackageRaw) {
+      const packageData = JSON.parse(tempPackageRaw);
+      const surveyData = packageData.survey;
+      const recoData = packageData.reco;
+      
+      const regionSi = surveyData.step1?.region_si || '';
+      // 선택한 설계안 이름이 있다면 제목에 반영 (예: "서울 스마트팜 프로젝트 (딸기 컴팩트형)")
+      const recoName = recoData?.title ? ` (${recoData.title})` : '';
+      const projectName = regionSi ? `${regionSi} 스마트팜 프로젝트${recoName}` : `신규 스마트팜 프로젝트${recoName}`;
+
+      // 3단계: projects 테이블에 마스터 행 추가 (선택한 설계안 정보인 recoData를 json 구조로 통째로 넣어 보관해도 좋습니다)
+      const { data: newProject, error: projectError } = await supabaseClient
+        .from('projects')
+        .insert([{ 
+          user_id: user.id, 
+          name: projectName, 
+          status: 'draft'
+          // 만약 projects 테이블에 선택한 안을 저장하는 컬럼(예: selected_reco)을 만드셨다면 여기에 recoData를 넣으시면 됩니다.
+        }])
+        .select()
+        .single();
+
+      if (projectError) throw projectError;
+
+      // 4단계: project_surveys 테이블에 상세 설문 데이터 매핑하여 추가
+      const { error: surveyError } = await supabaseClient
+        .from('project_surveys')
+        .insert([
+          {
+            project_id: newProject.id,
+            user_type: surveyData.step1?.user_type || null,
+            region_si: surveyData.step1?.region_si || null,
+            policy: surveyData.step1?.policy || null,
+            loan_range: surveyData.step1?.loan_range || null,
+            own_capital: surveyData.step1?.own_capital || null,
+            facility: surveyData.step2?.facility || null,
+            floor_area: surveyData.step2?.floor_area ? Number(surveyData.step2.floor_area) : null,
+            usable_area: surveyData.step2?.usable_area ? Number(surveyData.step2.usable_area) : null,
+            ceil_height: surveyData.step2?.ceil_height ? Number(surveyData.step2.ceil_height) : null,
+            pillar_info: surveyData.step2?.pillar_info || null,
+            entrance_path: surveyData.step2?.entrance_path || null,
+            electric_power: surveyData.step2?.electric_power ? Number(surveyData.step2.electric_power) : null,
+            electric_power_known: surveyData.step2?.electric_power_known || null,
+            electric_phase: surveyData.step2?.electric_phase || null,
+            panel_location: surveyData.step2?.panel_location || null,
+            panel_location_known: surveyData.step2?.panel_location_known || null,
+            water_supply: surveyData.step2?.water_supply || null,
+            water_location: surveyData.step2?.water_location || null,
+            water_location_known: surveyData.step2?.water_location_known || null,
+            ventilation: surveyData.step2?.ventilation || null,
+            work_hours: surveyData.step2?.work_hours || null,
+            work_type: surveyData.step2?.work_type || null,
+            family_staff: surveyData.step2?.family_staff ? parseInt(surveyData.step2.family_staff, 10) : null,
+            profit_goal: surveyData.step3?.profit_goal || null,
+            risk: surveyData.step3?.risk || null,
+            distribution: surveyData.step3?.distribution || [],
+            distribution_etc: surveyData.step3?.distribution_etc || null
+          }
+        ]);
+
+      if (surveyError) throw surveyError;
+
+      // 깔끔하게 임시 데이터 청소 및 현재 프로젝트 ID 세팅
+      localStorage.removeItem('ep-temp-project-package');
+      localStorage.setItem('ep-current-project-id', newProject.id);
+    }
+    
+    window.location.assign('home.html');
+
+  } catch (err) {
+    console.error('Supabase 비회원 데이터 통합 저장 에러:', err);
+    toast(`저장 실패: ${err.message || err}`);
+  }
+}
+
+
+// =============================
+//  홈 대시보드: Supabase에서 프로젝트 + 설문 데이터 불러오기
+// =============================
+
+// 1. 로그인한 유저의 프로젝트와 상세 설문(project_surveys) 데이터를 통째로 가져오는 함수
+async function fetchProjects() {
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) return [];
+
+    // projects 테이블을 가져올 때 관계를 맺은 project_surveys 테이블도 같이 join해서 긁어옵니다.
+    const { data, error } = await supabaseClient
+      .from('projects')
+      .select(`
+        *,
+        project_surveys (*)
+      `)
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false }); // 최근 생성 순
+
+    if (error) throw error;
+    return data || [];
+  } catch (err) {
+    console.error('프로젝트 데이터 fetch 에러:', err);
+    return [];
+  }
+}
+
+// 2. 서버에서 가져온 데이터로 홈 화면 UI를 동적으로 그려주는 함수
+async function renderHomeProjects() {
   const listEl         = document.querySelector('#projectList');
   const emptyEl        = document.querySelector('#projectEmptyState');
   const statInProgress = document.querySelector('#statInProgress');
   const statCompleted  = document.querySelector('#statCompleted');
 
-  if (!listEl) return; // home.html이 아닐 때
+  if (!listEl) return; // home.html 대시보드 페이지가 아니면 패스
 
-  // 리스트 비우기
-  listEl.innerHTML = '';
+  // 로딩 표시 또는 비우기
+  listEl.innerHTML = '<p style="text-align:center; color:#666; padding:20px; font-size:20px;">프로젝트를 불러오는 중입니다.</p>';
+
+  // 💡 [핵심] 로컬스토리지 대신 Supabase 서버에서 real 데이터 받아오기!
+  const projects = await fetchProjects();
+
+  listEl.innerHTML = ''; // 로딩 문구 제거
 
   let inProgress = 0;
   let completed  = 0;
 
-  // 없으면 비어있는 상태 노출
+  // 프로젝트가 하나도 없으면 예외 처리
   if (!projects.length) {
-    if (emptyEl) emptyEl.style.display = 'block';
+    if (emptyEl) emptyEl.style.style.display = 'block';
     if (statInProgress) statInProgress.textContent = '0건';
     if (statCompleted)  statCompleted.textContent  = '0건';
     return;
   } else if (emptyEl) {
     emptyEl.style.display = 'none';
   }
-
-  // 시설 유형 텍스트 (아이콘 옆에 나올 것)
+	
+	// 시설 유형 텍스트
   function facilityTypeFromReco(reco) {
     if (!reco) return '실내 스마트팜';
     const label = reco.facilityLabel || '';
@@ -316,7 +499,7 @@ function renderHomeProjects() {
     return '실내 스마트팜';
   }
 
-  // 상태 라벨
+  // 상태 라벨 변환기
   function statusLabel(status) {
     switch (status) {
       case 'draft':            return '설계중';
@@ -331,20 +514,15 @@ function renderHomeProjects() {
     }
   }
 
-  // 다음 액션 문구
+  // 다음 진행 액션 메시지
   function nextAction(status) {
     switch (status) {
       case 'draft':
-      default:
-        return '다음 단계: 견적 요청하기';
-      case 'quote_requested':
-        return '다음 단계: 견적 회신 확인하기';
-      case 'quote_review':
-        return '다음 단계: 조건 협의 및 계약 체결';
-      case 'contracted':
-        return '다음 단계: 착공 일정 확정하기';
-      case 'construction':
-        return '다음 단계: 준공 및 인수인계';
+      default:        return '다음 단계: 견적 요청하기';
+      case 'quote_requested':        return '다음 단계: 견적 회신 확인하기';
+      case 'quote_review':        return '다음 단계: 조건 협의 및 계약 체결';
+      case 'contracted':        return '다음 단계: 착공 일정 확정하기';
+      case 'construction':        return '다음 단계: 준공 및 인수인계';
       case 'operating':
       case 'done':
       case 'complete':
@@ -352,11 +530,10 @@ function renderHomeProjects() {
     }
   }
   
-  // 홈에서 보여줄 "사람이 읽기 쉬운" 프로젝트명 만들기
-function buildProjectName(p) {
+  function buildProjectName(p) {
   const survey = p.survey || {};
-  const s1 = survey.step1 || {};
-  const s2 = survey.step2 || {};
+  const s1 = p.step1 || {};
+  const s2 = p.step2 || {};
   const reco = p.reco || {};
 
   // 1) 지역: "경기도 김포시" → "경기도 김포시" 또는 "김포시"로 줄이기
@@ -409,16 +586,17 @@ function buildProjectName(p) {
   const name = parts.join(' '); // "김포시 지식산업센터 엽채 스마트팜"
 
   // 혹시라도 다 비어있으면 reco.title로 폴백
-  return name || reco.title || '이름 없는 프로젝트';
+  return name || '이름 없는 프로젝트';
 }
 
-
+  // Supabase에서 넘어온 프로젝트 배열 순회하며 카드 그리기
   projects.forEach(p => {
+
     const reco = p.reco || {};
     const status = p.status || 'draft';
 
     // ✅ 프로젝트명: reco-intro에서 선택한 설계안 제목
-    const name = reco.title || '이름 없는 프로젝트';
+    const name = p.name || '이름 없는 프로젝트';
 
     // ✅ 시설 유형 텍스트
     const facilityText = facilityTypeFromReco(reco);
@@ -434,10 +612,11 @@ function buildProjectName(p) {
 
     const card = document.createElement('article');
     card.className = 'project-card';
-
-    // home.html에서 쓰는 아이콘/클래스 구조에 맞춰서 렌더링 :contentReference[oaicite:5]{index=5}
+    card.style.cursor = 'pointer'; // 클릭 가능한 손가락 커서 명시
+    
+    // HTML 구조 렌더링 (a 태그 삭제로 안전성 확보)
     card.innerHTML = `
-      <a href="project-detail.html"><div class="project-main">
+      <div class="project-main">
         <h3 class="project-name">${name}</h3>
         <div class="project-meta">
           <span><i class="far fa-building"></i> ${facilityText}</span>
@@ -453,20 +632,19 @@ function buildProjectName(p) {
             ? '<span class="badge badge-gray">추가 상담 필요</span>'
             : '<span class="badge badge-green">실내 전용</span><span class="badge badge-blue">견적 연계 가능</span>'
         }
-      </div></a>
+      </div>
     `;
 
-    // 카드 클릭 시 해당 프로젝트 상세로
+    // 카드 클릭 이벤트 핸들러: ID 저장 보장 후 이동처리 (순서 정렬 완료 ⭐️)
     card.addEventListener('click', () => {
       localStorage.setItem('ep-current-project-id', p.id);
-      // 너가 만든 상세 페이지 이름에 맞게 수정 (예: project-detail.html)
       window.location.href = 'project-detail.html';
     });
 
     listEl.appendChild(card);
   });
 
-  // 통계 텍스트 갱신
+  // 상단 대시보드 통계판 수치 업데이트
   if (statInProgress) statInProgress.textContent = `${inProgress}건`;
   if (statCompleted)  statCompleted.textContent  = `${completed}건`;
 }
@@ -518,9 +696,7 @@ Object.assign(window, {
   filterPhone,
   saveBasic,
 
-  // 기타 유틸 (필요하면 직접 쓰도록)
-  toast,
-  read,
-  save
+  // 기타 유틸
+  toast
 });
 

@@ -3,8 +3,7 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-	<meta name="theme-color" content="#ffffff" />
-	<link rel="manifest" href="manifest.webmanifest" />
+	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 	<link rel="stylesheet" href="style.css" />
 	<title>이피랑</title>
 </head>
@@ -29,20 +28,20 @@
 					<div class="card pad">
 						<div class="grid">
 							<div class="agree-row" style="margin-bottom:16px">
-								<input type="checkbox" id="agreeService" onchange="syncAllAgree()">
+								<input type="checkbox" id="agreeService" name="agreeService" onchange="syncAllAgree()">
 								<div class="grow"><label for="agreeService" class="grow">서비스 이용약관 (필수)</label></div>
 								<button type="button" class="btn ghost" onclick="openTerms('서비스 이용약관', TERMS.service)">〉</button>
 							</div>
 							<div class="agree-row">
-								<input type="checkbox" id="agreePrivacy" onchange="syncAllAgree()">
+								<input type="checkbox" id="agreePrivacy" name="agreePrivacy" onchange="syncAllAgree()">
 								<div class="grow"><label for="agreePrivacy" class="grow">개인정보 수집 및 이용동의 (필수)</label></div>
 								<button type="button" class="btn ghost" onclick="openTerms('개인정보 수집 및 이용동의', TERMS.privacy)">〉</button>
 							</div>
 						</div>
 					</div>
 					<div class="bottom-bar">
-						<button type="button" class="btn ghost" onclick="window.location.assign('intro.html')">이전</button>
-						<button type="button" class="btn acc" id="btnTermsNext" onclick="handleTermsNext()">다음</button>
+						<button class="btn ghost" onclick="window.location.assign('intro.html')">이전</button>
+						<button class="btn acc" id="btnTermsNext" onclick="handleTermsNext()">다음</button>
 					</div>
 				</div>
 			</section>
