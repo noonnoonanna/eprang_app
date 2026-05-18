@@ -134,8 +134,10 @@ function sendPhoneAuth() {
     return;
   }
 
-  document.getElementById('phoneCodeWrap').style.display = 'block';
-  openTerms('알림', '인증번호가 발송되었습니다. (데모)');
+  openTerms(
+    '연락처 등록 완료',
+    '입력하신 연락처가 저장되었습니다.\n추후 견적 및 상담 안내에 활용됩니다.'
+  );
 }
 
 
