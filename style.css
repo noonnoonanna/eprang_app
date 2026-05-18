@@ -12,10 +12,12 @@ body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-ap
 .app {
   width: 100%;
   max-width: 430px;
-  min-height: 100vh;
   margin: 0 auto;
+  min-height: 100vh;
+
   background: #fff;
-  box-shadow: 0 0 30px rgba(0,0,0,0.08);
+
+  position: relative;
   overflow-x: hidden;
 }
 @media (min-width: 768px) {
@@ -45,7 +47,8 @@ main{flex:1;overflow:auto; padding: 20px; display: flex; flex-direction: column;
 .btn-prev { background: #f3f4f6; color: var(--text-sub); flex: 0 0 30%; }
 .btn-next { background: var(--primary); color: white; box-shadow: 0 4px 14px rgba(22, 163, 74, 0.3); }
 .btn-next:disabled { background: #d1d5db; box-shadow: none; cursor: not-allowed; }
-.bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); padding: 10px 20px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; gap: 12px; max-width: 100%; z-index: 99; }
+.bottom-bar {position: fixed;bottom: 0;left: 50%;transform: translateX(-50%);width: 100%;max-width: 430px;background: rgba(255, 255, 255, 0.9);backdrop-filter: blur(10px);padding: 10px 20px;box-sizing: border-box;border-top: 1px solid var(--line);
+display: flex;justify-content: space-between;gap: 12px;z-index: 99;}
 
 .view{display:none}
 .view.active{display:block}
