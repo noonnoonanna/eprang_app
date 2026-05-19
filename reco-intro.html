@@ -17,6 +17,9 @@ body[data-page="reco-intro"] .grid-3{display:grid;grid-template-columns:repeat(2
 @media (max-width: 340px){
   body[data-page="reco-intro"] #summaryGrid,
   body[data-page="reco-intro"] .grid-3{grid-template-columns:1fr;}
+  body[data-page="reco-intro"] .badge {
+    margin-left: 0; 
+  }
 }
 body[data-page="reco-intro"] .mini-card{padding:10px 12px;border-radius:12px;background:#f9fafb;border:1px solid #e5e7eb;display:flex;flex-direction:column;gap:4px;}
 body[data-page="reco-intro"] .mini-label{font-size:13px;font-weight:600;color:#6b7280;}
@@ -35,18 +38,30 @@ body[data-page="reco-intro"] .reco-meta{list-style:none;padding:0;margin:4px 0 0
 body[data-page="reco-intro"] .reco-meta i{margin-right:4px;font-size:13px;color:#9ca3af;}
 body[data-page="reco-intro"] .info-box{display:flex;align-items:flex-start;gap:8px;margin-top:16px;padding:10px 12px;background:#f1f5f9;border:1px solid #cbd5f5;border-radius:12px;font-size:12px;color:#1e293b;line-height:1.5;}
 body[data-page="reco-intro"] .info-box i{font-size:14px;margin-top:2px;color:#1d4ed8;}
-body[data-page="reco-intro"] .badge-green{background:#e6f9ea;border-color:#86efac;color:#15803d;}
-body[data-page="reco-intro"] .badge-gray{background:#f3f4f6;border-color:#d1d5db;color:#4b5563;}
+body[data-page="reco-intro"] .badge-green {background: #e6f9ea;border-color: #bbf7d0;color: #166534;}
+body[data-page="reco-intro"] .badge-gray {background: #f3f4f6;border-color: #e5e7eb;color: #4b5563;}
 body[data-page="reco-intro"] .badge{flex-shrink:0;white-space:nowrap;height:22px;line-height:22px;padding:0 10px;display:inline-flex;align-items:center;}
-body[data-page="reco-intro"] .reco-header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:4px 8px;}
-body[data-page="reco-intro"] .reco-header h4{flex:1 1 auto;min-width:0;}
-body[data-page="reco-intro"] .badge {flex:0 0 auto;display:inline-flex;align-items:center;white-space:nowrap;height:22px;line-height:22px;padding:0 10px;}
+body[data-page="reco-intro"] .reco-header {display: flex;flex-direction: row;flex-wrap: wrap;align-items: center;gap: 8px 6px;margin-bottom: 12px;width: 100%;}
+body[data-page="reco-intro"] .reco-header h4 {flex: 0 0 100%;margin: 0 !important;font-size: 15px;font-weight: 800;color: #111827;line-height: 1.4;}
+body[data-page="reco-intro"] .reco-header p {display: none !important;}
+body[data-page="reco-intro"] .ai-badge,
+body[data-page="reco-intro"] .badge {display: inline-flex !important;align-items: center;justify-content: center;white-space: nowrap;flex-shrink: 0;height: 22px;box-sizing: border-box;margin: 0 !important;}
+body[data-page="reco-intro"] .badge {padding: 0 8px;font-size: 11px;font-weight: 600;border-radius: 6px;border: 1px solid transparent;}
 body[data-page="reco-intro"] .reco-meta li {display:flex; align-Items: center; gap:3px; background:#f3f4f6; borderRadius:6px; padding:3px 8px; whiteSpace: nowrap;}
 body[data-page="reco-intro"] .reco-card.selected .reco-meta li {background:rgba(22,163,74,0.08); color: #166534;}
+body[data-page="reco-intro"] .ai-badge {gap: 4px;padding: 0 8px;font-size: 11px;font-weight: 700;color: #16a34a;background-color: #f0fdf4;border: 1px solid rgba(22, 163, 74, 0.2);border-radius: 6px;}
+body[data-page="reco-intro"] .ai-badge i {font-size: 10px;color: #16a34a;animation: shine 2s infinite ease-in-out;}
+body[data-page="reco-intro"] .reco-card.selected .ai-badge {color: #15803d;background-color: rgba(22, 163, 74, 0.12);border-color: rgba(22, 163, 74, 0.3);}
+body[data-page="reco-intro"] .reco-card.selected .ai-badge i {color: #15803d;}
+@keyframes shine {
+  0%, 100% { opacity: 0.6; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
 .section-title {margin-top:0;}
 .section-subtitle {font-size:12px;}
 </style>
 <body data-page="reco-intro">
+<script src="app.js"></script>
 <div class="app">
 	<header>
 		<div class="bar">
@@ -200,122 +215,109 @@ body[data-page="reco-intro"] .reco-card.selected .reco-meta li {background:rgba(
     }
 
     // ===== 2. 추천 설계안 생성 (항상 3개) =====
-   // ===== 2. 추천 설계안 생성 (항상 3개) =====
-function buildRecoList() {
-  const s1 = survey.step1 || {};
+async function buildRecoList() {
+
   const s2 = survey.step2 || {};
   const s3 = survey.step3 || {};
 
-  const facility = s2.facility;
-  const risk = s3.risk;
-  const distArr = Array.isArray(s3.distribution) ? s3.distribution : [];
+  const { data, error } = await supabaseClient
+    .from('reco_templates')
+    .select('*');
 
-  const isBiz = facility === 'biz_center';
-  const isRetail = facility === 'retail_space';
-  const isPanel = facility === 'panel_factory';
-  const wantsExperience = distArr.includes('experience_edu_landscape');
-  const wantsMixed = distArr.includes('mixed_use');
-
-  // 대략적인 투자 범위 산정
-  function investRange(type) {
-    const loan = s1.loan_range;
-    const own = s1.own_capital;
-
-    if (type === 'small') return '1~2억대(소규모 패키지)';
-
-    if (loan === '100_300' || own === '100_300') return '2~4억대';
-    if (loan === 'gt300' || own === 'gt300') return '4억 이상';
-    if (loan === 'lt100' || own === '30_100') return '1~2억대';
-
-    return '규모는 상담 후 조정';
+  if (error || !data) {
+    console.error(error);
+    return [];
   }
 
-  const facilityBase =
-    isBiz ? '지식산업센터' :
-    isPanel ? '판넬형 창고·공장' :
-    isRetail ? '상가/근린생활시설' :
-    '실내 공간';
+  function calcScore(item) {
 
-  const list = [];
+    let score = item.ai_score_base || 50;
+    const tags = item.tags || [];
 
-  // 1) 엽채류 기본형
-  list.push({
-    id: 'leafy_basic',
-    title: `${facilityBase} – 엽채류 수직 스마트팜(기본형)`,
-    desc: '상추·바질·허브 등 회전율 높은 작물 중심의 기본형 설계입니다. 적정 랙 수와 동선을 반영한 안정적인 입문 포트폴리오입니다.',
-    cropType: '상추·바질·케일 등 엽채류',
-    facilityLabel: `${facilityBase} 실내 수직농장`,
-    invest: investRange('standard'),
-    staff: '상근 1명 + 보조 0.5명',
-    estimatable: true
-  });
+    // 근무시간
+    if (s2.work_hours === 'lt10' && tags.includes('parttime')) {
+      score += 25;
+    }
 
-  // 2) 포트폴리오형 (리스크 기반)
-  if (risk === 'high') {
-    list.push({
-      id: 'highvalue',
-      title: `${facilityBase} – 고부가 특용작물 스마트팜`,
-      desc: '고부가가치 특용작물 중심의 성장형 포트폴리오입니다. 단가가 높은 허브·식용꽃 등으로 구성하며 초기 시장성 검토가 필요합니다.',
-      cropType: '특수 허브·식용꽃·프리미엄 작물',
-      facilityLabel: `${facilityBase} 특용작물형`,
-      invest: '시장조사 후 확정',
-      staff: '상근 1~2명',
-      estimatable: false
-    });
-  } else {
-    list.push({
-      id: 'balanced',
-      title: `${facilityBase} – 안정형+고수익 혼합형`,
-      desc: '엽채류 기반에 일부 고수익 작물을 혼합한 균형형 포트폴리오입니다. 운영 난이도는 낮고 수익 안정성이 높습니다.',
-      cropType: '엽채류 + 특용작물 일부',
-      facilityLabel: `${facilityBase} 혼합형`,
-      invest: investRange('standard'),
-      staff: '상근 1명',
-      estimatable: true
-    });
-  }
+    // 상근
+    if (s2.work_type === 'fulltime' && tags.includes('fulltime')) {
+      score += 20;
+    }
 
-  // 3) 시설/유통 목적에 따라 구분된 특화형
-  if (isPanel || wantsMixed) {
-    list.push({
-      id: 'nursery_mix',
-      title: `${facilityBase} – 육묘장 + 생산 복합형`,
-      desc: '육묘존과 생산존을 분리한 복합형 구조입니다. 계절별 수요에 맞춰 육묘·생산 비중을 조절할 수 있습니다.',
-      cropType: '육묘 + 엽채류 생산',
-      facilityLabel: `${facilityBase} 복합형`,
-      invest: '4~5억대(복합 기준)',
-      staff: '상근 1~2명',
-      estimatable: false
-    });
-  } else if (isRetail || wantsExperience) {
-    list.push({
-      id: 'showroom',
-      title: `${facilityBase} – 조경·체험형 쇼룸 스마트팜`,
-      desc: '방문객 경험·교육 중심의 쇼룸형 스마트팜입니다. 생산량보다는 공간 연출과 브랜드 경험에 초점을 둡니다.',
-      cropType: '관엽·플랜테리어·체험작물',
-      facilityLabel: `${facilityBase} 쇼룸형`,
-      invest: investRange('small'),
-      staff: '0.5~1명',
-      estimatable: true
-    });
-  } else {
-    list.push({
-      id: 'starter',
-      title: `${facilityBase} – 컴팩트 스타터 패키지`,
-      desc: '초기 자본·근무시간이 적을 때 적합한 소형 구성입니다. 최소 랙 구성으로 시작해 점진적으로 확장할 수 있습니다.',
-      cropType: '엽채류 소규모 구성',
-      facilityLabel: `${facilityBase} 소형 패키지`,
-      invest: investRange('small'),
-      staff: '0.5~1명',
-      estimatable: true
-    });
-  }
+    // 층고
+    if (Number(s2.ceil_height) >= 4 && tags.includes('high_ceiling')) {
+      score += 30;
+    }
 
-  return list.slice(0, 3);
+    // 전기
+    if (s2.electric_phase === 'three' && tags.includes('high_power')) {
+      score += 20;
+    }
+
+    // 리테일
+    if (
+      s3.distribution?.includes('experience_edu_landscape')
+      && tags.includes('experience')
+    ) {
+      score += 35;
+    }
+	
+	// 면적
+const area = Number(s2.usable_area || s2.floor_area || 0);
+
+if (area <= 30 && tags.includes('compact')) {
+  score += 30;
 }
 
+if (area >= 100 && tags.includes('large_scale')) {
+  score += 30;
+}
 
-    let recoList = buildRecoList();
+// 가족 운영
+if (
+  Number(s2.family_staff || 0) >= 2 &&
+  tags.includes('family')
+) {
+  score += 20;
+}
+
+// 시설 유형
+if (
+  s2.facility === 'biz_center' &&
+  tags.includes('biz_center')
+) {
+  score += 25;
+}
+
+// 목표 수익
+if (
+  s3.profit_goal === 'high' &&
+  tags.includes('high_profit')
+) {
+  score += 30;
+}
+
+    return score;
+  }
+
+  const ranked = data
+    .map(item => ({
+      ...item,
+      ai_match: calcScore(item)
+    }))
+    .sort((a,b) => b.ai_match - a.ai_match)
+    .slice(0,3);
+
+  return ranked;
+}
+
+let recoList = [];
+
+(async () => {
+  recoList = await buildRecoList();
+  renderRecoCards();
+})();
+
     let selectedIndex = 0;
 
     function renderRecoCards() {
@@ -334,24 +336,30 @@ function buildRecoList() {
         card.dataset.index = idx;
 
         const badge = r.estimatable
-          ? '<span class="badge badge-green">실내 전용 · 견적 연계 가능</span>'
-          : '<span class="badge badge-gray">정보 보완 후 · 추가 상담 필요</span>';
-
-        card.innerHTML = `
+          ? '<span class="badge badge-green">견적 연계 가능</span>'
+          : '<span class="badge badge-gray">추가 상담 필요</span>';
+		  
+		  const recoBadge = r.badge
+  ? `
+    <div class="ai-badge">
+      <i class="fa-solid fa-star"></i>
+      ${r.badge}
+    </div>
+  `
+  : '';
+  
+card.innerHTML = `
   <div class="reco-icon"><i class="fa-solid fa-seedling"></i></div>
   <div class="reco-info">
-    <div class="reco-header">
-      <h4>${r.title}</h4>
-      ${
-        r.estimatable
-          ? '<span class="badge badge-green">실내 전용 · 견적 연계 가능</span>'
-          : '<span class="badge badge-gray">추가 상담 필요</span>'
-      }
-    </div>
-    <p>${r.desc}</p>
+	<div class="reco-header">
+		<h4>${r.title}</h4>
+		${recoBadge}
+		${badge}
+	</div>
+    <p>${r.description}</p>
     <ul class="reco-meta">
-      <li><i class="fa-solid fa-leaf"></i> 주요 작목: ${r.cropType}</li>
-      <li><i class="fa-solid fa-warehouse"></i> 시설 유형: ${r.facilityLabel}</li>
+      <li><i class="fa-solid fa-leaf"></i> 주요 작목: ${r.crop_type}</li>
+      <li><i class="fa-solid fa-warehouse"></i> 시설 유형: ${r.facility_label}</li>
       <li><i class="fa-solid fa-coins"></i> 예상 투자 규모: ${r.invest}</li>
       <li><i class="fa-solid fa-users"></i> 적정 인력: ${r.staff}</li>
     </ul>
