@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>프로젝트 관리 · 이피랑 운영센터</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="css/hub.css">
+</head>
+<body>
+<div class="hub-shell">
+
+<aside class="hub-sidebar" id="hubSidebar">
+  <div class="hub-brand">
+    <img src="../img/logo.png" alt="이피랑">
+    <span class="hub-brand-title">운영센터</span>
+  </div>
+  <div class="nav-label">Overview</div>
+  <nav class="hub-nav">
+    <a href="index.html" data-page="dashboard"><i class="fa-solid fa-chart-pie"></i><span>대시보드</span></a>
+  </nav>
+  <div class="nav-label">Management</div>
+  <nav class="hub-nav">
+    <a href="members.html" data-page="members"><i class="fa-solid fa-users"></i><span>회원 관리</span><span class="nav-count" id="navMemberCount">-</span></a>
+    <a href="projects.html" data-page="projects"><i class="fa-solid fa-diagram-project"></i><span>프로젝트 관리</span><span class="nav-count" id="navProjectCount">-</span></a>
+    <a href="surveys.html" data-page="surveys"><i class="fa-solid fa-clipboard-list"></i><span>설문 관리</span><span class="nav-count" id="navSurveyCount">-</span></a>
+    <a href="templates.html" data-page="templates"><i class="fa-solid fa-wand-magic-sparkles"></i><span>추천안 관리</span><span class="nav-count" id="navTemplateCount">-</span></a>
+  </nav>
+  <div class="nav-label">Insight</div>
+  <nav class="hub-nav">
+    <a href="analytics.html" data-page="analytics"><i class="fa-solid fa-chart-column"></i><span>통계·리포트</span></a>
+    <a href="settings.html" data-page="settings"><i class="fa-solid fa-gear"></i><span>운영센터 설정</span></a>
+  </nav>
+  <div class="sidebar-help">
+    <strong>이피랑 운영센터</strong>
+    <p>회원·프로젝트·추천 데이터를 한곳에서 관리합니다.</p>
+    <button class="btn btn-soft btn-sm" id="btnHome"><i class="fa-solid fa-arrow-up-right-from-square"></i> 사용자 앱</button>
+  </div>
+  <div class="hub-user">
+    <div class="hub-user-row">
+      <div class="user-avatar" id="hubUserInitial">A</div>
+      <div><strong id="hubUserName">관리자</strong><span id="hubUserEmail"></span></div>
+    </div>
+    <div class="sidebar-actions">
+      <button class="btn btn-ghost btn-sm" onclick="location.href='settings.html'"><i class="fa-solid fa-user-gear"></i> 내 정보</button>
+      <button class="btn btn-danger btn-sm" id="btnLogout"><i class="fa-solid fa-right-from-bracket"></i> 로그아웃</button>
+    </div>
+  </div>
+</aside>
+<div class="overlay" id="mobileOverlay"></div>
+
+<div class="hub-content">
+
+<header class="hub-topbar">
+  <div class="topbar-left">
+    <button class="top-icon-btn mobile-menu" id="mobileMenu"><i class="fa-solid fa-bars"></i></button>
+    <div class="topbar-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" placeholder="운영센터 빠른 검색"></div>
+  </div>
+  <div class="topbar-right">
+    <span class="role-pill" id="hubRole">관리자</span>
+    <button class="top-icon-btn" title="새로고침" onclick="location.reload()"><i class="fa-solid fa-rotate-right"></i></button>
+  </div>
+</header>
+
+<main class="hub-main">
+  <div class="page-head">
+    <div><h1>프로젝트 관리</h1><p>회원별 프로젝트의 설계·견적·계약·시공 진행상태를 관리합니다.</p></div>
+  </div>
+  
+<div class="toolbar">
+  <div class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input id="projectSearch" placeholder="프로젝트명, 회원, 지역, 추천안 검색"></div>
+  <select class="control" id="projectStatus"><option value="">전체 상태</option><option value="draft">설계중</option><option value="quote_requested">견적요청</option><option value="quote_review">견적검토</option><option value="contracted">계약체결</option><option value="construction">시공</option><option value="operating">운영중</option><option value="complete">완료</option></select>
+  <select class="control" id="projectFacility"><option value="">전체 시설</option><option value="biz_center">지식산업센터</option><option value="panel_factory">판넬형 창고·공장</option><option value="retail_space">상가/근린생활시설</option></select>
+  <span class="count-text" id="projectCount">0건</span>
+</div>
+<div class="table-card"><div class="table-wrap"><table><thead><tr><th>프로젝트</th><th>회원</th><th>지역</th><th>시설</th><th>면적</th><th>상태</th><th>생성일</th><th></th></tr></thead><tbody id="projectRows"></tbody></table></div></div>
+<div class="modal-backdrop" id="projectModal"><div class="modal modal-lg">
+  <div class="modal-head"><div><h2 id="projectModalTitle">프로젝트 관리</h2><p>진행상태와 관리자 메모를 수정합니다.</p></div><button class="modal-close" data-close="projectModal"><i class="fa-solid fa-xmark"></i></button></div>
+  <div class="detail-grid" id="projectDetail"></div>
+  <form id="projectForm">
+    <input type="hidden" id="editProjectId">
+    <div class="form-grid" style="margin-top:18px">
+      <div class="field"><label>프로젝트명</label><input id="editProjectName" required></div>
+      <div class="field"><label>진행 상태</label><select id="editProjectStatus"><option value="draft">설계중</option><option value="quote_requested">견적요청</option><option value="quote_review">견적검토</option><option value="contracted">계약체결</option><option value="construction">시공</option><option value="operating">운영중</option><option value="complete">완료</option></select></div>
+      <div class="field full"><label>관리자 메모</label><textarea id="editProjectMemo"></textarea></div>
+    </div>
+    <div class="modal-actions"><button type="button" class="btn btn-ghost" data-close="projectModal">취소</button><button class="btn btn-primary">저장</button></div>
+  </form>
+</div></div>
+
+</main>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="js/hub.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>Hub.projects());</script>
+</body></html>

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>통계·리포트 · 이피랑 운영센터</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="css/hub.css">
+</head>
+<body>
+<div class="hub-shell">
+
+<aside class="hub-sidebar" id="hubSidebar">
+  <div class="hub-brand">
+    <img src="../img/logo.png" alt="이피랑">
+    <span class="hub-brand-title">운영센터</span>
+  </div>
+  <div class="nav-label">Overview</div>
+  <nav class="hub-nav">
+    <a href="index.html" data-page="dashboard"><i class="fa-solid fa-chart-pie"></i><span>대시보드</span></a>
+  </nav>
+  <div class="nav-label">Management</div>
+  <nav class="hub-nav">
+    <a href="members.html" data-page="members"><i class="fa-solid fa-users"></i><span>회원 관리</span><span class="nav-count" id="navMemberCount">-</span></a>
+    <a href="projects.html" data-page="projects"><i class="fa-solid fa-diagram-project"></i><span>프로젝트 관리</span><span class="nav-count" id="navProjectCount">-</span></a>
+    <a href="surveys.html" data-page="surveys"><i class="fa-solid fa-clipboard-list"></i><span>설문 관리</span><span class="nav-count" id="navSurveyCount">-</span></a>
+    <a href="templates.html" data-page="templates"><i class="fa-solid fa-wand-magic-sparkles"></i><span>추천안 관리</span><span class="nav-count" id="navTemplateCount">-</span></a>
+  </nav>
+  <div class="nav-label">Insight</div>
+  <nav class="hub-nav">
+    <a href="analytics.html" data-page="analytics"><i class="fa-solid fa-chart-column"></i><span>통계·리포트</span></a>
+    <a href="settings.html" data-page="settings"><i class="fa-solid fa-gear"></i><span>운영센터 설정</span></a>
+  </nav>
+  <div class="sidebar-help">
+    <strong>이피랑 운영센터</strong>
+    <p>회원·프로젝트·추천 데이터를 한곳에서 관리합니다.</p>
+    <button class="btn btn-soft btn-sm" id="btnHome"><i class="fa-solid fa-arrow-up-right-from-square"></i> 사용자 앱</button>
+  </div>
+  <div class="hub-user">
+    <div class="hub-user-row">
+      <div class="user-avatar" id="hubUserInitial">A</div>
+      <div><strong id="hubUserName">관리자</strong><span id="hubUserEmail"></span></div>
+    </div>
+    <div class="sidebar-actions">
+      <button class="btn btn-ghost btn-sm" onclick="location.href='settings.html'"><i class="fa-solid fa-user-gear"></i> 내 정보</button>
+      <button class="btn btn-danger btn-sm" id="btnLogout"><i class="fa-solid fa-right-from-bracket"></i> 로그아웃</button>
+    </div>
+  </div>
+</aside>
+<div class="overlay" id="mobileOverlay"></div>
+
+<div class="hub-content">
+
+<header class="hub-topbar">
+  <div class="topbar-left">
+    <button class="top-icon-btn mobile-menu" id="mobileMenu"><i class="fa-solid fa-bars"></i></button>
+    <div class="topbar-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" placeholder="운영센터 빠른 검색"></div>
+  </div>
+  <div class="topbar-right">
+    <span class="role-pill" id="hubRole">관리자</span>
+    <button class="top-icon-btn" title="새로고침" onclick="location.reload()"><i class="fa-solid fa-rotate-right"></i></button>
+  </div>
+</header>
+
+<main class="hub-main">
+  <div class="page-head">
+    <div><h1>통계·리포트</h1><p>회원·설문·프로젝트 데이터를 운영 관점에서 분석합니다.</p></div>
+  </div>
+  
+<div class="stats-grid">
+  <div class="stat-card"><div class="stat-label">설문 데이터</div><div class="stat-value" id="analyticsTotal">-</div><div class="stat-note">분석 대상 설문</div></div>
+  <div class="stat-card"><div class="stat-label">회원 수</div><div class="stat-value" id="analyticsMembers">-</div><div class="stat-note">전체 가입 회원</div></div>
+  <div class="stat-card"><div class="stat-label">평균 공간면적</div><div class="stat-value" id="analyticsAvgArea">-</div><div class="stat-note">설문 floor_area 기준</div></div>
+  <div class="stat-card"><div class="stat-label">견적·계약 단계</div><div class="stat-value" id="analyticsQuote">-</div><div class="stat-note">견적요청 이상 프로젝트</div></div>
+</div>
+<div class="grid-2">
+  <section class="panel"><div class="panel-head"><div><h2>회원 유형 분석</h2><p>청년농·후계농·귀농·일반창업 비중</p></div></div><div class="kpi-bars" id="analyticsTypeBars"></div></section>
+  <section class="panel"><div class="panel-head"><div><h2>면적 구간 분석</h2><p>㎡ 데이터를 평 단위 구간으로 환산</p></div></div><div class="kpi-bars" id="areaBars"></div></section>
+</div>
+<div class="grid-2">
+  <section class="panel"><div class="panel-head"><div><h2>시설 유형 분석</h2><p>공간 유형별 설문 비중</p></div></div><div class="kpi-bars" id="facilityBars"></div></section>
+  <section class="panel"><div class="panel-head"><div><h2>선택된 추천안 TOP 8</h2><p>프로젝트 reco 데이터 기준</p></div></div><div class="activity-list" id="topTemplates"></div></section>
+</div>
+
+</main>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="js/hub.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>Hub.analytics());</script>
+</body></html>
