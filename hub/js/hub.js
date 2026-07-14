@@ -1,5 +1,5 @@
 const SUPABASE_URL = 'https://jotgygpobwvswasgbage.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6ImpvdGd5Z3BvYnd2c3dhc2diYWdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4ODU4MzIsImV4cCI6MjA5NDQ2MTgzMn0.GCPW_viKskyoR7Nd1NbrSULJbouOBSFFtJdQQi6zDBE';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvdGd5Z3BvYnd2c3dhc2diYWdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4ODU4MzIsImV4cCI6MjA5NDQ2MTgzMn0.GCPW_viKskyoR7Nd1NbrSULJbouOBSFFtJdQQi6zDBE';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const $ = s => document.querySelector(s);
