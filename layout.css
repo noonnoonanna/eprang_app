@@ -1,0 +1,95 @@
+:root{
+  --ep-green:#16a34a;
+  --ep-green-dark:#15803d;
+  --ep-soft:#ecfdf5;
+  --ep-line:#e5e7eb;
+  --ep-text:#1f2937;
+  --ep-sub:#6b7280;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:#f4f7f5;
+  color:var(--ep-text);
+  font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+.layout-page{
+  max-width:1600px;
+  margin:0 auto;
+  padding:28px;
+}
+.layout-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:20px;
+}
+.layout-head h1{margin:0;font-size:25px}
+.layout-head p{margin:7px 0 0;color:var(--ep-sub);font-size:13px;line-height:1.6}
+.layout-actions{display:flex;gap:8px;flex-wrap:wrap}
+.layout-btn{
+  border:0;
+  border-radius:11px;
+  padding:10px 14px;
+  font-weight:800;
+  cursor:pointer;
+}
+.layout-btn.primary{background:var(--ep-green);color:#fff}
+.layout-btn.ghost{background:#fff;border:1px solid var(--ep-line)}
+.layout-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 320px;
+  gap:18px;
+}
+.canvas-card,.control-card{
+  background:#fff;
+  border:1px solid var(--ep-line);
+  border-radius:18px;
+  box-shadow:0 8px 30px rgba(0,0,0,.05);
+}
+.canvas-card{
+  padding:16px;
+  overflow:auto;
+}
+.canvas-wrap{
+  min-width:1200px;
+  display:flex;
+  justify-content:center;
+}
+#layoutCanvas{
+  display:block;
+  background:#fff;
+  border:1px solid #d1d5db;
+}
+.control-card{padding:18px}
+.control-card h2{font-size:16px;margin:0 0 15px}
+.control-section{padding:14px 0;border-top:1px solid #eef0f2}
+.control-section:first-of-type{border-top:0;padding-top:0}
+.field{display:grid;gap:6px;margin-bottom:11px}
+.field label{font-size:11px;font-weight:800;color:var(--ep-sub)}
+.field input,.field select{
+  width:100%;
+  height:40px;
+  border:1px solid var(--ep-line);
+  border-radius:10px;
+  padding:0 10px;
+}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.info-box{
+  background:var(--ep-soft);
+  color:var(--ep-green-dark);
+  padding:12px;
+  border-radius:11px;
+  font-size:11px;
+  line-height:1.6;
+}
+@media(max-width:1050px){
+  .layout-grid{grid-template-columns:1fr}
+  .control-card{order:-1}
+}
+@media(max-width:600px){
+  .layout-page{padding:16px}
+  .layout-head{display:block}
+  .layout-actions{margin-top:13px}
+}

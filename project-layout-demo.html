@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>이피랑 스마트팜 자동 배치도</title>
+  <link rel="stylesheet" href="layout.css">
+</head>
+<body>
+  <main class="layout-page">
+    <header class="layout-head">
+      <div>
+        <h1>이피랑 스마트팜 자동 배치도</h1>
+        <p>설문과 추천 데이터를 기준으로 생성되는 기본 배치도 데모입니다.</p>
+      </div>
+      <div class="layout-actions">
+        <button class="layout-btn ghost" id="btnReset">초기화</button>
+        <button class="layout-btn primary" id="btnDownload">PNG 저장</button>
+      </div>
+    </header>
+
+    <section class="layout-grid">
+      <article class="canvas-card">
+        <div class="canvas-wrap">
+          <canvas id="layoutCanvas"></canvas>
+        </div>
+      </article>
+
+      <aside class="control-card">
+        <h2>도면 조건</h2>
+
+        <div class="control-section">
+          <div class="field-row">
+            <div class="field">
+              <label>실내 폭(mm)</label>
+              <input id="roomWidth" type="number" value="12000">
+            </div>
+            <div class="field">
+              <label>실내 길이(mm)</label>
+              <input id="roomHeight" type="number" value="6000">
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>상단 랙 열</label>
+              <input id="rackAColumns" type="number" min="1" max="12" value="8">
+            </div>
+            <div class="field">
+              <label>상단 랙 행</label>
+              <input id="rackARows" type="number" min="1" max="10" value="5">
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>하단 랙 열</label>
+              <input id="rackBColumns" type="number" min="1" max="12" value="6">
+            </div>
+            <div class="field">
+              <label>하단 랙 행</label>
+              <input id="rackBRows" type="number" min="1" max="10" value="4">
+            </div>
+          </div>
+
+          <button class="layout-btn primary" id="btnApply" style="width:100%">도면 다시 그리기</button>
+        </div>
+
+        <div class="control-section">
+          <div class="field">
+            <label>도면명</label>
+            <input id="drawingTitle" value="실내 스마트팜 배치도">
+          </div>
+          <div class="field">
+            <label>도면번호</label>
+            <input id="drawingNo" value="EPRANG-LAYOUT-0001">
+          </div>
+          <div class="field">
+            <label>회사명</label>
+            <input id="companyName" value="주식회사 이피랑">
+          </div>
+        </div>
+
+        <div class="info-box">
+          이 도면은 사용자 설명과 견적 검토를 위한 배치 초안입니다.
+          실제 시공 전에는 현장 실측과 전문 설계 검토가 필요합니다.
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script src="layout-canvas.js"></script>
+  <script>
+    const canvas = document.querySelector('#layoutCanvas');
+    const renderer = new EprangLayoutCanvas(canvas);
+
+    function numberValue(id, fallback) {
+      const value = Number(document.querySelector(id).value);
+      return Number.isFinite(value) && value > 0 ? value : fallback;
+    }
+
+    function redraw() {
+      const layout = renderer.getLayout();
+
+      layout.room.widthMm = numberValue('#roomWidth', 12000);
+      layout.room.heightMm = numberValue('#roomHeight', 6000);
+
+      layout.racks[0].columns = numberValue('#rackAColumns', 8);
+      layout.racks[0].rows = numberValue('#rackARows', 5);
+      layout.racks[1].columns = numberValue('#rackBColumns', 6);
+      layout.racks[1].rows = numberValue('#rackBRows', 4);
+
+      layout.drawing.title = document.querySelector('#drawingTitle').value.trim();
+      layout.drawing.drawingNo = document.querySelector('#drawingNo').value.trim();
+      layout.drawing.company = document.querySelector('#companyName').value.trim();
+      layout.drawing.date = new Date().toISOString().slice(0, 10);
+
+      renderer.setLayout(layout);
+    }
+
+    document.querySelector('#btnApply').addEventListener('click', redraw);
+
+    document.querySelector('#btnDownload').addEventListener('click', () => {
+      redraw();
+      renderer.downloadPng('eprang-smartfarm-layout.png');
+    });
+
+    document.querySelector('#btnReset').addEventListener('click', () => {
+      location.reload();
+    });
+  </script>
+</body>
+</html>
