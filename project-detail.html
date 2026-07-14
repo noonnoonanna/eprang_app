@@ -6,8 +6,15 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="project-detail.css" />
+  <link rel="stylesheet" href="layout.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <title>이피랑 - 프로젝트 상세</title>
+  <style>
+    .pd-layout-wrap{width:100%;overflow:auto;border:1px solid #e5e7eb;border-radius:14px;background:#fff;padding:10px;margin-top:8px}
+    .pd-layout-wrap canvas{display:block;max-width:none;background:#fff}
+    .pd-layout-empty{padding:24px 14px;text-align:center;border:1px dashed #d1d5db;border-radius:12px;color:#6b7280;background:#f9fafb;font-size:13px}
+    .pd-layout-note{margin:10px 0 0;font-size:11px;line-height:1.6;color:#6b7280}
+  </style>
 </head>
 
 <body data-page="project-detail">
@@ -184,14 +191,11 @@
                     <span>공간 배치 개략도</span>
                   </div>
                   <div class="pd-info-text">
-                    <div class="pd-diagram">
-                      <div id="pdDiagramText">출입구 기준 좌측은 작업·포장, 중앙은 재배랙, 우측은 양액·기계실·창고로 나누는 기본 흐름입니다.</div>
-                      <div class="pd-diagram-rows">
-                        <div class="pd-diagram-cell">출입·포장</div>
-                        <div class="pd-diagram-cell">재배 구역</div>
-                        <div class="pd-diagram-cell">양액·기계실</div>
-                      </div>
+                    <div id="pdLayoutEmpty" class="pd-layout-empty">저장된 자동 배치도를 불러오는 중입니다.</div>
+                    <div id="pdLayoutWrap" class="pd-layout-wrap" hidden>
+                      <canvas id="pdLayoutCanvas"></canvas>
                     </div>
+                    <p class="pd-layout-note">본 도면은 AI 기반 기본 배치 초안이며, 현장 실측 및 전문 설계 검토 후 최종 확정됩니다.</p>
                   </div>
                 </div>
               </div>
@@ -389,6 +393,7 @@
   <div id="modal" class="modal" style="display:none"></div>
   <div id="toast" class="toast">처리되었습니다</div>
 
+  <script src="layout-canvas.js"></script>
   <script src="app.js" defer></script>
  <script>
     document.addEventListener('DOMContentLoaded', async function () {
@@ -453,6 +458,38 @@
         }
 
         var survey = (surveyList && surveyList.length > 0) ? surveyList[0] : {};
+
+        // 선택 프로젝트의 자동 배치도 조회 및 렌더링
+        const { data: layoutRow, error: layoutError } = await supabaseClient
+          .from('project_layouts')
+          .select('layout_json, version')
+          .eq('project_id', currentProjectId)
+          .eq('is_selected', true)
+          .order('version', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        var layoutEmpty = document.getElementById('pdLayoutEmpty');
+        var layoutWrap = document.getElementById('pdLayoutWrap');
+        var layoutCanvas = document.getElementById('pdLayoutCanvas');
+
+        if (!layoutError && layoutRow && layoutRow.layout_json && layoutCanvas && window.EprangLayoutCanvas) {
+          if (layoutEmpty) layoutEmpty.hidden = true;
+          if (layoutWrap) layoutWrap.hidden = false;
+          new EprangLayoutCanvas(layoutCanvas, layoutRow.layout_json, {
+            width: 1200,
+            height: 840,
+            showGridReference: true
+          });
+        } else {
+          if (layoutEmpty) {
+            layoutEmpty.hidden = false;
+            layoutEmpty.textContent = layoutError ? '배치도를 불러오지 못했습니다.' : '이 프로젝트에는 아직 저장된 자동 배치도가 없습니다.';
+          }
+          if (layoutWrap) layoutWrap.hidden = true;
+          if (layoutError) console.error('배치도 조회 에러:', layoutError);
+        }
+
 		
 		//매핑 테이블
 		var userTypeMap={young:'청년농',successor:'후계농',return:'귀농 예정',other:'일반 창업자'};
@@ -557,10 +594,11 @@
 		}
 		setText('pdDistribution','유통: '+distText);
 	
-		// 설계안 탭 - reco 데이터
-		setText('pdCropCombo',survey.cropType || '추천 작목·시설 조합 미정');
-		setText('pdMainCrops',survey.cropType || '-');
-		setText('pdFacilityCombo',survey.facilityLabel || facilitySimple+' 기반 스마트팜');
+		// 설계안 탭 - projects.reco JSON 데이터
+        var recoData = project.reco || {};
+		setText('pdCropCombo',recoData.title || '추천 작목·시설 조합 미정');
+		setText('pdMainCrops',recoData.crop_type || recoData.cropType || '-');
+		setText('pdFacilityCombo',recoData.facility_label || recoData.facilityLabel || facilitySimple+' 기반 스마트팜');
 	
 		// 자동화/전략 태그(간단 힌트)
 		var chipAuto=document.getElementById('pdChipAutomation');
@@ -594,7 +632,7 @@
 		setText('pdChangeLog','현장 협의 및 시운전 이후 변경된 내용은 이 영역에 메모해 둘 수 있습니다.');
 		
 		// 타임라인 일부에 실제 데이터 반영 (견적 요청일 = 프로젝트 생성일)
-		var createdDate=formatDate(project.createdAt);
+		var createdDate=formatDate(project.created_at);
 		if(createdDate){
 			setText('pdQuoteRequestDate','요청일: '+createdDate);
 		}

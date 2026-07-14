@@ -376,6 +376,58 @@ card.innerHTML = `
       });
     }
 
+
+    // ===== 3. 선택한 추천안 기준 자동 배치도 JSON 생성 =====
+    function buildLayoutFromSurvey(surveyData, selectedReco) {
+      const s2 = surveyData.step2 || {};
+      const areaSqm = Number(s2.usable_area || s2.floor_area || 165);
+      const ceilHeight = Number(s2.ceil_height || 4);
+      const roomWidthMm = areaSqm >= 230 ? 15000 : areaSqm >= 180 ? 13500 : areaSqm >= 120 ? 12000 : 10000;
+      const roomHeightMm = Math.max(5000, Math.round((areaSqm * 1000000) / roomWidthMm));
+      const highCeiling = ceilHeight >= 5;
+      const mainColumns = areaSqm >= 180 ? 8 : areaSqm >= 110 ? 7 : 6;
+      const rackMarginLeft = Math.round(roomWidthMm * 0.15);
+      const rackTop = Math.round(roomHeightMm * 0.15);
+      const mainRackWidth = Math.round(roomWidthMm * 0.68);
+      const mainRackHeight = Math.round(roomHeightMm * 0.40);
+      const lowerRackX = Math.round(roomWidthMm * 0.33);
+      const lowerRackY = Math.round(roomHeightMm * 0.58);
+      const lowerRackWidth = Math.round(roomWidthMm * 0.50);
+      const lowerRackHeight = Math.round(roomHeightMm * 0.25);
+
+      return {
+        drawing: {
+          title: `${selectedReco.title || '실내 스마트팜'} 배치도`,
+          drawingNo: `EPRANG-${Date.now()}`,
+          company: '주식회사 이피랑',
+          createdBy: '이피랑 AI 설계',
+          approvedBy: '',
+          date: new Date().toISOString().slice(0, 10),
+          revision: 'A',
+          sheet: '1/1'
+        },
+        room: { widthMm: roomWidthMm, heightMm: roomHeightMm, wallThicknessMm: 120 },
+        racks: [
+          { id:'rack-a', xMm:rackMarginLeft, yMm:rackTop, widthMm:mainRackWidth, heightMm:mainRackHeight, columns:mainColumns, rows:highCeiling?5:4, levels:highCeiling?5:4, label:'주 재배랙' },
+          { id:'rack-b', xMm:lowerRackX, yMm:lowerRackY, widthMm:lowerRackWidth, heightMm:lowerRackHeight, columns:Math.max(4,mainColumns-2), rows:4, levels:highCeiling?5:4, label:'보조 재배랙' }
+        ],
+        equipment: [
+          { id:'ac-1', type:'aircon', xMm:1200, yMm:250, widthMm:650, heightMm:300, label:'에어컨' },
+          { id:'ac-2', type:'aircon', xMm:roomWidthMm-2000, yMm:250, widthMm:650, heightMm:300, label:'에어컨' },
+          { id:'fan-1', type:'fan', xMm:2000, yMm:roomHeightMm-850, radiusMm:430, label:'순환팬' },
+          { id:'tank-1', type:'tank', xMm:500, yMm:Math.round(roomHeightMm*0.43), widthMm:420, heightMm:620, label:'양액탱크' }
+        ],
+        doors: [{ id:'door-1', wall:'bottom', offsetMm:900, widthMm:1100, swing:'right' }],
+        dimensions: [
+          { from:[rackMarginLeft,Math.round(roomHeightMm*0.52)], to:[0,Math.round(roomHeightMm*0.52)], label:String(rackMarginLeft) },
+          { from:[Math.round(roomWidthMm*0.55),rackTop], to:[Math.round(roomWidthMm*0.55),0], label:String(rackTop) },
+          { from:[rackMarginLeft+mainRackWidth,Math.round(roomHeightMm*0.40)], to:[roomWidthMm,Math.round(roomHeightMm*0.40)], label:String(roomWidthMm-rackMarginLeft-mainRackWidth) },
+          { from:[Math.round(roomWidthMm*0.65),lowerRackY+lowerRackHeight], to:[Math.round(roomWidthMm*0.65),roomHeightMm], label:String(roomHeightMm-lowerRackY-lowerRackHeight) }
+        ],
+        note:'본 도면은 AI 기반 기본 배치 초안이며, 현장 실측 및 전문 설계 검토 후 최종 확정됩니다.'
+      };
+    }
+
     // ===== 3. 프로젝트 저장 =====
     function saveProject() {
   if (!recoList.length) {
@@ -388,9 +440,12 @@ card.innerHTML = `
 
   // 💡 [핵심] 가입 완료 시점에 Supabase에 한 번에 넣기 위해 
   // 임시 데이터 패키지('ep-temp-project-package')를 만들어 로컬스토리지에 저장합니다.
+  const layoutData = buildLayoutFromSurvey(survey, selected);
+
   const tempPackage = {
-    survey: survey,      // 앞에서 로드한 설문 데이터
-    reco: selected,      // 유저가 최종 선택한 설계안
+    survey: survey,
+    reco: selected,
+    layout: layoutData,
     createdAt: new Date().toISOString()
   };
 

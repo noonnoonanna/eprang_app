@@ -261,6 +261,7 @@ async function saveBasic() {
       const packageData = JSON.parse(tempPackageRaw);
       const surveyData = packageData.survey;
       const recoData = packageData.reco;
+      const layoutData = packageData.layout || null;
       
       const regionSi = surveyData.step1?.region_si || '';
       // 선택한 설계안 이름이 있다면 제목에 반영 (예: "서울 스마트팜 프로젝트 (딸기 컴팩트형)")
@@ -273,8 +274,8 @@ async function saveBasic() {
         .insert([{ 
           user_id: userId, 
           name: projectName, 
-          status: 'draft'
-          // 만약 projects 테이블에 선택한 안을 저장하는 컬럼(예: selected_reco)을 만드셨다면 여기에 recoData를 넣으시면 됩니다.
+          status: 'draft',
+          reco: recoData
         }])
         .select()
         .single();
@@ -318,6 +319,19 @@ async function saveBasic() {
         ]);
 
       if (surveyError) throw surveyError;
+
+      // 선택한 추천안의 자동 배치도 JSON 저장
+      if (layoutData) {
+        const { error: layoutError } = await supabaseClient
+          .from('project_layouts')
+          .insert([{
+            project_id: newProject.id,
+            layout_json: layoutData,
+            version: 1,
+            is_selected: true
+          }]);
+        if (layoutError) throw layoutError;
+      }
 
       // 깔끔하게 임시 데이터 청소 및 현재 프로젝트 ID 세팅
       localStorage.removeItem('ep-temp-project-package');
@@ -356,6 +370,7 @@ async function addProject() {
       const packageData = JSON.parse(tempPackageRaw);
       const surveyData = packageData.survey;
       const recoData = packageData.reco;
+      const layoutData = packageData.layout || null;
       
       const regionSi = surveyData.step1?.region_si || '';
       // 선택한 설계안 이름이 있다면 제목에 반영 (예: "서울 스마트팜 프로젝트 (딸기 컴팩트형)")
@@ -368,8 +383,8 @@ async function addProject() {
         .insert([{ 
           user_id: user.id, 
           name: projectName, 
-          status: 'draft'
-          // 만약 projects 테이블에 선택한 안을 저장하는 컬럼(예: selected_reco)을 만드셨다면 여기에 recoData를 넣으시면 됩니다.
+          status: 'draft',
+          reco: recoData
         }])
         .select()
         .single();
@@ -413,6 +428,19 @@ async function addProject() {
         ]);
 
       if (surveyError) throw surveyError;
+
+      // 선택한 추천안의 자동 배치도 JSON 저장
+      if (layoutData) {
+        const { error: layoutError } = await supabaseClient
+          .from('project_layouts')
+          .insert([{
+            project_id: newProject.id,
+            layout_json: layoutData,
+            version: 1,
+            is_selected: true
+          }]);
+        if (layoutError) throw layoutError;
+      }
 
       // 깔끔하게 임시 데이터 청소 및 현재 프로젝트 ID 세팅
       localStorage.removeItem('ep-temp-project-package');
