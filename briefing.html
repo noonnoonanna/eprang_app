@@ -4,543 +4,78 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <title>이피랑 - 데이터 브리핑</title>
-
   <style>
-  :root {
-    --primary:#16a34a;
-    --primary-light:#dcfce7;
-    --primary-dark:#15803d;
-    --bg-soft:#f8fafc; /* 눈이 편안한 연한 배경색 */
-    --text-main:#1e293b;
-    --text-sub:#64748b;
-    --text-caption:#94a3b8;
-    --card-bg:#ffffff;
-    --border-light:#f1f5f9;
-    --shadow-sm:0 1px 2px rgba(0,0,0,0.05);
-    --shadow-md:0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.025);
-    --radius-lg:24px;
-    --radius-md:16px;
-    --radius-sm:12px;
-  }
-
-  body {
-    background-color: var(--bg-soft);
-  }
-
-  body[data-page="briefing"] main{
-    padding:24px 20px 120px;
-    width:100%;
-    max-width:560px; /* 레코드 페이지와 폭 통일 */
-    margin:0 auto;
-  }
-
-  /* 카드 디자인 전면 개선: 입체감 있는 플로팅 카드 스타일 */
-  body[data-page="briefing"] .br-card{
-    border-radius:var(--radius-lg);
-    background:var(--card-bg);
-    border:1px solid rgba(0,0,0,0.02); /* 테두리를 거의 없애고 그림자로 구분 */
-    box-shadow:var(--shadow-md);
-    width:100%;
-    padding:26px 22px;
-    margin-bottom:20px;
-    transition: transform 0.2s ease;
-  }
-
-  body[data-page="briefing"] .br-card:hover {
-    transform: translateY(-2px); /* 호버 시 살짝 떠오르는 효과 */
-  }
-
-  /* 섹션 타이틀 가독성 강화 */
-  body[data-page="briefing"] .br-title{
-    margin:0 0 12px;
-    font-size:19px;
-    font-weight:800;
-    color:var(--text-main);
-    display:flex;
-    align-items:center;
-    gap:8px;
-    letter-spacing: -0.5px;
-  }
-
-  body[data-page="briefing"] .br-title i{
-    color:var(--primary);
-    font-size: 18px;
-    background: var(--primary-light);
-    padding: 8px;
-    border-radius: 10px;
-  }
-
-  /* 설명 텍스트 */
-  body[data-page="briefing"] .br-sub{
-    margin:0 0 12px;
-    font-size:14px;
-    color:var(--text-sub);
-    line-height:1.6;
-    word-break: keep-all;
-  }
-
-  body[data-page="briefing"] .br-sub strong {
-    color: var(--text-main);
-    font-weight: 700;
-  }
-
-  body[data-page="briefing"] .br-caption{
-    margin:12px 0 0;
-    padding-top: 12px;
-    border-top: 1px dashed var(--border-light);
-    font-size:12px;
-    color:var(--text-caption);
-    line-height: 1.5;
-  }
-
-  /* KPI 그리드 영역 디자인 */
-  body[data-page="briefing"] .br-kpi-grid{
-    display:grid;
-    grid-template-columns:repeat(3,minmax(0,1fr));
-    gap:10px;
-    margin-top:20px;
-    margin-bottom: 8px;
-  }
-
-  @media (max-width:380px){
-    body[data-page="briefing"] .br-kpi-grid{
-      grid-template-columns:1fr; /* 작은 화면에서는 한 줄로 */
-      gap: 12px;
-    }
-  }
-
-  /* KPI 개별 박스 */
-  body[data-page="briefing"] .br-kpi{
-    border-radius:var(--radius-md);
-    border:1px solid var(--border-light);
-    background:#f8fafc;
-    padding:16px 12px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-    transition: all 0.2s;
-  }
-  
-  body[data-page="briefing"] .br-kpi:hover {
-    background: #ffffff;
-    box-shadow: var(--shadow-sm);
-    border-color: var(--primary-light);
-  }
-
-  body[data-page="briefing"] .br-kpi-label{
-    font-size:12px;
-    font-weight: 600;
-    color:var(--text-sub);
-    margin-bottom:6px;
-    letter-spacing: -0.3px;
-  }
-
-  body[data-page="briefing"] .br-kpi-value{
-    font-size:20px;
-    font-weight:800;
-    color:var(--primary-dark);
-    margin-bottom: 4px;
-  }
-
-  body[data-page="briefing"] .br-kpi-hint{
-    font-size:11px;
-    color:var(--text-caption);
-    letter-spacing: -0.5px;
-  }
-
-  /* 인사이트 블록 스타일 */
-  body[data-page="briefing"] .br-block{
-    margin-top:20px;
-    padding: 16px;
-    background-color: #fcfcfc;
-    border-radius: var(--radius-md);
-    border: 1px solid #f1f5f9;
-  }
-
-  body[data-page="briefing"] .br-block-title{
-    font-size:15px;
-    font-weight:700;
-    color:var(--text-main);
-    margin:0 0 8px;
-    display:flex;
-    align-items:center;
-    gap:8px;
-  }
-
-  body[data-page="briefing"] .br-block-title i{
-    font-size:14px;
-    color:#64748b;
-  }
-
-  body[data-page="briefing"] .br-block-body{
-    font-size:14px;
-    color:var(--text-sub);
-    line-height:1.65;
-    word-break: keep-all;
-  }
-
-  body[data-page="briefing"] .br-block-body strong{
-    font-weight:700;
-    color:var(--primary-dark);
-    background: linear-gradient(180deg, rgba(255,255,255,0) 60%, rgba(220, 252, 231, 0.6) 60%);
-  }
-
-  /* 리스트 스타일 개선 */
-  body[data-page="briefing"] .br-list{
-    margin:10px 0 0;
-    padding-left:0;
-    list-style: none;
-    font-size:14px;
-    color:var(--text-sub);
-    line-height:1.6;
-  }
-
-  body[data-page="briefing"] .br-list li{
-    margin-bottom:8px;
-    position: relative;
-    padding-left: 20px;
-  }
-
-  /* 리스트 불릿 커스텀 */
-  body[data-page="briefing"] .br-list li::before {
-    content: '•';
-    color: var(--primary);
-    position: absolute;
-    left: 4px;
-    font-weight: bold;
-    top: 0;
-  }
-
-  /* 칩 스타일 (태그) */
-  body[data-page="briefing"] .br-chip-row{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    margin-top:12px;
-    padding-left: 4px;
-  }
-
-  body[data-page="briefing"] .br-chip{
-    font-size:12px;
-    font-weight: 600;
-    border-radius:100px;
-    padding:6px 12px;
-    background:#ffffff;
-    border: 1px solid #e2e8f0;
-    color:#475569;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-  }
-
-  body[data-page="briefing"] .br-empty{
-    font-size:13px;
-    color:var(--text-caption);
-    margin-top:12px;
-    text-align: center;
-    padding: 20px 0;
-  }
+    :root{--br-green:#16a34a;--br-dark:#17221b;--br-sub:#64748b;--br-line:#e1e8e4}
+    body[data-page="briefing"]{background:#f6f8f7;color:var(--br-dark)}
+    body[data-page="briefing"] main{display:block;width:100%;max-width:480px;margin:0 auto;padding:18px 14px 110px}
+    .br-head{margin:0 2px 16px}.br-head h1{margin:0 0 4px;font-size:21px;font-weight:740;letter-spacing:-.035em}.br-head p{margin:0;color:var(--br-sub);font-size:12px;line-height:1.5}
+    .project-picker{position:relative;margin-bottom:14px}.project-picker select{width:100%;height:48px;padding:0 42px 0 14px;border:1px solid #dce5df;border-radius:15px;background:#fff;color:#26332b;font-size:12px;font-weight:650;appearance:none;box-shadow:0 5px 15px rgba(15,23,42,.04)}.project-picker .lucide{position:absolute;right:15px;top:50%;width:16px;height:16px;color:#64748b;transform:translateY(-50%);pointer-events:none}
+    .br-section{margin-bottom:14px;padding:16px;border:1px solid var(--br-line);border-radius:20px;background:#fff;box-shadow:0 7px 20px rgba(15,23,42,.05)}
+    .section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.section-title{display:flex;align-items:center;gap:7px;margin:0;color:#26332b;font-size:14px;font-weight:720}.section-title .lucide{width:16px;height:16px;color:#16a34a;stroke-width:1.9}.section-meta{color:#94a3b8;font-size:9px;font-weight:600}
+    .status-hero{padding:16px;border-radius:16px;background:linear-gradient(145deg,#17221b,#263a2e);color:#fff}.status-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.status-badge{padding:5px 8px;border-radius:7px;background:#16a34a;color:#fff;font-size:9px;font-weight:700;box-shadow:0 2px 0 #0f7433}.status-date{color:#9fb0a5;font-size:9px}.status-name{margin:0 0 15px;font-size:16px;line-height:1.45;font-weight:700;letter-spacing:-.025em;word-break:keep-all}.status-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:rgba(255,255,255,.12);border-radius:12px;overflow:hidden}.status-cell{padding:10px;background:rgba(255,255,255,.055)}.status-cell small{display:block;margin-bottom:3px;color:#9fb0a5;font-size:8px}.status-cell strong{color:#fff;font-size:11px;font-weight:600}
+    .readiness-top{display:flex;align-items:end;justify-content:space-between;margin-bottom:8px}.readiness-top strong{font-size:20px;color:#15803d;font-weight:720}.readiness-top span{color:#64748b;font-size:9px}.readiness-bar{height:7px;margin-bottom:13px;border-radius:999px;background:#e8eeea;overflow:hidden}.readiness-bar span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#16a34a,#4ade80)}
+    .check-list{display:grid;gap:7px}.check-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;border:1px solid #edf1ef;border-radius:11px;background:#fafcfb}.check-label{display:flex;align-items:center;gap:7px;color:#475569;font-size:10px;font-weight:550}.check-label .lucide{width:13px;height:13px}.check-row.done .check-label .lucide{color:#16a34a}.check-row.missing .check-label .lucide{color:#f59e0b}.check-state{font-size:9px;font-weight:650}.done .check-state{color:#15803d}.missing .check-state{color:#b45309}
+    .risk-list{display:grid;gap:8px}.risk-card{padding:12px;border:1px solid #fde7bd;border-radius:14px;background:#fffbeb}.risk-top{display:flex;align-items:center;gap:6px;margin-bottom:5px;color:#92400e;font-size:11px;font-weight:700}.risk-top .lucide{width:14px;height:14px}.risk-card p{margin:0;color:#785b30;font-size:10px;line-height:1.55}.risk-empty{display:flex;align-items:center;gap:8px;padding:12px;border-radius:13px;background:#f0fdf4;color:#24733f;font-size:10px;line-height:1.5}.risk-empty .lucide{width:16px;height:16px;flex:0 0 16px}
+    .quote-summary{padding:14px;border-radius:15px;background:#f4f7f5;border:1px solid #e0e7e2}.quote-summary.has{background:#17221b;border-color:#17221b;color:#fff}.quote-label{display:flex;align-items:center;gap:6px;margin-bottom:6px;color:#64748b;font-size:9px}.has .quote-label{color:#a7b7ad}.quote-label .lucide{width:13px;height:13px}.quote-value{font-size:16px;font-weight:720;color:#33473a}.has .quote-value{font-size:20px;color:#fff}.quote-hint{margin-top:5px;color:#849188;font-size:9px;line-height:1.45}.has .quote-hint{color:#9fb0a5}.quote-actions{display:grid;grid-template-columns:1fr 1.3fr;gap:8px;margin-top:10px}.quote-actions button{height:39px;border-radius:9px;display:flex;align-items:center;justify-content:center;gap:5px;font-size:10px;font-weight:700}.quote-actions .lucide{width:13px;height:13px}.btn-outline{border:1px solid #d8e2dc;background:#fff;color:#526158}.btn-green{border:0;background:#16a34a;color:#fff;box-shadow:0 3px 0 #0f7433}
+    .condition-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.condition{padding:11px;border:1px solid #e6ece8;border-radius:13px;background:#fbfcfb}.condition small{display:flex;align-items:center;gap:5px;margin-bottom:5px;color:#94a3b8;font-size:8px;font-weight:600}.condition small .lucide{width:11px;height:11px}.condition strong{color:#3b4b41;font-size:11px;line-height:1.4;font-weight:620}
+    .next-card{padding:14px;border-radius:15px;background:#eef8f1}.next-label{display:flex;align-items:center;gap:6px;margin-bottom:7px;color:#15803d;font-size:9px;font-weight:700}.next-label .lucide{width:13px;height:13px}.next-title{margin:0 0 5px;color:#1f5130;font-size:13px;font-weight:700}.next-desc{margin:0 0 11px;color:#52705d;font-size:10px;line-height:1.55}.next-button{width:100%;height:39px;border:0;border-radius:9px;background:#16a34a;color:#fff;font-size:10px;font-weight:700;box-shadow:0 3px 0 #0f7433;display:flex;align-items:center;justify-content:center;gap:6px}.next-button .lucide{width:13px;height:13px}
+    .br-empty{padding:30px 18px;border:1px dashed #cbd8cf;border-radius:18px;background:#fbfdfb;text-align:center;color:#728078;font-size:12px;line-height:1.6}.br-empty .lucide{display:block;width:27px;height:27px;margin:0 auto 10px;color:#94a3b8}.br-empty button{margin-top:13px;padding:10px 14px;border:0;border-radius:9px;background:#16a34a;color:#fff;font-size:10px;font-weight:700;box-shadow:0 3px 0 #0f7433}
+    .tabs .lucide{width:20px;height:20px;stroke-width:1.8}
   </style>
 </head>
-
 <body data-page="briefing">
   <div class="app">
     <header>
       <div class="bar">
-        <div class="logo">
-          <a href="home.html" style="all:unset;cursor:pointer">
-            <img src="img/logo.png" alt="이피랑 로고" />
-          </a>
-        </div>
+        <div class="logo"><a href="home.html" style="all:unset;cursor:pointer"><img src="img/logo.png" alt="이피랑 로고"></a></div>
       </div>
     </header>
-
     <main>
-      <!-- 상단 설명 -->
-      <section class="br-card">
-        <h3 class="br-title">
-          <i class="fa-solid fa-chart-line"></i>
-          <span>데이터 브리핑</span>
-        </h3>
-        <p class="br-sub">
-          온보딩 설문과 저장된 프로젝트를 바탕으로, <strong>내 조건과 비슷한 설계 패턴·수익 구조·설계 시 체크포인트</strong>를
-          브리핑 형식으로 정리해 주는 화면입니다.
-        </p>
-        <p class="br-caption">
-          장기적으로는 정책기관·연구기관용 실내 농업 데이터 리포트와 (주)그린 설계·제품 기획 피드백 자료의 기반이 됩니다.
-        </p>
-      </section>
-
-      <!-- 오늘의 브리핑 요약 -->
-      <section class="br-card">
-        <h3 class="br-title">
-          <i class="fa-regular fa-newspaper"></i>
-          <span>오늘의 브리핑 요약</span>
-        </h3>
-        <p class="br-sub">
-          지금까지 이 앱에 저장된 내 프로젝트 기준으로 간단한 요약을 보여줍니다.
-          실제 수익·비용 데이터와 타 사용자 집계는 추후 연동 예정이에요.
-        </p>
-
-        <div class="br-kpi-grid">
-          <div class="br-kpi">
-            <div class="br-kpi-label">저장된 프로젝트</div>
-            <div class="br-kpi-value" id="brKpiProjects">0개</div>
-            <div class="br-kpi-hint" id="brKpiProjectsHint">설문·설계안 기준</div>
-          </div>
-          <div class="br-kpi">
-            <div class="br-kpi-label">엽채류 중심 설계</div>
-            <div class="br-kpi-value" id="brKpiLeafy">-</div>
-            <div class="br-kpi-hint">추천 설계안 비중</div>
-          </div>
-          <div class="br-kpi">
-            <div class="br-kpi-label">지식산업센터</div>
-            <div class="br-kpi-value" id="brKpiBiz">-</div>
-            <div class="br-kpi-hint">공간 유형 비중</div>
-          </div>
-        </div>
-
-        <p class="br-caption" id="brKpiSummary">
-          아직 저장된 프로젝트 수가 적어, 경향 분석은 참고용으로만 제공됩니다.
-        </p>
-      </section>
-
-      <!-- 설계 패턴 인사이트 -->
-      <section class="br-card">
-        <h3 class="br-title">
-          <i class="fa-solid fa-sitemap"></i>
-          <span>설계 패턴 인사이트</span>
-        </h3>
-
-        <div class="br-block">
-          <h4 class="br-block-title">
-            <i class="fa-regular fa-lightbulb"></i>
-            <span>비슷한 조건에서 많이 선택한 설계 패턴</span>
-          </h4>
-          <p class="br-block-body" id="brPatternSentence">
-            저장된 프로젝트를 기반으로, 비슷한 조건(공간 유형·작목 중심)의 사용자들이 어떤 설계 패턴을 선택했는지 요약합니다.
-          </p>
-          <ul class="br-list" id="brPatternList">
-            <li>지식산업센터·엽채류 중심 사용자는 수직 랙형 스마트팜(3~4단) 설계를 선택하는 비중이 높습니다.</li>
-            <li>상가·조경 위주 사용자는 쇼룸형 구조(전면 쇼윈도+아일랜드 구조물)를 선호하는 경향이 있습니다.</li>
-            <li>샌드위치 판넬 창고는 육묘+생산 복합형으로 구성하는 사례가 자주 등장합니다.</li>
-          </ul>
-        </div>
-
-        <div class="br-chip-row" id="brPatternChips">
-          <span class="br-chip">수직 랙형</span>
-          <span class="br-chip">쇼룸형 조경</span>
-          <span class="br-chip">육묘+생산 복합</span>
-        </div>
-      </section>
-
-      <!-- 비용/수익 구조 경향 -->
-      <section class="br-card">
-        <h3 class="br-title">
-          <i class="fa-solid fa-coins"></i>
-          <span>고정비 · 수익 구조 브리핑</span>
-        </h3>
-
-        <div class="br-block">
-          <h4 class="br-block-title">
-            <i class="fa-solid fa-bolt"></i>
-            <span>LED · 전력 단가 관점</span>
-          </h4>
-          <p class="br-block-body" id="brCostSentence">
-            최근 전력 단가를 기준으로 볼 때, <strong>고효율 LED 옵션을 선택한 패턴</strong>에서
-            3년 누적 고정비가 일반형 대비 의미 있게 줄어드는 경향이 있습니다.
-            대신 초기 투자비가 증가하므로, <strong>예상 운영 시간·전력 단가·지원 사업 조건</strong>을 함께 보는 것이 중요합니다.
-          </p>
-        </div>
-
-        <div class="br-block">
-          <h4 class="br-block-title">
-            <i class="fa-solid fa-scale-balanced"></i>
-            <span>판넬형 창고 · 복합형 설계의 주의점</span>
-          </h4>
-          <p class="br-block-body" id="brRiskSentence">
-            판넬형 창고에서 <strong>육묘장+생산 복합형 설계</strong>를 선택한 사례에서 자주 언급되는 문제는
-            <strong>구역별 온·습도 편차, 품종별 생육 속도 차이, 작업 동선 피로도</strong>입니다.
-            설계 단계에서 <strong>공조 존 분리, 순환팬 배치, 작업 동선</strong>을 함께 설계하면 이런 리스크를 줄일 수 있습니다.
-          </p>
-        </div>
-
-        <p class="br-caption">
-          향후에는 실제 수확량·전력 사용량·운영비 데이터를 기반으로, 프로젝트별 맞춤 수익·고정비 브리핑이 제공될 예정입니다.
-        </p>
-      </section>
-
-      <!-- 설계 변경 시 체크포인트 -->
-      <section class="br-card">
-        <h3 class="br-title">
-          <i class="fa-solid fa-list-check"></i>
-          <span>설계 변경 시 체크포인트</span>
-        </h3>
-
-        <div class="br-block">
-          <h4 class="br-block-title">
-            <i class="fa-regular fa-clipboard"></i>
-            <span>지금 내 설계에서 특히 신경 쓸 만한 부분</span>
-          </h4>
-          <p class="br-block-body" id="brCheckSentence">
-            내 프로젝트 조건을 기준으로, 설계 변경 시 영향을 많이 받는 항목을 정리했습니다.
-          </p>
-          <ul class="br-list" id="brCheckList">
-            <li>공간 유형과 층고에 따라 <strong>랙 단 수·층수</strong>를 조정하면 초기 투자와 수익성의 균형이 달라집니다.</li>
-            <li><strong>작목 구성(엽채/허브/조경/육묘)</strong>을 바꾸면 LED 스펙·양액 라인 수·작업 동선 설계가 함께 바뀌어야 합니다.</li>
-            <li>향후 확장 계획이 있다면, <strong>전기·급배수 여유 용량</strong>과 설비 배치를 처음부터 고려하는 것이 좋습니다.</li>
-          </ul>
-        </div>
-
-        <p class="br-caption">
-          프로젝트 상세 화면에서 설계 옵션을 바꾸기 전에, 위 항목들을 한 번 더 점검해 보면 도움이 됩니다.
-        </p>
-      </section>
+      <div class="br-head"><h1>데이터 브리핑</h1><p>내 프로젝트의 준비 상태와 다음 행동을 확인하세요.</p></div>
+      <div class="project-picker" id="pickerWrap"><select id="projectPicker" aria-label="프로젝트 선택"><option>프로젝트를 불러오는 중입니다.</option></select><i data-lucide="chevron-down"></i></div>
+      <div id="briefingContent"><div class="br-empty">프로젝트 데이터를 불러오는 중입니다.</div></div>
     </main>
-
-<nav class="tabs">
-      <ul>
-        <li><button id="tab-home" onclick="window.location.assign('home.html')"><i class="fa-solid fa-house"></i><small>홈</small></button></li>
-        <li><button id="tab-records" onclick="window.location.assign('records.html')"><i class="fas fa-list-check"></i><small>기록</small></button></li>
-        <li><button id="tab-reco" onclick="window.location.assign('deals.html')"><i class="fas fa-file-signature"></i><small>견적</small></button></li>
-        <li><button id="tab-my" onclick="window.location.assign('settings.html')"><i class="fa-solid fa-user"></i><small>마이</small></button></li>
-      </ul>
-    </nav>
+    <nav class="tabs"><ul>
+      <li><button id="tab-home" onclick="window.location.assign('home.html')"><i data-lucide="house"></i><small>홈</small></button></li><li><button id="tab-records" onclick="window.location.assign('records.html')"><i data-lucide="list-checks"></i><small>기록</small></button></li><li><button id="tab-reco" onclick="window.location.assign('deals.html')"><i data-lucide="file-signature"></i><small>견적</small></button></li><li><button id="tab-my" onclick="window.location.assign('settings.html')"><i data-lucide="user"></i><small>마이</small></button></li>
+    </ul></nav>
   </div>
-
-  <!-- 공통 모달/토스트 -->
-  <div id="overlay" class="overlay" onclick="closeModal && closeModal(event)"></div>
-  <div id="modal" class="modal" style="display:none"></div>
-  <div id="toast" class="toast">처리되었습니다</div>
-
+  <div id="overlay" class="overlay" onclick="closeModal && closeModal(event)"></div><div id="modal" class="modal" style="display:none"></div><div id="toast" class="toast">처리되었습니다</div>
   <script src="app.js" defer></script>
   <script>
-  document.addEventListener('DOMContentLoaded',function(){
-    // 하단 버튼
-    var btnHome=document.getElementById('brBtnHome');
-    var btnProject=document.getElementById('brBtnProject');
-    if(btnHome){
-      btnHome.addEventListener('click',function(){window.location.assign('home.html');});
-    }
-    if(btnProject){
-      btnProject.addEventListener('click',function(){
-        // 최근 프로젝트 기준으로 상세 이동
-        var key=(window.K && K.PROJECTS) || 'ep-projects';
-        var projects=[];
-        try{
-          projects=(typeof read==='function')?read(key,[]):JSON.parse(localStorage.getItem(key)||'[]');
-        }catch(e){projects=[];}
-        if(!Array.isArray(projects) || !projects.length){
-          if(typeof toast==='function') toast('저장된 프로젝트가 없습니다.');
-          else alert('저장된 프로젝트가 없습니다.');
-          return;
-        }
-        // 가장 최근 생성 프로젝트
-        var latest=projects.slice().sort(function(a,b){
-          var ta=new Date(a.createdAt||0).getTime();
-          var tb=new Date(b.createdAt||0).getTime();
-          return tb-ta;
-        })[0];
-        if(latest && latest.id){
-          try{localStorage.setItem('ep-current-project-id',latest.id);}catch(e){}
-          window.location.assign('project-detail.html');
-        }else{
-          if(typeof toast==='function') toast('프로젝트 정보를 찾을 수 없습니다.');
-          else alert('프로젝트 정보를 찾을 수 없습니다.');
-        }
-      });
-    }
-
-    // =========================
-    //  ep-projects 기반 요약
-    // =========================
-    var key=(window.K && K.PROJECTS) || 'ep-projects';
-    var projects=[];
+  document.addEventListener('DOMContentLoaded',async function(){
+    const picker=document.getElementById('projectPicker'),content=document.getElementById('briefingContent');let projects=[],surveys=[];
+    const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    const icons=()=>window.lucide&&window.lucide.createIcons({attrs:{'aria-hidden':'true'}});
+    const stage=s=>({draft:'설계 중',quote_requested:'견적 요청',quote_review:'견적 검토',quote_received:'견적 검토',contracted:'계약 진행',construction:'시공 중',operating:'운영 중',done:'완료',complete:'완료'}[s]||'진행 중');
+    const facility=v=>({biz_center:'지식산업센터',panel_factory:'판넬형 창고·공장',retail_space:'상가·근린시설'}[v]||'실내 공간');
+    const money=p=>{const v=p.quote_total??p.quote_amount;if(v===null||v===undefined||v==='')return null;const n=Number(v);return Number.isFinite(n)?n.toLocaleString('ko-KR')+'원':String(v)};
     try{
-      projects=(typeof read==='function')?read(key,[]):JSON.parse(localStorage.getItem(key)||'[]');
-    }catch(e){projects=[];}
-    if(!Array.isArray(projects)) projects=[];
-
-    var total=projects.length;
-    var leafyCount=0;
-    var bizCount=0;
-    var mainCropLabel='';
-
-    projects.forEach(function(p){
-      var reco=p.reco||{};
-      var survey=p.survey||{};
-      var s2=survey.step2||{};
-      var cropSource=(reco.cropType||reco.title||'');
-      if(cropSource.includes('엽채')) leafyCount++;
-      if(s2.facility==='biz_center') bizCount++;
-    });
-
-    // KPI 표시
-    var elPr=document.getElementById('brKpiProjects');
-    var elPrHint=document.getElementById('brKpiProjectsHint');
-    var elLeaf=document.getElementById('brKpiLeafy');
-    var elBiz=document.getElementById('brKpiBiz');
-    var elSummary=document.getElementById('brKpiSummary');
-
-    if(elPr) elPr.textContent=total+'개';
-    if(elPrHint){
-      if(total>0){
-        elPrHint.textContent='온보딩 설문을 완료하고 설계안을 저장한 프로젝트 수입니다.';
-      }else{
-        elPrHint.textContent='설문·설계안을 저장하면 여기에서 요약을 볼 수 있어요.';
-      }
+      const {data:{session}}=await supabaseClient.auth.getSession();
+      if(session){const pr=await supabaseClient.from('projects').select('*').eq('user_id',session.user.id).order('created_at',{ascending:false});if(pr.error)throw pr.error;projects=pr.data||[];if(projects.length){const sr=await supabaseClient.from('project_surveys').select('*').in('project_id',projects.map(p=>p.id));if(!sr.error)surveys=sr.data||[]}}
+    }catch(error){console.error('브리핑 데이터 조회 오류',error)}
+    if(!projects.length){document.getElementById('pickerWrap').style.display='none';content.innerHTML='<div class="br-empty"><i data-lucide="folder-plus"></i>저장된 프로젝트가 없습니다.<br>설문을 완료하고 설계안을 저장하면 개인 브리핑을 볼 수 있어요.<button onclick="window.location.assign(\'survey_new.html\')">새 프로젝트 만들기</button></div>';icons();return}
+    picker.innerHTML=projects.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.name||'이름 없는 프로젝트')+'</option>').join('');const saved=localStorage.getItem('ep-current-project-id');if(saved&&projects.some(p=>String(p.id)===saved))picker.value=saved;
+    function surveyFor(id){return surveys.find(s=>String(s.project_id)===String(id))||{}}
+    function checks(s){return[
+      {label:'공간 면적',ok:!!(s.usable_area||s.floor_area),value:s.usable_area||s.floor_area},
+      {label:'층고',ok:!!s.ceil_height,value:s.ceil_height},
+      {label:'전력 용량',ok:!!s.electric_power||s.electric_power_known==='yes',value:s.electric_power},
+      {label:'급수 위치',ok:!!s.water_location||s.water_location_known==='yes',value:s.water_location},
+      {label:'환기 방식',ok:!!s.ventilation,value:s.ventilation}
+    ]}
+    function render(){const p=projects.find(x=>String(x.id)===picker.value)||projects[0],s=surveyFor(p.id),items=checks(s),done=items.filter(x=>x.ok).length,percent=Math.round(done/items.length*100),risks=[];if(!items[2].ok)risks.push({title:'전력 용량 확인 필요',desc:'LED·냉난방·제습 설비 용량을 정하기 전에 계약전력과 분전반 위치를 확인해 주세요.'});if(!items[3].ok)risks.push({title:'급수·배수 위치 확인 필요',desc:'양액실과 재배랙 배치를 확정하려면 급수점과 배수 경로 확인이 필요합니다.'});if(!items[4].ok)risks.push({title:'환기 방식 확인 필요',desc:'공조와 제습 용량에 영향을 줄 수 있어 자연환기·기계환기 조건을 확인해 주세요.'});const amount=money(p),next=risks[0]||{title:'견적 단계 확인',desc:'입력 조건이 준비되었습니다. 견적·계약 페이지에서 다음 진행 상태를 확인해 주세요.'};
+      content.innerHTML='<section class="br-section"><div class="section-head"><h2 class="section-title"><i data-lucide="layout-dashboard"></i>프로젝트 현황</h2><span class="section-meta">최근 업데이트 '+esc((p.updated_at||p.created_at||'').slice(0,10)||'-')+'</span></div><div class="status-hero"><div class="status-top"><span class="status-badge">'+stage(p.status)+'</span><span class="status-date">내 프로젝트 브리핑</span></div><h3 class="status-name">'+esc(p.name||'이름 없는 프로젝트')+'</h3><div class="status-grid"><div class="status-cell"><small>공간 유형</small><strong>'+facility(s.facility)+'</strong></div><div class="status-cell"><small>사용 면적</small><strong>'+(s.usable_area||s.floor_area?esc(s.usable_area||s.floor_area)+'㎡':'확인 필요')+'</strong></div><div class="status-cell"><small>운영 인력</small><strong>'+(s.family_staff?esc(s.family_staff)+'명':'확인 필요')+'</strong></div><div class="status-cell"><small>목표 수익</small><strong>'+esc(s.profit_goal||'확인 필요')+'</strong></div></div></div></section>'+
+      '<section class="br-section"><div class="section-head"><h2 class="section-title"><i data-lucide="clipboard-check"></i>시설 준비도</h2><span class="section-meta">'+done+'/'+items.length+' 확인</span></div><div class="readiness-top"><strong>'+percent+'%</strong><span>'+(items.length-done)+'개 항목 확인 필요</span></div><div class="readiness-bar"><span style="width:'+percent+'%"></span></div><div class="check-list">'+items.map(x=>'<div class="check-row '+(x.ok?'done':'missing')+'"><span class="check-label"><i data-lucide="'+(x.ok?'circle-check':'circle-alert')+'"></i>'+x.label+'</span><span class="check-state">'+(x.ok?'확인 완료':'확인 필요')+'</span></div>').join('')+'</div></section>'+
+      '<section class="br-section"><div class="section-head"><h2 class="section-title"><i data-lucide="triangle-alert"></i>확인할 조건</h2><span class="section-meta">'+risks.length+'건</span></div><div class="risk-list">'+(risks.length?risks.map(r=>'<article class="risk-card"><div class="risk-top"><i data-lucide="circle-alert"></i>'+r.title+'</div><p>'+r.desc+'</p></article>').join(''):'<div class="risk-empty"><i data-lucide="badge-check"></i>기본 시설 조건이 모두 입력되어 있습니다. 현장 확인 단계에서 실제 조건을 다시 검토해 주세요.</div>')+'</div></section>'+
+      '<section class="br-section"><div class="section-head"><h2 class="section-title"><i data-lucide="receipt-text"></i>비용 브리핑</h2></div><div class="quote-summary '+(amount?'has':'')+'"><div class="quote-label"><i data-lucide="calculator"></i>'+(amount?'현재 등록 견적':'견적 현황')+'</div><div class="quote-value">'+(amount?esc(amount):'아직 등록된 견적이 없습니다.')+'</div><div class="quote-hint">'+(amount?'부가세와 별도 공사 포함 여부를 견적 페이지에서 확인하세요.':'설비 구성이 확정되면 비용 분석을 확인할 수 있어요.')+'</div></div><div class="quote-actions"><button class="btn-outline" data-go="recipe"><i data-lucide="layers-3"></i>설비 비교</button><button class="btn-green" data-go="deal"><i data-lucide="file-signature"></i>견적·계약 보기</button></div></section>'+
+      '<section class="br-section"><div class="section-head"><h2 class="section-title"><i data-lucide="scan-search"></i>입력 조건 요약</h2></div><div class="condition-grid"><div class="condition"><small><i data-lucide="ruler"></i>층고</small><strong>'+(s.ceil_height?esc(s.ceil_height)+'m':'확인 필요')+'</strong></div><div class="condition"><small><i data-lucide="zap"></i>전력</small><strong>'+(s.electric_power?esc(s.electric_power)+'kW':'확인 필요')+'</strong></div><div class="condition"><small><i data-lucide="droplets"></i>급수</small><strong>'+esc(s.water_supply||s.water_location||'확인 필요')+'</strong></div><div class="condition"><small><i data-lucide="wind"></i>환기</small><strong>'+esc(s.ventilation||'확인 필요')+'</strong></div></div></section>'+
+      '<section class="br-section"><div class="section-head"><h2 class="section-title"><i data-lucide="route"></i>다음 행동</h2></div><div class="next-card"><div class="next-label"><i data-lucide="sparkles"></i>이 프로젝트에서 먼저 할 일</div><h3 class="next-title">'+next.title+'</h3><p class="next-desc">'+next.desc+'</p><button class="next-button" data-go="project"><i data-lucide="arrow-right"></i>프로젝트에서 확인하기</button></div></section>';icons();
+      content.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{localStorage.setItem('ep-current-project-id',p.id);if(b.dataset.go==='recipe')location.assign('recipes.html');else if(b.dataset.go==='deal')location.assign('deals.html?project='+encodeURIComponent(p.id));else location.assign('project-detail.html')})
     }
-
-    function percent(n,d){
-      if(!d) return '-';
-      return Math.round((n/d)*100)+'%';
-    }
-
-    if(elLeaf) elLeaf.textContent = total ? percent(leafyCount,total) : '-';
-    if(elBiz) elBiz.textContent = total ? percent(bizCount,total) : '-';
-
-    if(elSummary){
-      if(total<=1){
-        elSummary.textContent='저장된 프로젝트가 아직 많지 않아, 경향 분석은 참고용으로만 제공됩니다.';
-      }else{
-        elSummary.textContent='현재 저장된 내 프로젝트 기준으로, 엽채류 중심 설계 비중은 '+(total?percent(leafyCount,total):'-')+
-          ', 지식산업센터 공간 비중은 '+(total?percent(bizCount,total):'-')+' 수준입니다.';
-      }
-    }
-
-    // 설계 패턴 문장 약간 개인화
-    var elPatternSentence=document.getElementById('brPatternSentence');
-    if(elPatternSentence){
-      if(total===0){
-        elPatternSentence.textContent='아직 저장된 프로젝트가 없어, 기본적인 설계 패턴 예시만 보여주고 있습니다. 설문을 완료하고 설계안을 저장하면 내 조건에 맞는 문구로 바뀝니다.';
-      }else{
-        var base='지금까지 저장된 내 프로젝트 기준으로, ';\
-        if(bizCount/ (total||1) >= 0.5 && leafyCount/(total||1) >= 0.5){
-          elPatternSentence.textContent = base +
-            '지식산업센터·엽채류 중심 조건에서 수직 랙형 스마트팜 설계를 선택한 비중이 높은 편입니다.';
-        }else if(leafyCount/(total||1) >= 0.5){
-          elPatternSentence.textContent = base +
-            '엽채류 중심 설계 비중이 높으며, 랙 단 수·층수를 조정하면서 투자 규모를 맞추는 패턴이 자주 등장합니다.';
-        }else{
-          elPatternSentence.textContent = base +
-            '공간 유형·작목 구성이 다양해, 프로젝트별로 다른 설계 패턴이 시도되고 있습니다.';
-        }
-      }
-    }
-
-    // 체크포인트 문장 약간 개인화
-    var elCheckSentence=document.getElementById('brCheckSentence');
-    if(elCheckSentence){
-      if(total===0){
-        elCheckSentence.textContent='내 프로젝트 조건을 아직 알 수 없어, 일반적인 설계 변경 체크포인트만 보여주고 있습니다.';
-      }else if(bizCount/(total||1)>=0.5){
-        elCheckSentence.textContent='지식산업센터 기반 설계에서는, 층고·기계실 위치·소음 규제 등을 고려해 랙 단 수와 공조 설비를 함께 조정하는 것이 중요합니다.';
-      }else{
-        elCheckSentence.textContent='내 프로젝트 조건을 기준으로, 설계 변경 시 특히 영향을 많이 받는 항목을 정리했습니다.';
-      }
-    }
+    picker.onchange=()=>{localStorage.setItem('ep-current-project-id',picker.value);render()};render();icons();
   });
   </script>
 </body>
