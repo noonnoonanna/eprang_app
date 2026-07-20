@@ -4,591 +4,140 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <title>이피랑 - 리마인더</title>
-
   <style>
-  	:root { --primary:#16a34a; --text-sub:#4a5568}
-  body[data-page="reminder"] main{
-    padding:16px 14px 100px;
-    width:100%;
-    max-width:480px;
-    margin:0 auto;
-  }
-
-  body[data-page="reminder"] .rm-card{
-    border-radius:18px;
-    background:#ffffff;
-    border:1px solid #e5e7eb;
-    box-shadow:0 4px 12px rgba(15,23,42,0.04);
-    width:100%;
-    padding:18px 16px;
-    margin-bottom:14px;
-  }
-
-  body[data-page="reminder"] .rm-title{
-    margin:0 0 8px;
-    font-size:18px;
-    font-weight:800;
-    color:#111827;
-    display:flex;
-    align-items:center;
-    gap:6px;
-  }
-
-  body[data-page="reminder"] .rm-title i{
-    color:var(--acc);
-  }
-
-  body[data-page="reminder"] .rm-sub{
-    margin:0 0 8px;
-    font-size:13px;
-    color:#6b7280;
-    line-height:1.6;
-  }
-
-  body[data-page="reminder"] .rm-caption{
-    margin:4px 0 0;
-    font-size:11px;
-    color:#9ca3af;
-  }
-
-  /* 캘린더 + 리스트 카드 */
-  body[data-page="reminder"] .rm-calendar-wrap{
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-  }
-
-  /* 캘린더 헤더 */
-  body[data-page="reminder"] .rm-cal-header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin-bottom:6px;
-  }
-
-  body[data-page="reminder"] .rm-cal-month{
-    font-size:14px;
-    font-weight:700;
-    color:#111827;
-    display:flex;
-    align-items:center;
-    gap:6px;
-  }
-
-  body[data-page="reminder"] .rm-cal-month span{
-    font-weight:800;
-  }
-
-  body[data-page="reminder"] .rm-cal-nav{
-    display:flex;
-    gap:4px;
-    opacity:.4;
-    pointer-events:none; /* 아직 월 이동은 미구현 - UI만 */
-  }
-
-  body[data-page="reminder"] .rm-cal-nav button{
-    border:0;
-    background:#f3f4f6;
-    border-radius:999px;
-    width:26px;
-    height:26px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:12px;
-    color:#6b7280;
-  }
-
-  /* 요일 행 */
-  body[data-page="reminder"] .rm-cal-weekdays{
-    display:grid;
-    grid-template-columns:repeat(7,minmax(0,1fr));
-    font-size:11px;
-    color:#9ca3af;
-    margin-bottom:4px;
-  }
-
-  body[data-page="reminder"] .rm-cal-weekdays span{
-    text-align:center;
-    padding:2px 0;
-  }
-
-  /* 날짜 그리드 */
-  body[data-page="reminder"] .rm-cal-grid{
-    display:grid;
-    grid-template-columns:repeat(7,minmax(0,1fr));
-    gap:2px;
-  }
-
-  body[data-page="reminder"] .rm-day{
-    height:32px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:12px;
-    color:#9ca3af;
-  }
-
-  body[data-page="reminder"] .rm-day-num{
-    position:relative;
-    width:28px;
-    height:28px;
-    border-radius:999px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
-
-  body[data-page="reminder"] .rm-day--in-month{
-    color:#4b5563;
-    cursor:pointer;
-  }
-
-  body[data-page="reminder"] .rm-day--today .rm-day-num{
-    border:1px solid var(--acc);
-  }
-
-  body[data-page="reminder"] .rm-day--has .rm-day-num::after{
-    content:'';
-    position:absolute;
-    bottom:3px;
-    left:50%;
-    transform:translateX(-50%);
-    width:5px;
-    height:5px;
-    border-radius:999px;
-    background:var(--acc);
-  }
-
-  body[data-page="reminder"] .rm-day--selected .rm-day-num{
-    background:#ecfdf3;
-    color:#15803d;
-    border:1px solid rgba(22,163,74,0.5);
-  }
-
-  /* 일정 리스트 */
-  body[data-page="reminder"] .rm-list-header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin-top:10px;
-    margin-bottom:4px;
-  }
-
-  body[data-page="reminder"] .rm-list-title{
-    font-size:14px;
-    font-weight:700;
-    color:#111827;
-  }
-
-  body[data-page="reminder"] .rm-list-count{
-    font-size:11px;
-    color:#9ca3af;
-  }
-
-  body[data-page="reminder"] .rm-event-list{
-    margin:4px 0 0;
-    padding:0;
-    list-style:none;
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-  }
-
-  body[data-page="reminder"] .rm-date-group{
-    padding-top:6px;
-    border-top:1px dashed #e5e7eb;
-  }
-
-  body[data-page="reminder"] .rm-date-label{
-    font-size:12px;
-    font-weight:700;
-    color:#4b5563;
-    margin-bottom:4px;
-  }
-
-  body[data-page="reminder"] .rm-event-item{
-    border-radius:12px;
-    border:1px solid #e5e7eb;
-    background:#f9fafb;
-    padding:8px 10px;
-    font-size:12px;
-    color:#374151;
-    display:flex;
-    flex-direction:column;
-    gap:2px;
-    cursor:pointer;
-  }
-
-  body[data-page="reminder"] .rm-event-item:hover{
-    border-color:rgba(22,163,74,0.35);
-    background:#ffffff;
-    box-shadow:0 4px 12px rgba(22,163,74,0.08);
-  }
-
-  body[data-page="reminder"] .rm-event-main{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:6px;
-  }
-
-  body[data-page="reminder"] .rm-event-label{
-    font-weight:700;
-    color:#111827;
-  }
-
-  body[data-page="reminder"] .rm-event-tag{
-    font-size:11px;
-    color:#059669;
-  }
-
-  body[data-page="reminder"] .rm-event-meta{
-    font-size:11px;
-    color:#6b7280;
-    display:flex;
-    align-items:center;
-    gap:8px;
-  }
-
-  body[data-page="reminder"] .rm-event-meta i{
-    font-size:11px;
-    color:#9ca3af;
-  }
-
-  body[data-page="reminder"] .rm-empty{
-    margin-top:6px;
-    font-size:12px;
-    color:#9ca3af;
-  }
+    :root{--rm-green:#16a34a;--rm-text:#1f2937;--rm-sub:#64748b;--rm-line:#e2e8f0}
+    body[data-page="reminder"]{background:#f7f9f8;color:var(--rm-text)}
+    body[data-page="reminder"] main{display:block;width:100%;max-width:480px;margin:0 auto;padding:18px 14px 110px}
+    .rm-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin:0 2px 17px}
+    .rm-head h1{margin:0 0 4px;font-size:21px;font-weight:740;letter-spacing:-.035em}
+    .rm-head p{margin:0;color:var(--rm-sub);font-size:12px}
+    .rm-add{height:35px;padding:0 11px;border:0;border-radius:8px;background:#16a34a;color:#fff;display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;box-shadow:0 3px 0 #0f7433,0 5px 8px rgba(22,163,74,.15)}
+    .rm-add .lucide{width:14px;height:14px}
+    .rm-filters{display:flex;gap:7px;overflow:auto;margin:0 -14px 14px;padding:0 14px 5px;scrollbar-width:none}
+    .rm-filters::-webkit-scrollbar{display:none}
+    .rm-filter{flex:0 0 auto;height:31px;padding:0 12px;border:1px solid #dce5df;border-radius:999px;background:#fff;color:#64748b;font-size:11px;font-weight:650}
+    .rm-filter.active{border-color:#16a34a;background:#16a34a;color:#fff;box-shadow:0 2px 5px rgba(22,163,74,.16)}
+    .rm-card{margin-bottom:14px;padding:16px;border:1px solid #dfe7e2;border-radius:20px;background:#fff;box-shadow:0 7px 20px rgba(15,23,42,.05)}
+    .rm-cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
+    .rm-month{display:flex;align-items:center;gap:7px;font-size:15px;font-weight:700}.rm-month .lucide{width:17px;height:17px;color:#16a34a}
+    .rm-nav{display:flex;gap:5px}.rm-nav button{width:31px;height:31px;border:1px solid #e2e8f0;border-radius:10px;background:#f8fafc;color:#64748b;display:grid;place-items:center}.rm-nav .lucide{width:15px;height:15px}
+    .rm-week,.rm-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}.rm-week{margin-bottom:4px;color:#94a3b8;font-size:10px}.rm-week span{text-align:center;padding:4px 0}
+    .rm-day{height:39px;border:0;background:transparent;padding:0;display:grid;place-items:center;color:#334155;font-size:11px}
+    .rm-day.empty{pointer-events:none}.rm-day span{position:relative;width:31px;height:31px;border-radius:11px;display:grid;place-items:center}
+    .rm-day.today span{border:1px solid #86efac;color:#15803d}.rm-day.selected span{background:#16a34a;color:#fff}.rm-day.has span::after{content:"";position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:#f59e0b}.rm-day.selected span::after{background:#fff}
+    .rm-list-head{display:flex;align-items:end;justify-content:space-between;margin:22px 2px 10px}.rm-list-head h2{margin:0;font-size:16px;font-weight:720}.rm-count{color:#94a3b8;font-size:11px}
+    .rm-list{display:grid;gap:9px}.rm-empty{padding:25px 16px;border:1px dashed #cbd8cf;border-radius:16px;background:#fbfdfb;text-align:center;color:#7b8b81;font-size:12px;line-height:1.55}
+    .rm-event{width:100%;padding:13px;border:1px solid #e1e8e4;border-radius:16px;background:#fff;text-align:left;box-shadow:0 3px 11px rgba(15,23,42,.035);display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+    .rm-datebox{width:42px;height:46px;border-radius:12px;background:#f0fdf4;color:#15803d;display:flex;flex-direction:column;align-items:center;justify-content:center}.rm-datebox strong{font-size:16px;line-height:1}.rm-datebox small{margin-top:3px;font-size:9px;font-weight:650}
+    .rm-event.policy .rm-datebox{background:#fff7e6;color:#b45309}.rm-event.education .rm-datebox{background:#eff6ff;color:#1d4ed8}
+    .rm-event-body{min-width:0}.rm-event-top{display:flex;align-items:center;gap:6px;margin-bottom:5px}.rm-type{padding:4px 6px;border-radius:6px;background:#dcfce7;color:#15803d;font-size:9px;font-weight:700}.policy .rm-type{background:#fef3c7;color:#a16207}.education .rm-type{background:#dbeafe;color:#1d4ed8}
+    .rm-dday{color:#ef4444;font-size:9px;font-weight:700}.rm-event-title{margin:0 0 4px;color:#26332b;font-size:12px;font-weight:650;line-height:1.4;word-break:keep-all}.rm-event-meta{color:#94a3b8;font-size:10px}.rm-chevron{width:15px;height:15px;color:#a3aea8}
+    .rm-source-note{display:flex;gap:8px;margin-top:12px;padding:11px 12px;border-radius:13px;background:#f1f5f9;color:#64748b;font-size:10px;line-height:1.5}.rm-source-note .lucide{width:15px;height:15px;flex:0 0 15px;color:#16a34a}
+    .rm-overlay{position:fixed;inset:0;z-index:180;background:rgba(15,23,42,.42);backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:.2s}.rm-overlay.show{opacity:1;pointer-events:auto}
+    .rm-sheet{position:fixed;z-index:190;left:50%;bottom:0;width:100%;max-width:430px;max-height:82vh;overflow:auto;padding:10px 18px 25px;border-radius:24px 24px 0 0;background:#fff;transform:translate(-50%,105%);transition:.25s ease}.rm-sheet.show{transform:translate(-50%,0)}
+    .rm-handle{width:38px;height:4px;border-radius:2px;background:#d1d5db;margin:0 auto 18px}.rm-sheet-head{display:flex;justify-content:space-between;gap:12px}.rm-sheet h2{margin:8px 0 8px;font-size:19px;line-height:1.45;font-weight:740;letter-spacing:-.025em}.rm-close{width:34px;height:34px;flex:0 0 34px;border:0;border-radius:11px;background:#f1f5f9;color:#64748b;display:grid;place-items:center}.rm-close .lucide{width:17px;height:17px}
+    .rm-sheet-summary{margin:0 0 17px;color:#64748b;font-size:12px;line-height:1.65}.rm-detail-grid{display:grid;grid-template-columns:1fr 1fr;border:1px solid #e2e8f0;border-radius:15px;overflow:hidden;margin-bottom:15px}.rm-detail{padding:12px;border-right:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0}.rm-detail:nth-child(even){border-right:0}.rm-detail:nth-last-child(-n+2){border-bottom:0}.rm-detail small{display:block;margin-bottom:4px;color:#94a3b8;font-size:9px;font-weight:650}.rm-detail strong{color:#334155;font-size:11px;line-height:1.45;font-weight:650}
+    .rm-sheet-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rm-sheet-actions a,.rm-sheet-actions button{height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;font-weight:700;text-decoration:none}.rm-source{border:1px solid #cbd5e1;background:#fff;color:#475569}.rm-save{border:0;background:#16a34a;color:#fff;box-shadow:0 3px 0 #0f7433}.rm-sheet-actions .lucide{width:14px;height:14px}
+    .tabs .lucide{width:20px;height:20px;stroke-width:1.8}
   </style>
 </head>
-
 <body data-page="reminder">
   <div class="app">
     <header>
       <div class="bar">
-        <div class="logo">
-          <a href="home.html" style="all:unset;cursor:pointer">
-            <img src="img/logo.png" alt="이피랑 로고" />
-          </a>
-        </div>
+        <div class="logo"><a href="home.html" style="all:unset;cursor:pointer"><img src="img/logo.png" alt="이피랑 로고"></a></div>
       </div>
     </header>
 
     <main>
-      <!-- 상단 요약 -->
+      <div class="rm-head"><div><h1>리마인더</h1><p>프로젝트와 지원 일정을 한곳에서 확인하세요.</p></div><button class="rm-add" id="rmAdd"><i data-lucide="plus"></i>일정 추가</button></div>
+      <div class="rm-filters" id="rmFilters">
+        <button class="rm-filter active" data-filter="all">전체</button><button class="rm-filter" data-filter="project">내 프로젝트</button><button class="rm-filter" data-filter="policy">정책자금</button><button class="rm-filter" data-filter="education">교육·세미나</button>
+      </div>
       <section class="rm-card">
-        <h3 class="rm-title">
-          <i class="fa-solid fa-bell"></i>
-          <span>리마인더 (알림/일정 관리)</span>
-        </h3>
-        <p class="rm-sub">
-          실내 스마트팜을 처음 시작하는 청년농·귀농인이 <strong>놓치기 쉬운 정책자금·견적/계약·시공·운영 초기의 핵심 일정</strong>을
-          한 화면에서 관리하는 영역입니다.
-        </p>
-        <p class="rm-caption">
-          정책자금 마감일, (주)그린 견적 유효 기간, 착공/준공 일정, 첫 수확 예상일 등을 프로젝트별로 정리해서 챙길 수 있어요.
-        </p>
+        <div class="rm-cal-head"><div class="rm-month"><i data-lucide="calendar-days"></i><span id="rmMonth"></span></div><div class="rm-nav"><button id="rmPrev" aria-label="이전 달"><i data-lucide="chevron-left"></i></button><button id="rmNext" aria-label="다음 달"><i data-lucide="chevron-right"></i></button></div></div>
+        <div class="rm-week"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div><div class="rm-grid" id="rmGrid"></div>
       </section>
-
-      <!-- 캘린더 + 리스트 -->
-      <section class="rm-card">
-        <div class="rm-calendar-wrap">
-          <!-- 캘린더 헤더 -->
-          <div class="rm-cal-header">
-            <div class="rm-cal-month">
-              <i class="fa-regular fa-calendar"></i>
-              <span id="rmMonthLabel">2025년 11월</span>
-            </div>
-            <div class="rm-cal-nav">
-              <button type="button"><i class="fa-solid fa-chevron-left"></i></button>
-              <button type="button"><i class="fa-solid fa-chevron-right"></i></button>
-            </div>
-          </div>
-
-          <!-- 요일 -->
-          <div class="rm-cal-weekdays">
-            <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
-          </div>
-
-          <!-- 날짜 그리드 -->
-          <div class="rm-cal-grid" id="rmCalendarGrid"></div>
-
-          <!-- 리스트 헤더 -->
-          <div class="rm-list-header">
-            <div class="rm-list-title" id="rmListTitle">전체 일정</div>
-            <div class="rm-list-count" id="rmListCount">0건</div>
-          </div>
-
-          <!-- 일정 리스트 -->
-          <div id="rmEventContainer">
-            <p class="rm-empty">등록된 프로젝트 기반 일정이 아직 없습니다. 설문을 완료하고 설계안을 저장하면 일정이 자동으로 생성됩니다.</p>
-          </div>
-        </div>
-      </section>
+      <div class="rm-list-head"><h2 id="rmListTitle">다가오는 일정</h2><span class="rm-count" id="rmCount">0건</span></div>
+      <div class="rm-list" id="rmList"></div>
+      <div class="rm-source-note"><i data-lucide="shield-check"></i><span>정책 일정은 공식 공고 확인을 위한 MVP 알림입니다. 실제 신청 전 반드시 원문에서 지역별 접수기간과 자격을 확인하세요.</span></div>
     </main>
 
-    <!-- 하단 버튼 바 -->
-    <!--<div class="bottom-bar">
-      <button type="button" class="btn ghost" id="rmBtnHome">홈으로</button>
-      <button type="button" class="btn acc" id="rmBtnProjects">프로젝트 목록</button>
-    </div>-->
-<nav class="tabs">
-      <ul>
-        <li><button id="tab-home" onclick="window.location.assign('home.html')"><i class="fa-solid fa-house"></i><small>홈</small></button></li>
-        <li><button id="tab-records" onclick="window.location.assign('records.html')"><i class="fas fa-list-check"></i><small>기록</small></button></li>
-        <li><button id="tab-reco" onclick="window.location.assign('deals.html')"><i class="fas fa-file-signature"></i><small>견적</small></button></li>
-        <li><button id="tab-my" onclick="window.location.assign('settings.html')"><i class="fa-solid fa-user"></i><small>마이</small></button></li>
-      </ul>
-    </nav>
+    <nav class="tabs"><ul>
+      <li><button id="tab-home" onclick="window.location.assign('home.html')"><i data-lucide="house"></i><small>홈</small></button></li>
+      <li><button id="tab-records" onclick="window.location.assign('records.html')"><i data-lucide="list-checks"></i><small>기록</small></button></li>
+      <li><button id="tab-reco" onclick="window.location.assign('deals.html')"><i data-lucide="file-signature"></i><small>견적</small></button></li>
+      <li><button id="tab-my" onclick="window.location.assign('settings.html')"><i data-lucide="user"></i><small>마이</small></button></li>
+    </ul></nav>
   </div>
 
-  <!-- 공통 모달/토스트 레이어 -->
-  <div id="overlay" class="overlay" onclick="closeModal && closeModal(event)"></div>
-  <div id="modal" class="modal" style="display:none"></div>
+  <div class="rm-overlay" id="rmOverlay"></div><section class="rm-sheet" id="rmSheet" aria-modal="true" role="dialog"><div class="rm-handle"></div><div id="rmSheetContent"></div></section>
   <div id="toast" class="toast">처리되었습니다</div>
-
   <script src="app.js" defer></script>
   <script>
-  document.addEventListener('DOMContentLoaded',function(){
-    // 하단 버튼
-    var btnHome=document.getElementById('rmBtnHome');
-    var btnProjects=document.getElementById('rmBtnProjects');
-    if(btnHome){
-      btnHome.addEventListener('click',function(){window.location.assign('home.html');});
+  document.addEventListener('DOMContentLoaded', async function(){
+    const seedPolicyEvents=[
+      {id:'policy-smartfarm-ict',type:'policy',date:'2026-08-10',title:'스마트팜 ICT 융복합 확산사업 공고 확인',summary:'시설원예·스마트팜 관련 지역별 지원사업 공고와 신청기간을 확인하는 일정입니다.',region:'전국·지자체별',target:'시설원예·스마트팜 도입 농가',benefit:'ICT 시설·장비 지원(공고별 상이)',source:'농림축산식품부',url:'https://www.mafra.go.kr/bbs/home/798/574277/artclView.do'},
+      {id:'education-young-farmer',type:'education',date:'2026-09-01',title:'청년농업인 교육·지원사업 일정 확인',summary:'청년농업인을 위한 교육과 지원사업 모집 정보를 확인하는 일정입니다.',region:'전국',target:'청년농업인·예비농업인',benefit:'교육·사업·사례 정보',source:'농촌진흥청 똑똑청년농부',url:'https://www.data.go.kr/data/15112316/openapi.do'},
+      {id:'policy-energy',type:'policy',date:'2026-10-15',title:'농업에너지 이용효율화 사업 확인',summary:'신재생에너지 시설과 에너지 절감 관련 사업지침 및 지역 공고를 확인합니다.',region:'전국·지자체별',target:'시설원예 농업인·농업법인',benefit:'에너지 절감시설 지원(공고별 상이)',source:'농림축산식품부',url:'https://www.mafra.go.kr/bbs/home/798/574274/artclView.do'},
+      {id:'education-smartfarm-seminar',type:'education',date:'2026-11-12',title:'스마트팜 교육·세미나 정보 확인',summary:'스마트팜 운영과 데이터 활용 관련 최신 교육 일정을 확인합니다.',region:'전국',target:'스마트팜 예비·운영 농가',benefit:'교육·기술정보',source:'농사로',url:'https://www.nongsaro.go.kr/portal/ps/psn/psnj/openApiLst.ps?menuId=PS65428'}
+    ];
+    // 나중에 Supabase Edge Function 또는 서버 수집 API 주소만 지정하면
+    // 같은 화면이 외부 동기화 데이터로 자동 전환됩니다.
+    async function loadPolicyEvents(){
+      const endpoint=window.EP_POLICY_API_ENDPOINT||'';
+      if(!endpoint)return seedPolicyEvents;
+      try{
+        const response=await fetch(endpoint,{headers:{Accept:'application/json'}});
+        if(!response.ok)throw new Error('정책 일정 API '+response.status);
+        const payload=await response.json();
+        const rows=Array.isArray(payload)?payload:payload.events;
+        return Array.isArray(rows)&&rows.length?rows:seedPolicyEvents;
+      }catch(error){console.error('정책 일정 API 연결 오류',error);return seedPolicyEvents}
     }
-    if(btnProjects){
-      btnProjects.addEventListener('click',function(){window.location.assign('home.html');});
-    }
-
-    // ==========================
-    //  데이터 준비: ep-projects
-    // ==========================
-    var key=(window.K && K.PROJECTS) || 'ep-projects';
-    var projects=[];
+    const policyEvents=await loadPolicyEvents();
+    let projectEvents=[];
     try{
-      projects = (typeof read === 'function') ? read(key, []) : JSON.parse(localStorage.getItem(key) || '[]');
-    }catch(e){
-      projects=[];
-    }
-    if(!Array.isArray(projects)) projects=[];
-
-    // 프로젝트 기반 간단 리마인더 생성
-    // 지금은 우리가 가진 게 createdAt 뿐이라
-    // "설계 저장 / 견적 준비" 일정만 자동으로 만들고,
-    // 나중에 정책자금/시공/운영일정 날짜 들어오면 이벤트만 추가하면 됨.
-    var events=[];
-    projects.forEach(function(p){
-      if(!p || !p.createdAt) return;
-      var dt=new Date(p.createdAt);
-      if(isNaN(dt.getTime())) return;
-
-      var y=dt.getFullYear();
-      var m=('0'+(dt.getMonth()+1)).slice(-2);
-      var d=('0'+dt.getDate()).slice(-2);
-      var dateStr=y+'-'+m+'-'+d;
-
-      var name=(p.reco && p.reco.title) || '이름 없는 프로젝트';
-
-      events.push({
-        projectId:p.id,
-        projectName:name,
-        date:dateStr,
-        type:'contract',
-        tag:'견적/계약',
-        label:'설계 저장 · (주)그린 견적 준비',
-        desc:'온보딩 설문과 추천 설계안을 바탕으로, (주)그린과의 첫 견적/상담을 준비하는 시점입니다.'
-      });
-    });
-
-    // 그룹핑: 날짜별
-    function groupByDate(evts){
-      var map={};
-      evts.forEach(function(e){
-        if(!map[e.date]) map[e.date]=[];
-        map[e.date].push(e);
-      });
-      return map;
-    }
-
-    var eventByDate=groupByDate(events);
-
-    // 오늘/이번달 기준
-    var today=new Date();
-    var currentYear=today.getFullYear();
-    var currentMonth=today.getMonth(); // 0~11
-
-    // 월 라벨
-    var monthLabel=document.getElementById('rmMonthLabel');
-    function setMonthLabel(year,month){
-      if(!monthLabel) return;
-      monthLabel.textContent=year+'년 '+(month+1)+'월';
-    }
-    setMonthLabel(currentYear,currentMonth);
-
-    // 캘린더 빌드
-    var calGrid=document.getElementById('rmCalendarGrid');
-    var selectedDate=null;
-
-    function buildCalendar(year,month){
-      if(!calGrid) return;
-      calGrid.innerHTML='';
-
-      var first=new Date(year,month,1);
-      var firstDay=first.getDay(); // 0=일
-      var lastDayCount=new Date(year,month+1,0).getDate();
-
-      // 앞 공백
-      for(var i=0;i<firstDay;i++){
-        var empty=document.createElement('div');
-        empty.className='rm-day';
-        calGrid.appendChild(empty);
+      const {data:{session}}=await supabaseClient.auth.getSession();
+      if(session){
+        const {data}=await supabaseClient.from('projects').select('id,name,status,created_at').eq('user_id',session.user.id).order('created_at',{ascending:false});
+        projectEvents=(data||[]).map(p=>({id:'project-'+p.id,type:'project',projectId:p.id,date:(p.created_at||'').slice(0,10),title:p.name||'스마트팜 프로젝트',summary:'저장한 설계안을 확인하고 다음 견적·계약 단계를 준비하세요.',region:'내 프로젝트',target:'프로젝트 진행',benefit:'설계안·견적 진행 확인',source:'이피랑 프로젝트',url:'project-detail.html'}));
       }
-
-      for(var d=1;d<=lastDayCount;d++){
-        var cell=document.createElement('div');
-        cell.className='rm-day rm-day--in-month';
-
-        var numWrap=document.createElement('div');
-        numWrap.className='rm-day-num';
-        numWrap.textContent=d;
-
-        var y=year;
-        var m=('0'+(month+1)).slice(-2);
-        var dd=('0'+d).slice(-2);
-        var dateStr=y+'-'+m+'-'+dd;
-
-        if(eventByDate[dateStr]){
-          cell.classList.add('rm-day--has');
-        }
-
-        var isToday = (year===today.getFullYear() &&
-                       month===today.getMonth() &&
-                       d===today.getDate());
-        if(isToday){
-          cell.classList.add('rm-day--today');
-        }
-
-        if(selectedDate===dateStr){
-          cell.classList.add('rm-day--selected');
-        }
-
-        cell.dataset.date=dateStr;
-        cell.appendChild(numWrap);
-        calGrid.appendChild(cell);
-      }
+    }catch(e){console.error('리마인더 프로젝트 조회 오류',e)}
+    let events=policyEvents.concat(projectEvents);
+    let view=new Date(), selected='', filter='all'; view.setDate(1);
+    const $=s=>document.querySelector(s), grid=$('#rmGrid'), list=$('#rmList');
+    const pad=n=>String(n).padStart(2,'0'), dateKey=(y,m,d)=>y+'-'+pad(m+1)+'-'+pad(d);
+    const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    function visible(){return events.filter(e=>(filter==='all'||e.type===filter)&&(!selected||e.date===selected));}
+    function renderCalendar(){
+      const y=view.getFullYear(),m=view.getMonth(),first=new Date(y,m,1).getDay(),last=new Date(y,m+1,0).getDate(),today=new Date();
+      $('#rmMonth').textContent=y+'년 '+(m+1)+'월'; let html='';
+      for(let i=0;i<first;i++)html+='<button class="rm-day empty"></button>';
+      for(let d=1;d<=last;d++){const key=dateKey(y,m,d),has=events.some(e=>e.date===key&&(filter==='all'||e.type===filter)),isToday=today.toDateString()===new Date(y,m,d).toDateString();html+='<button class="rm-day '+(has?'has ':'')+(isToday?'today ':'')+(selected===key?'selected ':'')+'" data-date="'+key+'"><span>'+d+'</span></button>'}
+      grid.innerHTML=html;
     }
-
-    // 리스트 렌더링
-    var listTitle=document.getElementById('rmListTitle');
-    var listCount=document.getElementById('rmListCount');
-    var eventContainer=document.getElementById('rmEventContainer');
-
-    function formatKoreanDate(dateStr){
-      // "YYYY-MM-DD" -> "MM월 DD일(요일)"
-      var parts=dateStr.split('-');
-      if(parts.length!==3) return dateStr;
-      var y=parseInt(parts[0],10);
-      var m=parseInt(parts[1],10)-1;
-      var d=parseInt(parts[2],10);
-      var dt=new Date(y,m,d);
-      if(isNaN(dt.getTime())) return dateStr;
-      var weekday=['일','월','화','수','목','금','토'][dt.getDay()];
-      return (m+1)+'월 '+d+'일('+weekday+')';
+    function dday(date){const n=Math.ceil((new Date(date+'T23:59:59')-new Date())/86400000);return n>=0?'D-'+n:'종료'}
+    function renderList(){const rows=visible().sort((a,b)=>a.date.localeCompare(b.date));$('#rmCount').textContent=rows.length+'건';$('#rmListTitle').textContent=selected?selected.replaceAll('-','.')+' 일정':'다가오는 일정';
+      if(!rows.length){list.innerHTML='<div class="rm-empty">선택한 조건에 표시할 일정이 없습니다.</div>';return}
+      list.innerHTML=rows.map(e=>{const dt=new Date(e.date+'T00:00:00');return '<button class="rm-event '+e.type+'" data-id="'+esc(e.id)+'"><span class="rm-datebox"><strong>'+dt.getDate()+'</strong><small>'+(dt.getMonth()+1)+'월</small></span><span class="rm-event-body"><span class="rm-event-top"><span class="rm-type">'+(e.type==='project'?'내 프로젝트':e.type==='policy'?'정책자금':'교육·세미나')+'</span><span class="rm-dday">'+dday(e.date)+'</span></span><h3 class="rm-event-title">'+esc(e.title)+'</h3><span class="rm-event-meta">'+esc(e.source)+'</span></span><i data-lucide="chevron-right" class="rm-chevron"></i></button>'}).join('');icons();
     }
-
-    function renderList(filterDate){
-      if(!eventContainer) return;
-
-      var filtered = filterDate
-        ? events.filter(function(e){return e.date===filterDate;})
-        : events.slice().sort(function(a,b){return a.date.localeCompare(b.date);});
-
-      // 헤더 텍스트
-      if(filterDate){
-        if(listTitle) listTitle.textContent=formatKoreanDate(filterDate)+' 일정';
-      }else{
-        if(listTitle) listTitle.textContent='전체 일정';
-      }
-      if(listCount) listCount.textContent=filtered.length+'건';
-
-      if(!filtered.length){
-        eventContainer.innerHTML='<p class="rm-empty">표시할 일정이 없습니다. 프로젝트 상세 화면에서 정책자금·계약·시공 일정을 채워 넣으면 이곳에 모아볼 수 있어요.</p>';
-        return;
-      }
-
-      // 날짜별 정렬 후 그룹핑
-      var byDate=groupByDate(filtered.slice().sort(function(a,b){return a.date.localeCompare(b.date);}));
-      var dates=Object.keys(byDate).sort();
-      var html='';
-
-      dates.forEach(function(dateStr){
-        html+='<div class="rm-date-group">';
-        html+='<div class="rm-date-label">'+formatKoreanDate(dateStr)+'</div>';
-        html+='<ul class="rm-event-list">';
-        byDate[dateStr].forEach(function(ev,idx){
-          var pid=ev.projectId || '';
-          var safeName=ev.projectName || '이름 없는 프로젝트';
-          html+='<li class="rm-event-item" data-project-id="'+pid+'" data-date="'+ev.date+'">';
-          html+='<div class="rm-event-main">';
-          html+='<span class="rm-event-label">'+ev.label+'</span>';
-          html+='<span class="rm-event-tag">'+safeName+'</span>';
-          html+='</div>';
-          html+='<div class="rm-event-meta">';
-          html+='<span><i class="fa-regular fa-bell"></i>'+ev.tag+'</span>';
-          html+='</div>';
-          html+='</li>';
-        });
-        html+='</ul></div>';
-      });
-
-      eventContainer.innerHTML=html;
-
-      // 클릭 시 프로젝트 상세 이동
-      var items=eventContainer.querySelectorAll('.rm-event-item');
-      items.forEach(function(item){
-        item.addEventListener('click',function(){
-          var pid=this.dataset.projectId;
-          if(pid){
-            try{
-              localStorage.setItem('ep-current-project-id',pid);
-            }catch(e){}
-            window.location.assign('project-detail.html');
-          }else{
-            if(typeof toast==='function'){
-              toast('프로젝트 정보가 없습니다.');
-            }else{
-              alert('프로젝트 정보가 없습니다.');
-            }
-          }
-        });
-      });
+    function icons(){if(window.lucide)window.lucide.createIcons({attrs:{'aria-hidden':'true'}})}
+    function render(){renderCalendar();renderList();icons()}
+    function openEvent(id){const e=events.find(x=>x.id===id);if(!e)return;const project=e.type==='project';$('#rmSheetContent').innerHTML='<div class="rm-sheet-head"><div><span class="rm-type">'+(project?'내 프로젝트':e.type==='policy'?'정책자금':'교육·세미나')+'</span><h2>'+esc(e.title)+'</h2></div><button class="rm-close" id="rmClose"><i data-lucide="x"></i></button></div><p class="rm-sheet-summary">'+esc(e.summary)+'</p><div class="rm-detail-grid"><div class="rm-detail"><small>일정</small><strong>'+esc(e.date)+'</strong></div><div class="rm-detail"><small>지역</small><strong>'+esc(e.region)+'</strong></div><div class="rm-detail"><small>대상</small><strong>'+esc(e.target)+'</strong></div><div class="rm-detail"><small>내용</small><strong>'+esc(e.benefit)+'</strong></div></div><div class="rm-sheet-actions"><a class="rm-source" href="'+esc(e.url)+'" '+(project?'':'target="_blank" rel="noopener"')+'><i data-lucide="external-link"></i>'+(project?'프로젝트 보기':'공식 원문 보기')+'</a><button class="rm-save" id="rmSave"><i data-lucide="bell-plus"></i>내 일정에 추가</button></div>';
+      $('#rmOverlay').classList.add('show');$('#rmSheet').classList.add('show');icons();$('#rmClose').onclick=closeSheet;$('#rmSave').onclick=()=>saveReminder(e);
+      history.replaceState(null,'','reminder.html?event='+encodeURIComponent(e.id));
     }
-
-    // 캘린더와 리스트 초기 렌더
-    buildCalendar(currentYear,currentMonth);
-    renderList(null); // 전체 일정
-
-    // 날짜 클릭 필터
-    if(calGrid){
-      calGrid.addEventListener('click',function(e){
-        var day = e.target.closest('.rm-day--in-month');
-        if(!day || !day.dataset.date) return;
-        var dateStr=day.dataset.date;
-        if(selectedDate===dateStr){
-          // 한번 더 누르면 전체보기
-          selectedDate=null;
-        }else{
-          selectedDate=dateStr;
-        }
-        buildCalendar(currentYear,currentMonth);
-        renderList(selectedDate);
-      });
-    }
+    function closeSheet(){ $('#rmOverlay').classList.remove('show');$('#rmSheet').classList.remove('show');history.replaceState(null,'','reminder.html') }
+    function saveReminder(e){const key='ep-user-reminders',saved=JSON.parse(localStorage.getItem(key)||'[]');if(!saved.some(x=>x.id===e.id))saved.push(e);localStorage.setItem(key,JSON.stringify(saved));toast('내 일정에 추가했습니다.');}
+    $('#rmPrev').onclick=()=>{view.setMonth(view.getMonth()-1);selected='';render()};$('#rmNext').onclick=()=>{view.setMonth(view.getMonth()+1);selected='';render()};
+    grid.onclick=e=>{const b=e.target.closest('[data-date]');if(!b)return;selected=selected===b.dataset.date?'':b.dataset.date;render()};
+    $('#rmFilters').onclick=e=>{const b=e.target.closest('[data-filter]');if(!b)return;filter=b.dataset.filter;selected='';document.querySelectorAll('.rm-filter').forEach(x=>x.classList.toggle('active',x===b));render()};
+    list.onclick=e=>{const b=e.target.closest('[data-id]');if(b)openEvent(b.dataset.id)};$('#rmOverlay').onclick=closeSheet;$('#rmAdd').onclick=()=>toast('직접 일정 추가 기능은 다음 단계에서 연결됩니다.');
+    render();const requested=new URLSearchParams(location.search).get('event');if(requested)openEvent(requested);
   });
   </script>
 </body>
