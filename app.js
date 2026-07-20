@@ -62,6 +62,13 @@ async function handleLogin(e) {
 
     toast('로그인 되었습니다.');
 	localStorage.setItem('AUTH', 'true');
+
+    // 회원가입 시 이메일 인증 때문에 저장하지 못한 설문 패키지가 있으면
+    // 로그인 직후 프로젝트로 저장한 다음 홈으로 이동합니다.
+    if (localStorage.getItem('ep-temp-project-package')) {
+      await addProject();
+      return;
+    }
     window.location.assign('home.html');
   } catch (e) {
     console.error(e);
@@ -252,7 +259,24 @@ async function saveBasic() {
       return;
     }
 
-    const userId = authData.user.id; 
+    // 회원가입 직후 실제 Supabase 세션을 확보해야 홈에서 프로젝트를 조회할 수 있습니다.
+    // 이메일 확인 설정 등에 따라 signUp 결과에 session이 없을 수 있어 한 번 로그인도 시도합니다.
+    let activeSession = authData.session;
+    if (!activeSession) {
+      const { data: loginData, error: loginError } = await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (loginError || !loginData.session) {
+        toast('이메일 인증 후 로그인하면 선택한 설계안이 자동으로 저장됩니다.');
+        window.location.assign('login.html');
+        return;
+      }
+      activeSession = loginData.session;
+    }
+
+    const userId = activeSession.user.id;
 
     // 2단계: reco-intro에서 임시 패킹해둔 [설문+설계안] 데이터 패키지 꺼내기
     const tempPackageRaw = localStorage.getItem('ep-temp-project-package');
@@ -273,8 +297,8 @@ async function saveBasic() {
         .insert([{ 
           user_id: userId, 
           name: projectName, 
-          status: 'draft',
-          reco: recoData
+          status: 'draft'
+          // 만약 projects 테이블에 선택한 안을 저장하는 컬럼(예: selected_reco)을 만드셨다면 여기에 recoData를 넣으시면 됩니다.
         }])
         .select()
         .single();
@@ -368,8 +392,8 @@ async function addProject() {
         .insert([{ 
           user_id: user.id, 
           name: projectName, 
-          status: 'draft',
-          reco: recoData
+          status: 'draft'
+          // 만약 projects 테이블에 선택한 안을 저장하는 컬럼(예: selected_reco)을 만드셨다면 여기에 recoData를 넣으시면 됩니다.
         }])
         .select()
         .single();
@@ -435,16 +459,15 @@ async function addProject() {
 // 1. 로그인한 유저의 프로젝트와 상세 설문(project_surveys) 데이터를 통째로 가져오는 함수
 async function fetchProjects() {
   try {
-    const { data: { user } } = await supabaseClient.auth.getUser();
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    const user = session?.user;
     if (!user) return [];
 
-    // projects 테이블을 가져올 때 관계를 맺은 project_surveys 테이블도 같이 join해서 긁어옵니다.
+    // 홈 카드에는 projects 데이터만 필요합니다.
+    // project_surveys 관계/RLS 오류가 프로젝트 목록 전체를 막지 않도록 조회를 분리합니다.
     const { data, error } = await supabaseClient
       .from('projects')
-      .select(`
-        *,
-        project_surveys (*)
-      `)
+      .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false }); // 최근 생성 순
 
@@ -466,7 +489,8 @@ async function renderHomeProjects() {
   if (!listEl) return; // home.html 대시보드 페이지가 아니면 패스
 
   // 로딩 표시 또는 비우기
-  listEl.innerHTML = '<p style="text-align:center; color:#666; padding:20px; font-size:20px;">프로젝트를 불러오는 중입니다.</p>';
+  if (emptyEl) emptyEl.style.display = 'none';
+  listEl.innerHTML = '<p class="project-loading">프로젝트를 불러오는 중입니다.</p>';
 
   // 💡 [핵심] 로컬스토리지 대신 Supabase 서버에서 real 데이터 받아오기!
   const projects = await fetchProjects();
@@ -478,7 +502,7 @@ async function renderHomeProjects() {
 
   // 프로젝트가 하나도 없으면 예외 처리
   if (!projects.length) {
-    if (emptyEl) emptyEl.style.style.display = 'block';
+    if (emptyEl) emptyEl.style.display = 'block';
     if (statInProgress) statInProgress.textContent = '0건';
     if (statCompleted)  statCompleted.textContent  = '0건';
     return;
@@ -619,8 +643,8 @@ async function renderHomeProjects() {
       <div class="project-main">
         <h3 class="project-name">${name}</h3>
         <div class="project-meta">
-          <span><i class="far fa-building"></i> ${facilityText}</span>
-          <span><i class="fas fa-chart-line"></i> ${statusText}</span>
+          <span><i data-lucide="building-2"></i> ${facilityText}</span>
+          <span><i data-lucide="chart-no-axes-column-increasing"></i> ${statusText}</span>
         </div>
         <div class="project-next">
           ${nextText}
@@ -629,8 +653,8 @@ async function renderHomeProjects() {
       <div class="project-tags">
         ${
           reco.estimatable === false
-            ? '<span class="badge badge-gray">추가 상담 필요</span>'
-            : '<span class="badge badge-green">실내 전용</span><span class="badge badge-blue">견적 연계 가능</span>'
+            ? '<span class="badge badge-gray"><i data-lucide="circle-help"></i>추가 상담 필요</span>'
+            : '<span class="badge badge-green"><i data-lucide="check"></i>실내 전용</span><span class="badge badge-blue"><i data-lucide="link"></i>견적 연계 가능</span>'
         }
       </div>
     `;
@@ -647,6 +671,11 @@ async function renderHomeProjects() {
   // 상단 대시보드 통계판 수치 업데이트
   if (statInProgress) statInProgress.textContent = `${inProgress}건`;
   if (statCompleted)  statCompleted.textContent  = `${completed}건`;
+
+  // 렌더가 끝난 뒤 한 번만 Lucide 아이콘을 생성합니다.
+  if (window.lucide) {
+    window.lucide.createIcons({ attrs: { 'aria-hidden': 'true' } });
+  }
 }
 
 

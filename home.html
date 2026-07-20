@@ -431,21 +431,13 @@ body[data-page="dashboard"] .live-project-list .project-tags .badge{font-size:10
   <div id="toast" class="toast">처리되었습니다</div>
   <script src="app.js" defer></script>
   <script>
-  (function(){
-    var map={'fa-building':'building-2','fa-chart-line':'chart-no-axes-column-increasing'};
-    function refresh(root){
-      (root||document).querySelectorAll('i[class*="fa-"]').forEach(function(old){
-        var key=Array.from(old.classList).find(function(c){return map[c]});
-        if(!key)return; var el=document.createElement('i'); el.setAttribute('data-lucide',map[key]); old.replaceWith(el);
-      });
-      if(window.lucide) window.lucide.createIcons({attrs:{'aria-hidden':'true'}});
-    }
-    document.addEventListener('DOMContentLoaded',function(){
-      refresh(document);
-      var list=document.getElementById('projectList');
-      if(list)new MutationObserver(function(){refresh(list)}).observe(list,{childList:true,subtree:true});
+    // 정적 홈 아이콘은 최초 한 번만 생성합니다.
+    // 동적 프로젝트 아이콘은 app.js가 프로젝트 렌더 완료 후 한 번 생성합니다.
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.lucide) {
+        window.lucide.createIcons({ attrs: { 'aria-hidden': 'true' } });
+      }
     });
-  })();
   </script>
 </body>
 </html>
