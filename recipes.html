@@ -4,8 +4,107 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>:root{ --bg:#ffffff; --card:#ffffff; --muted:#6b7280; --text:#111111; --acc:#16a34a; --line:rgba(0,0,0,.08); --radius:16px; --shadow:0 8px 24px rgba(0,0,0,.06); }
+*{box-sizing:border-box}
+html,body{height:100%}
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #f5f5f5;
+}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,Malgun Gothic,sans-serif}
+.app{display:flex;flex-direction:column;height:100dvh}
+/* 모바일 앱처럼 중앙 고정 */
+.app {
+  width: 100%;
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+
+  background: #fff;
+
+  position: relative;
+  overflow-x: hidden;
+}
+@media (min-width: 768px) {
+  body {
+    padding: 24px 0;
+  }
+
+  .app {
+    border-radius: 24px;
+    min-height: calc(100vh - 48px);
+  }
+}
+header{position:sticky;top:0;z-index:10;backdrop-filter:saturate(150%) blur(8px);background:#ffffffee;border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:10px; padding:14px 16px}
+.bar h1{font-size:18px;margin:0;font-weight:800}
+.logo a { font-size: 1.6rem; font-weight: 800; color: var(--primary-color); display: flex; align-items: center; }
+.logo img { height: 30px; display: block;}
+main{flex:1;overflow:auto; padding: 20px; display: flex; flex-direction: column; align-items: center; position: relative;}
+.app main { padding-bottom: 80px; }
+
+/*버튼*/
+.btn{appearance:none;background:#fff;color:#111;cursor:pointer;flex: 1;padding: 13px;border-radius: 14px;border: none;font-size: 1rem;font-weight: 700;transition: transform 0.1s, box-shadow 0.2s;}
+.btn.acc{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:700;text-decoration-line:none;}
+.btn.ghost{background:#fff;border:1px solid var(--line)}
+.btn.link{background:transparent;padding:0;color:#059669;border:0}
+.btn:active { transform: scale(0.98); }
+.btn-prev { background: #f3f4f6; color: var(--text-sub); flex: 0 0 30%; }
+.btn-next { background: var(--primary); color: white; box-shadow: 0 4px 14px rgba(22, 163, 74, 0.3); }
+.btn-next:disabled { background: #d1d5db; box-shadow: none; cursor: not-allowed; }
+.bottom-bar {position: fixed;bottom: 0;left: 50%;transform: translateX(-50%);width: 100%;max-width: 430px;background: rgba(255, 255, 255, 0.9);backdrop-filter: blur(10px);padding: 10px 20px;box-sizing: border-box;border-top: 1px solid var(--line);
+display: flex;justify-content: space-between;gap: 12px;z-index: 99;}
+
+.view{display:none}
+.view.active{display:block}
+.card { background: #fff; border-radius: 14px; border: 1px solid #e5e7eb; box-shadow: 0 2px 10px rgba(22, 163, 74, 0.05); padding: 16px; width: 100%; max-width: 360px; margin: 0 auto 18px; }
+.card.pad{padding:14px}
+.grid{display:grid;gap:1px}
+.cols{display:grid;gap:12px}
+.cols.two{grid-template-columns:1fr 1fr}
+.cols.dup{grid-template-columns:1fr auto;align-items:center}
+
+form{display:grid;gap:12px}
+label{display:grid;gap:6px}
+input, textarea, select{width:100%;padding:12px;border-radius:12px;background:#fff;color:#111;border:1px solid rgba(0,0,0,.12)}
+input[type="checkbox"],input[type="radio"]{width:auto}
+nav.tabs{position:sticky;bottom:0;background:#ffffff;border-top:1px solid var(--line)}
+.tabs ul{margin:0;display:grid;grid-template-columns:repeat(4,1fr);list-style:none;padding:6px 12px;justify-items:center;}
+.tabs button{display:grid;gap:4px;place-items:center;padding:10px;border-radius:12px;background:transparent;color:#4b5563;border:0}
+.tabs button.active{color:#111;background:#f3f4f6;}
+.tabs.hidden{display:none}
+
+.tabs{position:fixed;bottom:0;left:0;width:100%;background-color:var(--card-bg);border-top:1px solid var(--border-light);box-shadow:var(--shadow-md);z-index:100;padding:8px 0;}
+.tabs ul{display:flex;justify-content:space-around;list-style:none;margin:0;padding:0;}
+.tabs li{flex:1;text-align:center;}
+.tabs button{background:none;border:none;color:var(--text-sub);font-size:20px;padding:8px 0;width:100%;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:var(--transition-ease);}
+.tabs button small{font-size:11px;font-weight:600;color:var(--text-sub);transition:var(--transition-ease);}
+.tabs button:hover,.tabs button.active{color:var(--primary);}
+.tabs button:hover small,.tabs button.active small{color:var(--primary);}
+
+.toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 14px;border-radius:15px;
+border:1px solid var(--line);opacity:0;pointer-events:none;transition:.25s;display: inline-block;text-align: center;min-width: 240px;max-width: min(90vw, 560px);     
+width: max-content;white-space: normal;word-break: keep-all;line-height: 1.4;}
+.toast.show{opacity:1;pointer-events:auto}
+.title-strong {margin-bottom: 24px;font-weight:800;font-size: 20px;color: #15803d;}
+.hint{color:#4b5563;font-size:12px}
+
+.login-text {margin-top: 14px;font-size: 14px;color: #555;text-align: center;}
+.login-link {color: var(--acc);font-weight: 600;cursor: pointer;margin-left: 4px;transition: color 0.2s ease;}
+.login-link:hover {color: #15803d;}
+
+/* 모달 */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);backdrop-filter:blur(2px);display:none;z-index:30}
+.overlay.show{display:block}
+.modal{position:fixed;left:12px;right:12px;bottom:120px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;z-index:100;max-height:65vh;overflow:auto}
+.modal .title{font-weight:800;margin-bottom:6px}
+
+/*배지*/
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:500;background:linear-gradient(135deg,#f8fafc 0%,#eef1f5 100%);border:1px solid rgba(0,0,0,0.08);color:#475569;backdrop-filter:blur(4px);}
+.badge-green{background:linear-gradient(135deg,#ecfdf3 0%,#dcfce7 100%);border-color:rgba(34,197,94,0.5);color:#15803d;}
+.badge-gray{background:linear-gradient(135deg,#f9fafb 0%,#e5e7eb 100%);border-color:rgba(148,163,184,0.6);color:#4b5563;}</style>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <title>이피랑 - 설비 레시피</title>
 <style>
 	:root { --primary:#16a34a; --text-sub:#4a5568}
@@ -165,7 +264,7 @@
     background: #ffffff;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     transition: all 0.2s;
-    border-left: 5px solid #16a34a; /* 포인트 컬러 바 */
+    border-left: 1px solid #e2e8f0;
     position: relative;
   }
   @media (min-width: 400px) {
@@ -261,9 +360,7 @@
     display: flex; align-items: center; gap: 6px;
   }
   body[data-page="recipe"] .recipe-footer::before {
-    content: '\f05a'; /* font-awesome info-circle */
-    font-family: "Font Awesome 6 Free"; font-weight: 900;
-    color: #94a3b8;
+    content: none;
   }
 
   body[data-page="recipe"] .recipe-result-summary {
@@ -291,6 +388,50 @@
   body[data-page="recipe"] .recipe-card.is-best {
     border-color:#4ade80; box-shadow:0 10px 24px rgba(22,163,74,.13);
   }
+
+  /* ===== Lucide + clean recipe card preview ===== */
+  body[data-page="recipe"]{background:#f6f8f7}
+  body[data-page="recipe"] main{background:#f6f8f7;padding:18px 14px 110px;max-width:480px}
+  body[data-page="recipe"] .card{padding:18px 16px;margin-bottom:14px;border-radius:20px;border-color:#e1e8e4;box-shadow:0 6px 18px rgba(15,23,42,.045)}
+  body[data-page="recipe"] .section-title{font-size:18px;font-weight:720;letter-spacing:-.03em}
+  body[data-page="recipe"] .section-title .lucide{width:20px;height:20px;padding:0;background:none;color:#16a34a;stroke-width:1.9}
+  body[data-page="recipe"] .section-subtitle{font-size:12px;font-weight:450;color:#64748b}
+  body[data-page="recipe"] .section-caption{font-size:10px;line-height:1.5;border-radius:10px}
+  body[data-page="recipe"] .field-label{font-weight:650;text-transform:none;letter-spacing:0}
+  body[data-page="recipe"] .field-label::before{display:none}
+  body[data-page="recipe"] .pill-content{min-height:62px;padding:11px 8px;border:1px solid #e2e8f0;border-radius:14px;font-size:12px;font-weight:550}
+  body[data-page="recipe"] .pill-content .lucide{width:19px;height:19px;margin-bottom:5px;color:#94a3b8;stroke-width:1.8}
+  body[data-page="recipe"] .pill-label input:checked + .pill-content{border-color:#86efac;box-shadow:0 3px 9px rgba(22,163,74,.1);transform:none}
+  body[data-page="recipe"] .pill-label input:checked + .pill-content .lucide{color:#16a34a}
+  body[data-page="recipe"] .pill-check{width:20px;height:20px;top:-4px;right:-4px}
+  body[data-page="recipe"] .pill-check .lucide{width:11px;height:11px;stroke-width:3}
+  body[data-page="recipe"] .recipe-list{gap:12px;margin-top:12px}
+  body[data-page="recipe"] .recipe-card,
+  body[data-page="recipe"] .recipe-card.is-best{display:block;padding:17px;border:1px solid #e1e8e4;border-radius:21px;background:#fff;box-shadow:0 7px 20px rgba(15,23,42,.055);transition:.18s ease}
+  body[data-page="recipe"] .recipe-card:hover{transform:translateY(-2px);border-color:#cbd8cf;box-shadow:0 10px 25px rgba(15,23,42,.075)}
+  body[data-page="recipe"] .recipe-card.is-best{background:linear-gradient(145deg,#ffffff 65%,#f1fbf4);border-color:#cfe8d6}
+  body[data-page="recipe"] .recipe-card-top{display:grid;grid-template-columns:auto minmax(0,1fr);gap:11px;align-items:center;margin-bottom:13px}
+  body[data-page="recipe"] .recipe-icon{width:42px;height:42px;border-radius:13px;background:#eef8f1;color:#15803d;box-shadow:none}
+  body[data-page="recipe"] .recipe-icon .lucide{width:20px;height:20px;stroke-width:1.8}
+  body[data-page="recipe"] .recipe-heading{min-width:0}
+  body[data-page="recipe"] .recipe-body h4{margin:0 0 6px;font-size:15px;font-weight:720;letter-spacing:-.025em}
+  body[data-page="recipe"] .match-badge{position:static;width:max-content;max-width:100%;padding:5px 8px;border:0;border-radius:7px;background:#edf2ef;color:#527060;font-size:9px;font-weight:650;box-shadow:none}
+  body[data-page="recipe"] .match-badge.is-best{background:#16a34a;color:#fff;border:0;box-shadow:0 2px 0 #0f7433}
+  body[data-page="recipe"] .match-badge .lucide{width:11px;height:11px;stroke-width:2.2}
+  body[data-page="recipe"] .recipe-body>p{margin:0 0 13px;padding-bottom:13px;border-bottom:1px solid #edf1ef;font-size:12px;line-height:1.6;color:#64748b}
+  body[data-page="recipe"] .recipe-meta{margin:0 0 13px;padding:0;border:0;background:none;gap:7px}
+  body[data-page="recipe"] .recipe-meta li{padding:9px 10px;border:1px solid #edf1ef;border-radius:11px;background:#fafcfb;font-size:11px;line-height:1.45;color:#475569}
+  body[data-page="recipe"] .recipe-meta li .lucide{width:13px;height:13px;margin-top:1px;color:#16a34a;stroke-width:2;flex:0 0 13px}
+  body[data-page="recipe"] .recipe-tags{margin:0;gap:5px}
+  body[data-page="recipe"] .badge{padding:5px 8px;border-radius:7px;font-size:9px;font-weight:600}
+  body[data-page="recipe"] .recipe-footer{margin-top:12px;padding:10px 11px;border:0;border-radius:11px;background:#f1f5f3;font-size:10px;font-style:normal;line-height:1.5;color:#64748b}
+  body[data-page="recipe"] .recipe-footer::before{content:none}
+  body[data-page="recipe"] .recipe-footer .lucide{width:13px;height:13px;flex:0 0 13px;color:#16a34a}
+  body[data-page="recipe"] .recipe-result-summary{border:0;border-radius:13px;background:#eef8f1;padding:12px 13px}
+  body[data-page="recipe"] .recipe-result-summary strong{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700}
+  body[data-page="recipe"] .recipe-result-summary strong .lucide{width:14px;height:14px}
+  body[data-page="recipe"] .recipe-result-summary span{font-size:10px}
+  body[data-page="recipe"] .tabs .lucide{width:20px;height:20px;stroke-width:1.8}
   </style>
 </head>
 
@@ -310,7 +451,7 @@
       <!-- 상단 인트로 -->
       <section class="card">
         <h3 class="section-title">
-          <i class="fa-solid fa-flask"></i>
+          <i data-lucide="flask-conical"></i>
           <span>설비 레시피 카탈로그</span>
         </h3>
         <p class="section-subtitle"> 공간별로 많이 쓰이는 <strong>설비 조합</strong>을 확인해 보세요. </p>
@@ -323,7 +464,7 @@
       <!-- 필터 영역 -->
       <section class="card">
         <h3 class="section-title">
-          <i class="fa-solid fa-filter"></i>
+          <i data-lucide="sliders-horizontal"></i>
           <span>조건으로 설비 레시피 찾기</span>
         </h3>
 
@@ -335,34 +476,34 @@
               <label class="pill-label">
                 <input type="radio" name="f_space" value="biz_center" checked>
                 <div class="pill-content">
-                  <i class="fa-solid fa-city"></i>
+                  <i data-lucide="building-2"></i>
                   <span>지식산업센터</span>
                 </div>
-                <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+                <div class="pill-check"><i data-lucide="check"></i></div>
               </label>
               <label class="pill-label">
                 <input type="radio" name="f_space" value="retail">
                 <div class="pill-content">
-                  <i class="fa-regular fa-building"></i>
+                  <i data-lucide="building"></i>
                   <span>상가</span>
                 </div>
-                <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+                <div class="pill-check"><i data-lucide="check"></i></div>
               </label>
               <label class="pill-label">
                 <input type="radio" name="f_space" value="panel">
                 <div class="pill-content">
-                  <i class="fa-solid fa-industry"></i>
+                  <i data-lucide="warehouse"></i>
                   <span>샌드위치 판넬 창고</span>
                 </div>
-                <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+                <div class="pill-check"><i data-lucide="check"></i></div>
               </label>
               <label class="pill-label">
                 <input type="radio" name="f_space" value="etc">
                 <div class="pill-content">
-                  <i class="fa-solid fa-ellipsis"></i>
+                  <i data-lucide="ellipsis"></i>
                   <span>기타 실내</span>
                 </div>
-                <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+                <div class="pill-check"><i data-lucide="check"></i></div>
               </label>
             </div>
           </div>
@@ -374,34 +515,34 @@
               <label class="pill-label">
                 <input type="radio" name="f_purpose" value="production" checked>
                 <div class="pill-content">
-                  <i class="fa-solid fa-seedling"></i>
+                  <i data-lucide="sprout"></i>
                   <span>생산 위주</span>
                 </div>
-                <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+                <div class="pill-check"><i data-lucide="check"></i></div>
               </label>
               <label class="pill-label">
                 <input type="radio" name="f_purpose" value="nursery">
                 <div class="pill-content">
-                  <i class="fa-solid fa-seedling"></i>
+                  <i data-lucide="sprout"></i>
                   <span>육묘 위주</span>
                 </div>
-                <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+                <div class="pill-check"><i data-lucide="check"></i></div>
               </label>
               <label class="pill-label">
                 <input type="radio" name="f_purpose" value="landscape">
                 <div class="pill-content">
-                  <i class="fa-solid fa-tree-city"></i>
+                  <i data-lucide="trees"></i>
                   <span>체험·조경 위주</span>
                 </div>
-                <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+                <div class="pill-check"><i data-lucide="check"></i></div>
               </label>
               <label class="pill-label">
                 <input type="radio" name="f_purpose" value="mixed">
                 <div class="pill-content">
-                  <i class="fa-solid fa-layer-group"></i>
+                  <i data-lucide="layers-3"></i>
                   <span>복합</span>
                 </div>
-                <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+                <div class="pill-check"><i data-lucide="check"></i></div>
               </label>
             </div>
           </div>
@@ -413,34 +554,34 @@
               <label class="pill-label">
                 <input type="radio" name="f_crop" value="leafy" checked>
                 <div class="pill-content">
-                  <i class="fa-solid fa-leaf"></i>
+                  <i data-lucide="leaf"></i>
                   <span>엽채류</span>
                 </div>
-                <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+                <div class="pill-check"><i data-lucide="check"></i></div>
               </label>
               <label class="pill-label">
                 <input type="radio" name="f_crop" value="herb">
                 <div class="pill-content">
-                  <i class="fa-solid fa-spray-can-sparkles"></i>
+                  <i data-lucide="flower-2"></i>
                   <span>허브</span>
                 </div>
-                <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+                <div class="pill-check"><i data-lucide="check"></i></div>
               </label>
               <label class="pill-label">
                 <input type="radio" name="f_crop" value="foliage">
                 <div class="pill-content">
-                  <i class="fa-solid fa-seedling"></i>
+                  <i data-lucide="sprout"></i>
                   <span>관엽</span>
                 </div>
-                <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+                <div class="pill-check"><i data-lucide="check"></i></div>
               </label>
               <label class="pill-label">
                 <input type="radio" name="f_crop" value="strawberry">
                 <div class="pill-content">
-                  <i class="fa-solid fa-apple-whole"></i>
+                  <i data-lucide="cherry"></i>
                   <span>딸기</span>
                 </div>
-                <div class="pill-check"><i class="fa-solid fa-check"></i></div>
+                <div class="pill-check"><i data-lucide="check"></i></div>
               </label>
             </div>
           </div>
@@ -450,7 +591,7 @@
       <!-- 설비 레시피 카드 목록 -->
       <section class="card">
         <h3 class="section-title">
-          <i class="fa-solid fa-layer-group"></i>
+          <i data-lucide="layers-3"></i>
           <span>표준 설비 패턴</span>
         </h3>
 
@@ -458,17 +599,17 @@
           <!-- 카드 1 -->
           <article class="recipe-card" data-space="biz_center" data-purpose="production" data-crop="leafy">
             <div class="recipe-icon">
-              <i class="fa-solid fa-city"></i>
+              <i data-lucide="building-2"></i>
             </div>
             <div class="recipe-body">
               <h4>지식산업센터 30평 – 엽채 수직 스마트팜 A타입</h4>
               <p>사무동·지식산업센터 내 30평 내외 공간에서 상추·바질 등 엽채류를 안정적으로 생산하는 기본형 패턴입니다.</p>
               <ul class="recipe-meta">
-                <li><i class="fa-solid fa-border-all"></i> 랙 구조: 3열 배치, 4단 랙(통로 폭 90cm 기준)</li>
-                <li><i class="fa-solid fa-lightbulb"></i> LED: 랙당 45~55W 바 타입, 층당 2열 배치</li>
-                <li><i class="fa-solid fa-flask"></i> 양액 시스템: 중앙 양액실 1개, NFT 순환식, 1.5톤 탱크</li>
-                <li><i class="fa-solid fa-temperature-half"></i> 공조: 소형 냉난방+제습 일체형 2대, CO₂ 센서 연동</li>
-                <li><i class="fa-solid fa-microchip"></i> 제어 수준: 환경+양액 모니터링, 원격 알림, 기본 자동화</li>
+                <li><i data-lucide="panels-top-left"></i> 랙 구조: 3열 배치, 4단 랙(통로 폭 90cm 기준)</li>
+                <li><i data-lucide="lightbulb"></i> LED: 랙당 45~55W 바 타입, 층당 2열 배치</li>
+                <li><i data-lucide="flask-conical"></i> 양액 시스템: 중앙 양액실 1개, NFT 순환식, 1.5톤 탱크</li>
+                <li><i data-lucide="thermometer"></i> 공조: 소형 냉난방+제습 일체형 2대, CO₂ 센서 연동</li>
+                <li><i data-lucide="cpu"></i> 제어 수준: 환경+양액 모니터링, 원격 알림, 기본 자동화</li>
               </ul>
               <div class="recipe-tags">
                 <span class="badge badge-green">생산 위주</span>
@@ -482,17 +623,17 @@
           <!-- 카드 2 -->
           <article class="recipe-card" data-space="retail" data-purpose="landscape" data-crop="foliage">
             <div class="recipe-icon">
-              <i class="fa-solid fa-store"></i>
+              <i data-lucide="store"></i>
             </div>
             <div class="recipe-body">
               <h4>상가 20평 – 쇼룸형 조경 스마트팜 B타입</h4>
               <p>거리 상권·카페 인근 상가 20평을 활용해, 체험·전시용 조경 스마트팜을 구성하는 쇼룸형 패턴입니다.</p>
               <ul class="recipe-meta">
-                <li><i class="fa-solid fa-border-all"></i> 구조물: 전면 쇼윈도 1열+내부 아일랜드형 구조물 2세트</li>
-                <li><i class="fa-solid fa-layer-group"></i> 층수: 관엽·허브 혼합 2~3단, 고객 시야 높이 위주 설계</li>
-                <li><i class="fa-solid fa-bolt"></i> 전력: 피크 12~15kW, 전시 조명+설비 합산 기준</li>
-                <li><i class="fa-solid fa-paint-roller"></i> 데코 요소: 목재 마감, 간접 조명, 포토존 벽체 포함</li>
-                <li><i class="fa-solid fa-shield-halved"></i> 안전: 투명 안전 커버, 코너 보호, 미끄럼 방지 바닥</li>
+                <li><i data-lucide="panels-top-left"></i> 구조물: 전면 쇼윈도 1열+내부 아일랜드형 구조물 2세트</li>
+                <li><i data-lucide="layers-3"></i> 층수: 관엽·허브 혼합 2~3단, 고객 시야 높이 위주 설계</li>
+                <li><i data-lucide="zap"></i> 전력: 피크 12~15kW, 전시 조명+설비 합산 기준</li>
+                <li><i data-lucide="paint-roller"></i> 데코 요소: 목재 마감, 간접 조명, 포토존 벽체 포함</li>
+                <li><i data-lucide="shield-check"></i> 안전: 투명 안전 커버, 코너 보호, 미끄럼 방지 바닥</li>
               </ul>
               <div class="recipe-tags">
                 <span class="badge badge-green">체험·조경 위주</span>
@@ -506,17 +647,17 @@
           <!-- 카드 3 -->
           <article class="recipe-card"data-space="panel" data-purpose="mixed" data-crop="nursery">
             <div class="recipe-icon">
-              <i class="fa-solid fa-warehouse"></i>
+              <i data-lucide="warehouse"></i>
             </div>
             <div class="recipe-body">
               <h4>샌드위치 판넬 창고 50평 – 육묘+생산 복합형 C타입</h4>
               <p>외곽 판넬형 창고 50평 정도를 활용해, 육묘와 생산을 함께 운영하는 복합 패턴입니다.</p>
               <ul class="recipe-meta">
-                <li><i class="fa-solid fa-border-all"></i> 랙 구조: 육묘존 2열(저단 고밀도) + 생산존 2열(3~4단)</li>
-                <li><i class="fa-solid fa-lightbulb"></i> LED: 육묘존 고조도 타입, 생산존 일반 조도 타입 혼합</li>
-                <li><i class="fa-solid fa-flask"></i> 양액: 존 분리형 양액실 2세트, 레시피 별 EC/PH 분리 운용</li>
-                <li><i class="fa-solid fa-temperature-arrow-up"></i> 공조: 대용량 냉난방/제습기+순환팬, 구역별 온·습도 편차 보정</li>
-                <li><i class="fa-solid fa-microchip"></i> 제어 수준: 환경·양액·조명 스케줄 전체 자동화, 로그 저장</li>
+                <li><i data-lucide="panels-top-left"></i> 랙 구조: 육묘존 2열(저단 고밀도) + 생산존 2열(3~4단)</li>
+                <li><i data-lucide="lightbulb"></i> LED: 육묘존 고조도 타입, 생산존 일반 조도 타입 혼합</li>
+                <li><i data-lucide="flask-conical"></i> 양액: 존 분리형 양액실 2세트, 레시피 별 EC/PH 분리 운용</li>
+                <li><i data-lucide="thermometer-sun"></i> 공조: 대용량 냉난방/제습기+순환팬, 구역별 온·습도 편차 보정</li>
+                <li><i data-lucide="cpu"></i> 제어 수준: 환경·양액·조명 스케줄 전체 자동화, 로그 저장</li>
               </ul>
               <div class="recipe-tags">
                 <span class="badge badge-green">복합(육묘+생산)</span>
@@ -536,10 +677,10 @@
 
 <nav class="tabs">
       <ul>
-        <li><button id="tab-home" onclick="window.location.assign('home.html')"><i class="fa-solid fa-house"></i><small>홈</small></button></li>
-        <li><button id="tab-records" onclick="window.location.assign('records.html')"><i class="fas fa-list-check"></i><small>기록</small></button></li>
-        <li><button id="tab-reco" onclick="window.location.assign('deals.html')"><i class="fas fa-file-signature"></i><small>견적</small></button></li>
-        <li><button id="tab-my" onclick="window.location.assign('settings.html')"><i class="fa-solid fa-user"></i><small>마이</small></button></li>
+        <li><button id="tab-home" onclick="window.location.assign('home.html')"><i data-lucide="house"></i><small>홈</small></button></li>
+        <li><button id="tab-records" onclick="window.location.assign('records.html')"><i data-lucide="list-checks"></i><small>기록</small></button></li>
+        <li><button id="tab-reco" onclick="window.location.assign('deals.html')"><i data-lucide="file-signature"></i><small>견적</small></button></li>
+        <li><button id="tab-my" onclick="window.location.assign('settings.html')"><i data-lucide="user"></i><small>마이</small></button></li>
       </ul>
     </nav>
   </div>
@@ -579,22 +720,22 @@
     };
 
     var recipes=[
-      {space:'biz_center',purpose:'production',crop:'leafy',icon:'fa-city',title:'도심형 엽채 수직재배 A형',desc:'제한된 면적에서 회전율과 생산량을 확보하는 다단 NFT 생산 패턴입니다.',spec:['4단 재배랙·90cm 작업 통로','NFT 순환식·1.5톤 양액 탱크','냉난방·제습 2대와 CO₂ 연동'],note:'초기 창업과 납품형 엽채 생산에 적합합니다.'},
-      {space:'biz_center',purpose:'nursery',crop:'herb',icon:'fa-seedling',title:'도심 허브 육묘·순화 B형',desc:'허브 플러그묘를 균일하게 키우고 출하 전 순화까지 처리하는 소형 육묘 패턴입니다.',spec:['저단 고밀도 육묘랙 4열','미스트 관수·배수 회수','발아존과 순화존 온습도 분리'],note:'카페·로컬 매장 납품용 허브 모종에 알맞습니다.'},
-      {space:'biz_center',purpose:'mixed',crop:'strawberry',icon:'fa-building',title:'도심 딸기 생산·체험 복합 C형',desc:'생산 구역과 소규모 방문 체험 동선을 분리한 도심형 딸기 패턴입니다.',spec:['고설베드 2열·체험 통로 분리','점적관수·배액 EC 모니터링','보광 LED·수분용 송풍 제어'],note:'예약 체험과 프리미엄 소매를 함께 운영할 때 적합합니다.'},
-      {space:'biz_center',purpose:'landscape',crop:'foliage',icon:'fa-leaf',title:'오피스 바이오필릭 쇼룸 D형',desc:'업무 공간의 휴식과 브랜드 전시를 결합한 관엽 조경형 패턴입니다.',spec:['모듈형 플랜트월·이동식 화분존','저조도 관엽용 보광 조명','누수 감지·자동 점적관수'],note:'로비·공용 라운지의 인테리어 개선에 적합합니다.'},
-      {space:'retail',purpose:'landscape',crop:'foliage',icon:'fa-store',title:'상가 쇼룸형 관엽 스마트가든 A형',desc:'고객 시야와 체류 경험을 중심으로 구성한 전시·조경 패턴입니다.',spec:['쇼윈도 플랜트월·아일랜드 2조','간접조명과 관엽 보광등 분리','안전 커버·미끄럼 방지 바닥'],note:'카페·매장·브랜드 쇼룸에 잘 맞습니다.'},
-      {space:'retail',purpose:'production',crop:'herb',icon:'fa-mug-hot',title:'매장 연계 신선 허브 생산 B형',desc:'주방과 판매 공간에서 바로 사용할 허브를 소량 다품종으로 생산합니다.',spec:['벽면 3단 랙·이동식 재배대','소형 DWC·독립 양액통','저소음 팬·영업시간 조명 제어'],note:'카페와 레스토랑의 팜투테이블 운영에 적합합니다.'},
-      {space:'retail',purpose:'mixed',crop:'leafy',icon:'fa-basket-shopping',title:'판매·체험형 엽채 마이크로팜 C형',desc:'재배 모습을 보여주면서 수확 상품을 판매할 수 있는 전면 개방형 패턴입니다.',spec:['전시랙과 생산랙 구역 분리','NFT 3단·세척 작업대 연계','고객 동선용 투명 안전 가드'],note:'체험 수확과 소포장 판매를 결합하기 좋습니다.'},
-      {space:'retail',purpose:'nursery',crop:'strawberry',icon:'fa-seedling',title:'딸기 모종 전시·육묘 D형',desc:'건전묘 육성과 품종 전시를 함께 운영하는 소규모 육묘 패턴입니다.',spec:['육묘벤치·모주존 구분','저면관수·병해 확산 방지 구획','순화 조도 단계 자동 조절'],note:'교육 매장과 도시농업 체험장에 적합합니다.'},
-      {space:'panel',purpose:'production',crop:'leafy',icon:'fa-warehouse',title:'창고형 대량 엽채 생산 A형',desc:'단열 창고의 층고를 활용해 생산성과 작업 효율을 높인 표준 생산 패턴입니다.',spec:['5단 랙·중앙 물류 통로','대용량 NFT·양액 이중화','덕트 공조·구역별 순환팬'],note:'정기 납품과 중규모 생산 확장에 유리합니다.'},
-      {space:'panel',purpose:'nursery',crop:'strawberry',icon:'fa-warehouse',title:'창고형 딸기 전문 육묘 B형',desc:'모주 관리부터 자묘 발근·순화까지 구역별로 관리하는 전문 육묘 패턴입니다.',spec:['모주·발근·순화 3개 존','포그 관수·살균수 라인','구역별 차압·위생 동선'],note:'균일한 딸기 묘 생산과 병해 관리에 적합합니다.'},
-      {space:'panel',purpose:'mixed',crop:'herb',icon:'fa-industry',title:'허브 육묘·생산 복합 C형',desc:'육묘와 본 재배를 연속 동선으로 연결한 다품종 허브 생산 패턴입니다.',spec:['육묘 2단+생산 4단 랙','작물별 양액 채널 분리','수확·포장실 냉방 독립'],note:'여러 허브 품종을 주 단위로 출하하기 좋습니다.'},
-      {space:'panel',purpose:'landscape',crop:'foliage',icon:'fa-tree-city',title:'대형 실내정원·행사 D형',desc:'창고의 넓은 면적을 활용한 체험형 실내정원과 이벤트 공간 패턴입니다.',spec:['대형 플랜터·가변형 행사 동선','천장 보광·관람 조명 분리','관수 회수와 바닥 배수 강화'],note:'팝업 전시와 복합문화공간 운영에 적합합니다.'},
-      {space:'etc',purpose:'production',crop:'strawberry',icon:'fa-apple-whole',title:'유휴공간 딸기 고설재배 A형',desc:'지하·공장 유휴실 등 다양한 실내에 적용 가능한 모듈형 딸기 생산 패턴입니다.',spec:['독립형 고설베드 모듈','점적관수·배액 재활용','제습 우선 공조·보광 제어'],note:'기존 공간의 단계적 전환에 유리합니다.'},
-      {space:'etc',purpose:'nursery',crop:'leafy',icon:'fa-seedling',title:'모듈형 엽채 육묘 B형',desc:'공간 형태에 맞춰 육묘 선반 수를 조절할 수 있는 범용 패턴입니다.',spec:['이동식 육묘랙·트레이 규격화','저면관수·발아 돔','일령별 조명 스케줄'],note:'본 재배 시설에 공급할 균일묘 생산에 적합합니다.'},
-      {space:'etc',purpose:'landscape',crop:'herb',icon:'fa-spa',title:'향기정원 체험 C형',desc:'향과 촉감을 활용한 허브 체험 프로그램 중심의 실내정원 패턴입니다.',spec:['높이별 체험 베드·무장애 동선','저압 점적·수동 체험 관수','환기·향기 확산 구역 조절'],note:'교육·치유·커뮤니티 프로그램에 잘 맞습니다.'},
-      {space:'etc',purpose:'mixed',crop:'foliage',icon:'fa-layer-group',title:'관엽 재배·판매 복합 D형',desc:'관엽 식물의 순화, 전시, 판매를 하나의 흐름으로 연결한 범용 패턴입니다.',spec:['입고 순화존·전시존 분리','품종별 점적 주기 그룹 제어','이동식 진열대·포장 작업대'],note:'식물 편집숍과 소규모 유통 거점에 적합합니다.'}
+      {space:'biz_center',purpose:'production',crop:'leafy',icon:'building-2',title:'도심형 엽채 수직재배 A형',desc:'제한된 면적에서 회전율과 생산량을 확보하는 다단 NFT 생산 패턴입니다.',spec:['4단 재배랙·90cm 작업 통로','NFT 순환식·1.5톤 양액 탱크','냉난방·제습 2대와 CO₂ 연동'],note:'초기 창업과 납품형 엽채 생산에 적합합니다.'},
+      {space:'biz_center',purpose:'nursery',crop:'herb',icon:'sprout',title:'도심 허브 육묘·순화 B형',desc:'허브 플러그묘를 균일하게 키우고 출하 전 순화까지 처리하는 소형 육묘 패턴입니다.',spec:['저단 고밀도 육묘랙 4열','미스트 관수·배수 회수','발아존과 순화존 온습도 분리'],note:'카페·로컬 매장 납품용 허브 모종에 알맞습니다.'},
+      {space:'biz_center',purpose:'mixed',crop:'strawberry',icon:'building',title:'도심 딸기 생산·체험 복합 C형',desc:'생산 구역과 소규모 방문 체험 동선을 분리한 도심형 딸기 패턴입니다.',spec:['고설베드 2열·체험 통로 분리','점적관수·배액 EC 모니터링','보광 LED·수분용 송풍 제어'],note:'예약 체험과 프리미엄 소매를 함께 운영할 때 적합합니다.'},
+      {space:'biz_center',purpose:'landscape',crop:'foliage',icon:'leaf',title:'오피스 바이오필릭 쇼룸 D형',desc:'업무 공간의 휴식과 브랜드 전시를 결합한 관엽 조경형 패턴입니다.',spec:['모듈형 플랜트월·이동식 화분존','저조도 관엽용 보광 조명','누수 감지·자동 점적관수'],note:'로비·공용 라운지의 인테리어 개선에 적합합니다.'},
+      {space:'retail',purpose:'landscape',crop:'foliage',icon:'store',title:'상가 쇼룸형 관엽 스마트가든 A형',desc:'고객 시야와 체류 경험을 중심으로 구성한 전시·조경 패턴입니다.',spec:['쇼윈도 플랜트월·아일랜드 2조','간접조명과 관엽 보광등 분리','안전 커버·미끄럼 방지 바닥'],note:'카페·매장·브랜드 쇼룸에 잘 맞습니다.'},
+      {space:'retail',purpose:'production',crop:'herb',icon:'coffee',title:'매장 연계 신선 허브 생산 B형',desc:'주방과 판매 공간에서 바로 사용할 허브를 소량 다품종으로 생산합니다.',spec:['벽면 3단 랙·이동식 재배대','소형 DWC·독립 양액통','저소음 팬·영업시간 조명 제어'],note:'카페와 레스토랑의 팜투테이블 운영에 적합합니다.'},
+      {space:'retail',purpose:'mixed',crop:'leafy',icon:'shopping-basket',title:'판매·체험형 엽채 마이크로팜 C형',desc:'재배 모습을 보여주면서 수확 상품을 판매할 수 있는 전면 개방형 패턴입니다.',spec:['전시랙과 생산랙 구역 분리','NFT 3단·세척 작업대 연계','고객 동선용 투명 안전 가드'],note:'체험 수확과 소포장 판매를 결합하기 좋습니다.'},
+      {space:'retail',purpose:'nursery',crop:'strawberry',icon:'sprout',title:'딸기 모종 전시·육묘 D형',desc:'건전묘 육성과 품종 전시를 함께 운영하는 소규모 육묘 패턴입니다.',spec:['육묘벤치·모주존 구분','저면관수·병해 확산 방지 구획','순화 조도 단계 자동 조절'],note:'교육 매장과 도시농업 체험장에 적합합니다.'},
+      {space:'panel',purpose:'production',crop:'leafy',icon:'warehouse',title:'창고형 대량 엽채 생산 A형',desc:'단열 창고의 층고를 활용해 생산성과 작업 효율을 높인 표준 생산 패턴입니다.',spec:['5단 랙·중앙 물류 통로','대용량 NFT·양액 이중화','덕트 공조·구역별 순환팬'],note:'정기 납품과 중규모 생산 확장에 유리합니다.'},
+      {space:'panel',purpose:'nursery',crop:'strawberry',icon:'warehouse',title:'창고형 딸기 전문 육묘 B형',desc:'모주 관리부터 자묘 발근·순화까지 구역별로 관리하는 전문 육묘 패턴입니다.',spec:['모주·발근·순화 3개 존','포그 관수·살균수 라인','구역별 차압·위생 동선'],note:'균일한 딸기 묘 생산과 병해 관리에 적합합니다.'},
+      {space:'panel',purpose:'mixed',crop:'herb',icon:'factory',title:'허브 육묘·생산 복합 C형',desc:'육묘와 본 재배를 연속 동선으로 연결한 다품종 허브 생산 패턴입니다.',spec:['육묘 2단+생산 4단 랙','작물별 양액 채널 분리','수확·포장실 냉방 독립'],note:'여러 허브 품종을 주 단위로 출하하기 좋습니다.'},
+      {space:'panel',purpose:'landscape',crop:'foliage',icon:'trees',title:'대형 실내정원·행사 D형',desc:'창고의 넓은 면적을 활용한 체험형 실내정원과 이벤트 공간 패턴입니다.',spec:['대형 플랜터·가변형 행사 동선','천장 보광·관람 조명 분리','관수 회수와 바닥 배수 강화'],note:'팝업 전시와 복합문화공간 운영에 적합합니다.'},
+      {space:'etc',purpose:'production',crop:'strawberry',icon:'cherry',title:'유휴공간 딸기 고설재배 A형',desc:'지하·공장 유휴실 등 다양한 실내에 적용 가능한 모듈형 딸기 생산 패턴입니다.',spec:['독립형 고설베드 모듈','점적관수·배액 재활용','제습 우선 공조·보광 제어'],note:'기존 공간의 단계적 전환에 유리합니다.'},
+      {space:'etc',purpose:'nursery',crop:'leafy',icon:'sprout',title:'모듈형 엽채 육묘 B형',desc:'공간 형태에 맞춰 육묘 선반 수를 조절할 수 있는 범용 패턴입니다.',spec:['이동식 육묘랙·트레이 규격화','저면관수·발아 돔','일령별 조명 스케줄'],note:'본 재배 시설에 공급할 균일묘 생산에 적합합니다.'},
+      {space:'etc',purpose:'landscape',crop:'herb',icon:'flower-2',title:'향기정원 체험 C형',desc:'향과 촉감을 활용한 허브 체험 프로그램 중심의 실내정원 패턴입니다.',spec:['높이별 체험 베드·무장애 동선','저압 점적·수동 체험 관수','환기·향기 확산 구역 조절'],note:'교육·치유·커뮤니티 프로그램에 잘 맞습니다.'},
+      {space:'etc',purpose:'mixed',crop:'foliage',icon:'layers-3',title:'관엽 재배·판매 복합 D형',desc:'관엽 식물의 순화, 전시, 판매를 하나의 흐름으로 연결한 범용 패턴입니다.',spec:['입고 순화존·전시존 분리','품종별 점적 주기 그룹 제어','이동식 진열대·포장 작업대'],note:'식물 편집숍과 소규모 유통 거점에 적합합니다.'}
     ];
 
     function getCheckedValue(name){
@@ -614,12 +755,10 @@
       var exact=result.score===100;
       var badge=exact ? '조건 완전 일치 · 100%' : result.matches.length+'개 조건 일치 · '+result.score+'%';
       return '<article class="recipe-card'+(index===0?' is-best':'')+'">'+
-        '<span class="match-badge'+(index===0?' is-best':'')+'"><i class="fa-solid fa-chart-simple"></i> '+badge+'</span>'+
-        '<div class="recipe-icon"><i class="fa-solid '+recipe.icon+'"></i></div>'+
-        '<div class="recipe-body"><h4>'+recipe.title+'</h4><p>'+recipe.desc+'</p>'+
-        '<ul class="recipe-meta">'+recipe.spec.map(function(item){return '<li><i class="fa-solid fa-check"></i>'+item+'</li>';}).join('')+'</ul>'+
+        '<div class="recipe-body"><div class="recipe-card-top"><div class="recipe-icon"><i data-lucide="'+recipe.icon+'"></i></div><div class="recipe-heading"><h4>'+recipe.title+'</h4><span class="match-badge'+(index===0?' is-best':'')+'"><i data-lucide="chart-no-axes-column-increasing"></i>'+badge+'</span></div></div><p>'+recipe.desc+'</p>'+
+        '<ul class="recipe-meta">'+recipe.spec.map(function(item){return '<li><i data-lucide="check"></i>'+item+'</li>';}).join('')+'</ul>'+
         '<div class="recipe-tags"><span class="badge badge-green">'+labels.purpose[recipe.purpose]+'</span><span class="badge badge-gray">'+labels.crop[recipe.crop]+'</span><span class="badge badge-gray">'+labels.space[recipe.space]+'</span></div>'+
-        '<div class="recipe-footer">'+recipe.note+'</div></div></article>';
+        '<div class="recipe-footer"><i data-lucide="info"></i>'+recipe.note+'</div></div></article>';
     }
 
     function applyRecipeFilter(){
@@ -632,8 +771,9 @@
 
       var best=ranked[0].result.score;
       var exactCount=ranked.filter(function(item){return item.result.score===100;}).length;
-      var summary='<div class="recipe-result-summary"><strong><i class="fa-solid fa-wand-magic-sparkles"></i> '+labels.space[space]+' · '+labels.purpose[purpose]+' · '+labels.crop[crop]+'</strong><span>'+(exactCount ? '조건에 완전히 일치하는 패턴을 우선 표시했습니다.' : '완전 일치 패턴이 없어 가장 가까운 설비 구성부터 추천합니다. 최고 적합도 '+best+'%')+'</span></div>';
+      var summary='<div class="recipe-result-summary"><strong><i data-lucide="sparkles"></i>'+labels.space[space]+' · '+labels.purpose[purpose]+' · '+labels.crop[crop]+'</strong><span>'+(exactCount ? '조건에 완전히 일치하는 패턴을 우선 표시했습니다.' : '완전 일치 패턴이 없어 가장 가까운 설비 구성부터 추천합니다. 최고 적합도 '+best+'%')+'</span></div>';
       recipeList.innerHTML=summary+ranked.slice(0,5).map(function(item,index){return renderRecipe(item.recipe,item.result,index);}).join('');
+      if(window.lucide) window.lucide.createIcons({attrs:{'aria-hidden':'true'}});
     }
 
 
