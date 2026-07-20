@@ -29,7 +29,6 @@
             <span>프로젝트 상세</span>
           </div>
           <h1 class="pd-summary-title" id="pdProjectTitle">프로젝트 제목</h1>
-          <p class="pd-summary-subtitle" id="pdProjectSubtitle">프로젝트 정보를 불러오고 있습니다.</p>
           <div class="pd-summary-meta">
             <div class="pd-summary-pill">
               <span class="pd-summary-pill-label">시설 유형</span>
@@ -44,18 +43,6 @@
               <span class="pd-summary-pill-value" id="pdProfitTarget">-</span>
             </div>
           </div>
-          <div class="pd-progress-wrap">
-            <div class="pd-progress-head"><span>프로젝트 진행 단계</span><strong id="pdCurrentStage">설계 완료</strong></div>
-            <div class="pd-progress-steps" id="pdProgressSteps">
-              <div class="pd-progress-step active"><span>1</span><small>설계</small></div>
-              <div class="pd-progress-line"></div>
-              <div class="pd-progress-step"><span>2</span><small>견적</small></div>
-              <div class="pd-progress-line"></div>
-              <div class="pd-progress-step"><span>3</span><small>계약</small></div>
-              <div class="pd-progress-line"></div>
-              <div class="pd-progress-step"><span>4</span><small>시공</small></div>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -65,17 +52,15 @@
           <div class="pd-card-header">
             <h2 class="pd-card-title">
               <i class="fa-solid fa-clipboard-list"></i>
-              <span>프로젝트 상세정보</span>
+              <span>프로젝트 요구사항 & 설계 기록</span>
             </h2>
           </div>
-          <p class="pd-card-sub">필요한 정보만 탭으로 나누어 확인할 수 있어요.</p>
+          <p class="pd-card-sub">이후 변경 이력도 계속 이어서 적어둘 수 있어요.</p>
 
           <!-- 탭 -->
           <div class="pd-tabs">
-            <button type="button" class="pd-tab active" data-tab="needs"><i class="fa-solid fa-sliders"></i><span>조건</span></button>
+            <button type="button" class="pd-tab active" data-tab="needs">요구사항</button>
             <button type="button" class="pd-tab" data-tab="design">설계안</button>
-            <button type="button" class="pd-tab" data-tab="progress">진행</button>
-            <button type="button" class="pd-tab" data-tab="memo">메모</button>
           </div>
 
           <div class="pd-tab-panels">
@@ -174,72 +159,84 @@
 
             <!-- 탭 2: 설계안 -->
             <div class="pd-tab-panel" id="pdTabDesign">
-              <section class="pd-design-hero">
-                <div class="pd-design-kicker"><i class="fa-solid fa-seedling"></i> 선택한 추천 설계안</div>
-                <h3 id="pdCropCombo">설계안 정보를 불러오고 있습니다.</h3>
-                <p id="pdMainCrops">-</p>
-                <div class="pd-design-tags">
-                  <span class="pd-design-tag" id="pdFacilityCombo">-</span>
-                  <span class="pd-design-tag" id="pdChipAutomation"><i class="fa-solid fa-microchip"></i><span>자동화 수준</span></span>
-                  <span class="pd-design-tag" id="pdChipStrategy"><i class="fa-solid fa-arrows-rotate"></i><span>운영 전략</span></span>
+              <div class="pd-info-grid">
+                <div class="pd-info-item">
+                  <div class="pd-info-label">
+                    <i class="fa-solid fa-seedling"></i>
+                    <span>추천 작목 · 시설 조합</span>
+                  </div>
+                  <div class="pd-info-text">
+                    <span class="pd-info-value-strong" id="pdCropCombo">-</span>
+                    <ul class="pd-info-list">
+                      <li id="pdMainCrops">-</li>
+                      <li id="pdFacilityCombo">-</li>
+                    </ul>
+                    <div class="pd-tag-row">
+                      <span class="pd-chip" id="pdChipAutomation"><i class="fa-solid fa-microchip"></i><span>자동화 수준</span></span>
+                      <span class="pd-chip" id="pdChipStrategy"><i class="fa-solid fa-arrows-rotate"></i><span>운영 전략</span></span>
+                    </div>
+                  </div>
                 </div>
-              </section>
 
-              <section class="pd-design-block">
-                <div class="pd-design-heading"><i class="fa-solid fa-object-group"></i><div><strong>공간 배치</strong><small>작업 흐름을 기준으로 구역을 나눴어요.</small></div></div>
-                <div class="pd-layout-flow">
-                  <div class="pd-layout-zone"><i class="fa-solid fa-box-open"></i><span>출입·포장</span></div>
-                  <i class="fa-solid fa-chevron-right"></i>
-                  <div class="pd-layout-zone primary"><i class="fa-solid fa-seedling"></i><span>재배 구역</span></div>
-                  <i class="fa-solid fa-chevron-right"></i>
-                  <div class="pd-layout-zone"><i class="fa-solid fa-flask"></i><span>양액·기계실</span></div>
+                <div class="pd-info-item">
+                  <div class="pd-info-label">
+                    <i class="fa-solid fa-object-group"></i>
+                    <span>공간 배치 개략도</span>
+                  </div>
+                  <div class="pd-info-text">
+                    <div class="pd-diagram">
+                      <div id="pdDiagramText">출입구 기준 좌측은 작업·포장, 중앙은 재배랙, 우측은 양액·기계실·창고로 나누는 기본 흐름입니다.</div>
+                      <div class="pd-diagram-rows">
+                        <div class="pd-diagram-cell">출입·포장</div>
+                        <div class="pd-diagram-cell">재배 구역</div>
+                        <div class="pd-diagram-cell">양액·기계실</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <p class="pd-layout-caption" id="pdDiagramText">출입구 기준 좌측은 작업·포장, 중앙은 재배랙, 우측은 양액·기계실로 구성합니다.</p>
-              </section>
+              </div>
 
-              <section class="pd-design-block">
-                <div class="pd-design-heading"><i class="fa-solid fa-gears"></i><div><strong>핵심 설비</strong><small>항목을 누르면 상세 기준을 볼 수 있어요.</small></div></div>
-                <div class="pd-equipment-list">
-                  <details class="pd-equipment-item">
-                    <summary><span class="pd-equipment-icon"><i class="fa-solid fa-lightbulb"></i></span><span><strong>재배 LED</strong><small>작물별 조도·점등 설정</small></span><i class="fa-solid fa-chevron-down"></i></summary>
-                    <p id="pdLed">-</p>
-                  </details>
-                  <details class="pd-equipment-item">
-                    <summary><span class="pd-equipment-icon"><i class="fa-solid fa-droplet"></i></span><span><strong>양액 시스템</strong><small>순환식 양액·탱크 산정</small></span><i class="fa-solid fa-chevron-down"></i></summary>
-                    <p id="pdNutrient">-</p>
-                  </details>
-                  <details class="pd-equipment-item">
-                    <summary><span class="pd-equipment-icon"><i class="fa-solid fa-wind"></i></span><span><strong>공조 환경</strong><small>냉난방·제습·CO₂ 제어</small></span><i class="fa-solid fa-chevron-down"></i></summary>
-                    <p id="pdHvac">-</p>
-                  </details>
-                  <details class="pd-equipment-item">
-                    <summary><span class="pd-equipment-icon"><i class="fa-solid fa-microchip"></i></span><span><strong>통합 관제</strong><small>환경 모니터링·원격 알림</small></span><i class="fa-solid fa-chevron-down"></i></summary>
-                    <p id="pdControl">-</p>
-                  </details>
+              <div class="pd-info-grid">
+                <div class="pd-info-item">
+                  <div class="pd-info-label">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <span>LED · 양액 · 공조 · 제어</span>
+                  </div>
+                  <div class="pd-info-text">
+                    <ul class="pd-info-list">
+                      <li id="pdLed">-</li>
+                      <li id="pdNutrient">-</li>
+                      <li id="pdHvac">-</li>
+                      <li id="pdControl">-</li>
+                    </ul>
+                  </div>
                 </div>
-              </section>
 
-              <section class="pd-design-block">
-                <div class="pd-design-heading"><i class="fa-solid fa-sliders"></i><div><strong>변경 가능한 옵션</strong><small>예산과 현장 조건에 따라 조정할 수 있어요.</small></div></div>
-                <div class="pd-option-list">
-                  <div class="pd-option-row"><span>자동화 수준</span><strong id="pdAutomation">-</strong></div>
-                  <div class="pd-option-row"><span>확장 설계</span><strong id="pdExpansion">-</strong></div>
-                  <div class="pd-option-row"><span>변경 기록</span><strong id="pdChangeLog">-</strong></div>
+                <div class="pd-info-item">
+                  <div class="pd-info-label">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>선택 · 변경 옵션</span>
+                  </div>
+                  <div class="pd-info-text">
+                    <ul class="pd-info-list">
+                      <li id="pdAutomation">-</li>
+                      <li id="pdExpansion">-</li>
+                      <li id="pdChangeLog">-</li>
+                    </ul>
+                    <div class="pd-tag-row">
+                      <span class="pd-chip"><i class="fa-solid fa-pen"></i><span>현장 협의 후 수정 가능</span></span>
+                      <span class="pd-chip"><i class="fa-solid fa-file-contract"></i><span>(주)그린 상세 설계와 연동</span></span>
+                    </div>
+                  </div>
                 </div>
-                <div class="pd-design-notes">
-                  <span><i class="fa-solid fa-pen"></i> 현장 협의 후 수정 가능</span>
-                  <span><i class="fa-solid fa-file-contract"></i> (주)그린 상세 설계 연동</span>
-                </div>
-              </section>
+              </div>
             </div><!-- /pdTabDesign -->
-            <div class="pd-tab-panel" id="pdTabProgress"></div>
-            <div class="pd-tab-panel" id="pdTabMemo"></div>
           </div><!-- /pd-tab-panels -->
         </div>
       </section>
 
       <!-- 3-2. 견적 · 계약 · 시공 이력 -->
-      <section class="pd-section" id="pdHistorySection">
+      <section class="pd-section">
         <div class="pd-card">
           <div class="pd-card-header">
             <h2 class="pd-card-title">
@@ -395,24 +392,9 @@
   <script src="app.js" defer></script>
  <script>
     document.addEventListener('DOMContentLoaded', async function () {
-      // 긴 진행 이력과 메모를 각각 전용 탭으로 이동
-      var historySection = document.getElementById('pdHistorySection');
-      var progressPanel = document.getElementById('pdTabProgress');
-      var memoPanel = document.getElementById('pdTabMemo');
-      var timeline = historySection ? historySection.querySelector('.pd-timeline') : null;
-      var memo = historySection ? historySection.querySelector('.pd-memo') : null;
-      if (progressPanel && timeline) progressPanel.appendChild(timeline);
-      if (memoPanel && memo) memoPanel.appendChild(memo);
-      if (historySection) historySection.remove();
-
       // ===== [1] 탭 전환 제어 레이아웃 =====
       var tabs = document.querySelectorAll('.pd-tab');
-      var panels = {
-        needs: document.getElementById('pdTabNeeds'),
-        design: document.getElementById('pdTabDesign'),
-        progress: document.getElementById('pdTabProgress'),
-        memo: document.getElementById('pdTabMemo')
-      };
+      var panels = { needs: document.getElementById('pdTabNeeds'), design: document.getElementById('pdTabDesign') };
       tabs.forEach(function (btn) {
         btn.addEventListener('click', function () {
           var target = this.getAttribute('data-tab');
@@ -487,42 +469,15 @@
 		// 상단 요약
 		var facilitySimple=facilitySimpleMap[survey.facility] || '실내 공간';
 		var regionText=survey.region_si || '';
-		var reco=project.reco || {};
-        if(typeof reco==='string'){
-          try{reco=JSON.parse(reco);}catch(e){reco={};}
-        }
-        var titleMatch=(project.name || '').match(/\(([^()]+)\)\s*$/);
-        if(!reco.title && titleMatch){
-          var templateResult=await supabaseClient
-            .from('reco_templates')
-            .select('*')
-            .eq('title',titleMatch[1])
-            .maybeSingle();
-          if(!templateResult.error && templateResult.data){reco=templateResult.data;}
-        }
-        var selectedDesignTitle=reco.title || (titleMatch ? titleMatch[1] : '') || '선택한 스마트팜 설계안';
-		var facilityLabelFull=reco.facility_label || survey.facilityLabel || facilitySimple;
+		var facilityLabelFull=survey.facilityLabel || facilitySimple;
 		var summaryFacility=regionText ? facilityLabelFull : facilityLabelFull;
 		var profitLabel=profitMap[survey.profit_goal || ''] || '미설정';		
 
 		setText('pdProjectTitle',project.name || facilitySimple+' 프로젝트');
 		setText('pdProjectSubtitle',regionText ? regionText+'의 실내 스마트팜 프로젝트입니다.' : '온보딩 설문과 추천 설계안을 바탕으로 이 프로젝트의 요구사항과 설계를 한눈에 정리합니다.');
 		setText('pdFacilityType',summaryFacility);
-		setText('pdInvestRange',reco.invest || survey.invest || '상담 후 확정');
+		setText('pdInvestRange',survey.invest || '투자 규모는 상담 후 확정');
 		setText('pdProfitTarget',profitLabel);
-
-        // 프로젝트 진행 단계 표시
-        var stageIndexMap={draft:1,quote_requested:2,quote_review:2,contracted:3,construction:4,operating:4,complete:4,done:4};
-        var stageLabelMap={draft:'설계 진행',quote_requested:'견적 요청',quote_review:'견적 검토',contracted:'계약 완료',construction:'시공 진행',operating:'운영 중',complete:'완료',done:'완료'};
-        var currentStageIndex=stageIndexMap[project.status] || 1;
-        setText('pdCurrentStage',stageLabelMap[project.status] || '설계 진행');
-        document.querySelectorAll('#pdProgressSteps .pd-progress-step').forEach(function(step,index){
-          step.classList.toggle('active',index+1<=currentStageIndex);
-          step.classList.toggle('current',index+1===currentStageIndex);
-        });
-        document.querySelectorAll('#pdProgressSteps .pd-progress-line').forEach(function(line,index){
-          line.classList.toggle('active',index+1<currentStageIndex);
-        });
 
 
         // 요구사항 탭 - 사용자/정책/자금
@@ -603,9 +558,9 @@
 		setText('pdDistribution','유통: '+distText);
 	
 		// 설계안 탭 - reco 데이터
-		setText('pdCropCombo',selectedDesignTitle);
-		setText('pdMainCrops','주요 작목 · '+(reco.crop_type || survey.cropType || '상세 설계 시 확정'));
-		setText('pdFacilityCombo',reco.facility_label || survey.facilityLabel || facilitySimple+' 기반');
+		setText('pdCropCombo',survey.cropType || '추천 작목·시설 조합 미정');
+		setText('pdMainCrops',survey.cropType || '-');
+		setText('pdFacilityCombo',survey.facilityLabel || facilitySimple+' 기반 스마트팜');
 	
 		// 자동화/전략 태그(간단 힌트)
 		var chipAuto=document.getElementById('pdChipAutomation');

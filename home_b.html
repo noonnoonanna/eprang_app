@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="home.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <title>이피랑</title>
+</head>
+
+<!-- data-page는 dashboard로 유지 -->
+<body data-page="dashboard">
+  <div class="app">	
+		<header>
+			<div class="bar">
+				<div class="logo"><a href="home.html" style="all:unset;cursor:pointer"><img src="img/logo.png" alt="이피랑 로고"></a></div>
+			</div>
+		</header>
+
+    <main>
+      <!-- 상단 프로젝트 요약 -->
+      <section class="dash-section" id="projectSummarySection">
+        <div class="summary-banner">
+          <div class="summary-chip">
+            <i class="fas fa-seedling"></i> 
+            <span>내 스마트팜 프로젝트</span>
+          </div>
+          <p class="summary-subtitle">
+            고객님의 스마트팜 프로젝트 현황을 한눈에 확인하고, 다음 단계로 나아가세요.
+          </p>
+
+          <div class="summary-stats">
+            <div class="stat-item">
+              <div class="stat-label">진행 중 프로젝트</div>
+              <div class="stat-value" id="statInProgress">0건</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">완료 프로젝트</div>
+              <div class="stat-value" id="statCompleted">0건</div>
+            </div>
+          </div>
+
+          <div class="summary-bg-icon"></div>
+        </div>
+      </section>
+
+      <!-- 프로젝트 목록 -->
+      <section class="dash-section" id="projectListSection">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fas fa-list-check"></i>
+            <span>프로젝트 목록</span>
+          </h2>
+          <!-- 버튼 디자인 통일 -->
+          <button type="button" class="btn acc" id="btnNewProject">
+            <i class="fas fa-plus"></i> 
+            <span>새 프로젝트</span>
+          </button>
+        </div>
+        
+        <!-- 프로젝트 리스트 (예시 카드 추가) -->
+        <div class="project-list" id="projectList">
+          <!-- 프로젝트가 없는 경우에만 이 요소가 보입니다 (JS로 제어) -->
+          <div class="empty-state" id="projectEmptyState" style="display:none;">
+            <strong>아직 저장된 스마트팜 프로젝트가 없어요.</strong>
+            먼저 설문을 통해 <br>나만의 실내 스마트팜 설계 초안을 만들어 볼까요?
+            <button type="button" class="btn" id="btnStartFirstProject">
+              첫 프로젝트 만들러 가기
+            </button>
+          </div>
+        </div>
+      </section>
+	  
+	  <section class="dash-section feature-section" id="featureSection">
+        <div class="feature-grid">
+          <!-- 4. 설비 레시피 -->
+          <article class="feature-card" onclick="location.href='recipes.html'">
+            <div class="feature-icon"><i class="fas fa-layer-group"></i></div>
+            <h3 class="feature-title">설비 레시피</h3>
+            <p class="feature-desc">
+              내 공간·용도·작목에 많이 쓰이는
+              설비 조합 패턴을 한눈에.
+            </p>
+            <div class="feature-tags">
+              <span class="badge badge-gray">표준 설비 패턴</span>
+            </div>
+          </article>
+
+          <!-- 5. 리마인더 -->
+          <article class="feature-card" onclick="location.href='reminder.html'">
+            <div class="feature-icon"><i class="fas fa-bell"></i></div>
+            <h3 class="feature-title">리마인더</h3>
+            <p class="feature-desc">
+              정책자금·견적·시공·운영 초기까지
+              놓치기 쉬운 일정을 자동으로 챙겨줘요.
+            </p>
+            <div class="feature-tags">
+              <span class="badge badge-green">알림/일정 관리</span>
+            </div>
+          </article>
+
+          <!-- 6. 견적/계약 -->
+          <article class="feature-card" onclick="location.href='deals.html'">
+            <div class="feature-icon"><i class="fas fa-file-signature"></i></div>
+            <h3 class="feature-title">견적 / 계약</h3>
+            <p class="feature-desc">
+              (주)그린과 주고받은
+              모든 견적과 계약 현황을 모아서.
+            </p>
+            <div class="feature-tags">
+              <span class="badge badge-gray">견적·계약 현황</span>
+            </div>
+          </article>
+
+          <!-- 7. 데이터 브리핑 -->
+          <article class="feature-card" onclick="location.href='briefing.html'">
+            <div class="feature-icon"><i class="fas fa-chart-bar"></i></div>
+            <h3 class="feature-title">데이터 브리핑</h3>
+            <p class="feature-desc">
+              나와 비슷한 조건의 사용자 설계 패턴과
+              비용·수익 경향을 브리핑으로.
+            </p>
+            <div class="feature-tags">
+              <span class="badge badge-blue">인사이트 리포트</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- 정책자금 · 교육 · 세미나 공지 -->
+      <section class="dash-section" id="noticeSection">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fas fa-bullhorn"></i>
+            <span>정책자금 · 교육 · 세미나</span>
+          </h2>
+          
+          <!--<button type="button" class="btn acc">
+            <i class="fas fa-arrow-right"></i>
+            <span>더보기</span>
+          </button>-->
+        </div>
+
+        <div class="notice-list" id="noticeList">
+<article class="notice-card">
+            <h3 class="notice-title">2026년 하반기 후계농업경영인 육성자금 및 귀농창업자금 안내</h3>
+            <p class="notice-body">
+              농림축산식품부 주관 최대 5억 원 한도(연리 1.5%, 5년 거치 20년 상환) 정책자금 대출입니다. 
+              7~8월 중 지자체별 하반기 잔여 예산 추가 배정 및 대출 실행 심사가 집중되오니, 사업계획서 검토를 미리 신청하세요.
+            </p>
+            <div class="notice-meta">
+              <span class="notice-tag" style="background-color: #fef3c7; color: #d97706;">정책자금</span>
+              <span class="notice-date"><i class="far fa-calendar-alt"></i> 2026-08 마감 예정을 위한 준비 필요</span>
+            </div>
+          </article>
+
+          <article class="notice-card">
+            <h3 class="notice-title">제9기 스마트팜 청년창업 보육과정(20인 이상) 최종 선발 및 교육 개시</h3>
+            <p class="notice-body">
+              농림수산식품교육문화정보원(농정원) 주관 2026년도 정규 보육과정 신청자 대상, 7~8월 교육생 선발 후 9월부터 전국 4개 보육센터(전북 김제, 전남 고흥, 경북 상주, 경남 밀양)에서 20개월 장기 전문 교육이 공식 개시됩니다.
+            </p>
+            <div class="notice-meta">
+              <span class="notice-tag" style="background-color: #dcfce7; color: #16a34a;">의무교육</span>
+              <span class="notice-date"><i class="far fa-calendar-alt"></i> 2026-09-01 교육 개시</span>
+            </div>
+          </article>
+
+          <article class="notice-card">
+            <h3 class="notice-title">하반기 귀농창업 및 주말농장 온·오프라인 연계 교육 (100시간 인정)</h3>
+            <p class="notice-body">
+              정부 정책자금(귀농창업자금 등) 신청 시 필수 조건인 '귀농 교육 100시간 이수'를 채울 수 있는 마지막 정규 기수입니다. 
+              귀농귀촌종합센터 이러닝 및 지역별 농업기술센터 대면 실습 일정이 10월에 집중 배정되어 있습니다.
+            </p>
+            <div class="notice-meta">
+              <span class="notice-tag" style="background-color: #dcfce7; color: #16a34a;">필수이수</span>
+              <span class="notice-date"><i class="far fa-calendar-alt"></i> 2026-10-15 순차 개강</span>
+            </div>
+          </article>
+
+          <article class="notice-card">
+            <h3 class="notice-title">2026 대한민국 국제첨단농업기술 박람회 & 스마트팜 비즈니스 세미나</h3>
+            <p class="notice-body">
+              산업통상자원부 및 농식품부 후원, 국내외 스마트팜 시공사 및 ICT 기자재 기업이 총출동하는 하반기 최대 네트워킹 행사입니다. 
+              이피랑 회원 대상 11월 중순 코엑스(COEX) 3층 컨퍼런스룸에서 진행되는 '실내 수직형 농장 수익 모델 분석' 세미나 무료 초청권을 배포합니다.
+            </p>
+            <div class="notice-meta">
+              <span class="notice-tag" style="background-color: #e0f2fe; color: #0284c7;">국제세미나</span>
+              <span class="notice-date"><i class="far fa-calendar-alt"></i> 2026-11-12 ~ 11-14 예정</span>
+            </div>
+          </article>
+
+          <article class="notice-card">
+            <h3 class="notice-title">2027년도 대비 지자체별 스마트팜 ICT 융복합 확산 시범사업 사전 수요조사</h3>
+            <p class="notice-body">
+              각 시·군 농업기술센터에서 집행하는 2027년도 시설원예/내부 리모델링 스마트팜 보조금(국비 30%, 지방비 30% 선) 사업 편성을 위한 연말 사전 가반영 신청 기간입니다. 12월 중 가산점을 위한 사업계획서 초안 제출이 필요합니다.
+            </p>
+            <div class="notice-meta">
+              <span class="notice-tag" style="background-color: #fef3c7; color: #d97706;">지자체보조</span>
+              <span class="notice-date"><i class="far fa-calendar-alt"></i> 2026-12-10 예산 편성 마감</span>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <!-- 하단 탭바 (공통) -->
+    <nav class="tabs">
+      <ul>
+        <li><button id="tab-home" onclick="window.location.assign('home.html')" class="active"><i class="fa-solid fa-house"></i><small>홈</small></button></li>
+        <li><button id="tab-records" onclick="window.location.assign('records.html')"><i class="fas fa-list-check"></i><small>기록</small></button></li>
+        <li><button id="tab-reco" onclick="window.location.assign('deals.html')"><i class="fas fa-file-signature"></i><small>견적</small></button></li>
+        <li><button id="tab-my" onclick="window.location.assign('settings.html')"><i class="fa-solid fa-user"></i><small>마이</small></button></li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- 공통 모달/토스트 레이어 -->
+  <div id="overlay" class="overlay" onclick="closeModal && closeModal(event)"></div>
+  <div id="modal" class="modal" style="display:none"></div>
+  <div id="recOverlay" class="overlay"></div>
+  <div id="recModal" class="modal" style="display:none"></div>
+  <div id="toast" class="toast">처리되었습니다</div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

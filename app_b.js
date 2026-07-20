@@ -273,8 +273,8 @@ async function saveBasic() {
         .insert([{ 
           user_id: userId, 
           name: projectName, 
-          status: 'draft',
-          reco: recoData
+          status: 'draft'
+          // 만약 projects 테이블에 선택한 안을 저장하는 컬럼(예: selected_reco)을 만드셨다면 여기에 recoData를 넣으시면 됩니다.
         }])
         .select()
         .single();
@@ -368,8 +368,8 @@ async function addProject() {
         .insert([{ 
           user_id: user.id, 
           name: projectName, 
-          status: 'draft',
-          reco: recoData
+          status: 'draft'
+          // 만약 projects 테이블에 선택한 안을 저장하는 컬럼(예: selected_reco)을 만드셨다면 여기에 recoData를 넣으시면 됩니다.
         }])
         .select()
         .single();
@@ -699,3 +699,4 @@ Object.assign(window, {
   // 기타 유틸
   toast
 });
+

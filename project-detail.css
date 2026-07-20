@@ -204,3 +204,362 @@
       outline: none; border-color: #f59e0b; background: #fff;
     }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===== 프로젝트 상세 v2: 모바일 정보 구조 개선 ===== */
+body[data-page="project-detail"] main{
+  align-items:stretch;
+  gap:14px;
+  padding:16px 14px 105px;
+  background:#f6f8f7;
+}
+body[data-page="project-detail"] main>.pd-section{
+  flex:0 0 auto;
+  margin:0;
+}
+
+/* 상단 프로젝트 히어로 */
+body[data-page="project-detail"] .pd-summary-card{
+  padding:20px 18px 18px;
+  border-radius:22px;
+  border:1px solid #dbe9df;
+  background:linear-gradient(145deg,#f0fdf4 0%,#ffffff 58%);
+  box-shadow:0 8px 24px rgba(22,101,52,.07);
+}
+body[data-page="project-detail"] .pd-summary-card::after{
+  content:"";
+  position:absolute;
+  width:145px;
+  height:145px;
+  right:-55px;
+  top:-70px;
+  border-radius:50%;
+  background:rgba(34,197,94,.08);
+}
+body[data-page="project-detail"] .pd-summary-chip{
+  position:relative;
+  z-index:1;
+  padding:0;
+  margin-bottom:8px;
+  background:transparent;
+  color:#15803d;
+  font-size:11px;
+}
+body[data-page="project-detail"] .pd-summary-title{
+  position:relative;
+  z-index:1;
+  margin:0 0 5px;
+  font-size:21px;
+  line-height:1.35;
+  color:#17211b;
+}
+body[data-page="project-detail"] .pd-summary-subtitle{
+  position:relative;
+  z-index:1;
+  margin:0 0 15px;
+  color:#64748b;
+  font-size:12px;
+  line-height:1.5;
+}
+body[data-page="project-detail"] .pd-summary-meta{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:7px;
+  margin:0;
+}
+body[data-page="project-detail"] .pd-summary-pill{
+  min-width:0;
+  padding:10px 7px;
+  border-radius:11px;
+  background:rgba(255,255,255,.85);
+  border:1px solid #e3ece6;
+  align-items:flex-start;
+  text-align:left;
+}
+body[data-page="project-detail"] .pd-summary-pill-label{font-size:9px;color:#94a3b8;}
+body[data-page="project-detail"] .pd-summary-pill-value{width:100%;font-size:11px;color:#334155;overflow:hidden;text-overflow:ellipsis;}
+
+/* 진행 단계 */
+body[data-page="project-detail"] .pd-progress-wrap{
+  margin-top:16px;
+  padding-top:14px;
+  border-top:1px solid #e5eee8;
+}
+body[data-page="project-detail"] .pd-progress-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:12px;
+  color:#64748b;
+  font-size:10px;
+  font-weight:700;
+}
+body[data-page="project-detail"] .pd-progress-head strong{color:#15803d;font-size:11px;}
+body[data-page="project-detail"] .pd-progress-steps{display:flex;align-items:flex-start;}
+body[data-page="project-detail"] .pd-progress-step{flex:0 0 34px;text-align:center;color:#94a3b8;}
+body[data-page="project-detail"] .pd-progress-step span{
+  width:24px;
+  height:24px;
+  margin:0 auto 5px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#e5e7eb;
+  color:#fff;
+  font-size:10px;
+  font-weight:850;
+}
+body[data-page="project-detail"] .pd-progress-step small{font-size:9px;font-weight:700;white-space:nowrap;}
+body[data-page="project-detail"] .pd-progress-step.active span{background:#16a34a;}
+body[data-page="project-detail"] .pd-progress-step.active{color:#166534;}
+body[data-page="project-detail"] .pd-progress-step.current span{box-shadow:0 0 0 4px #dcfce7;}
+body[data-page="project-detail"] .pd-progress-line{flex:1;height:2px;margin-top:11px;background:#e5e7eb;}
+body[data-page="project-detail"] .pd-progress-line.active{background:#16a34a;}
+
+/* 상세정보 작업영역 */
+body[data-page="project-detail"] .pd-card{
+  padding:18px 14px;
+  border-radius:22px;
+  border:1px solid #e2e8f0;
+  box-shadow:0 5px 18px rgba(15,23,42,.04);
+}
+body[data-page="project-detail"] .pd-card-header{padding:0 4px;}
+body[data-page="project-detail"] .pd-card-title{font-size:17px;}
+body[data-page="project-detail"] .pd-card-sub{padding:0 4px;margin:5px 0 15px;font-size:11px;}
+body[data-page="project-detail"] .pd-tabs{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:4px;
+  padding:4px;
+  margin-bottom:16px;
+  border-radius:13px;
+  background:#f1f5f9;
+  position:sticky;
+  top:0;
+  z-index:5;
+}
+body[data-page="project-detail"] .pd-tab{
+  min-width:0;
+  padding:9px 3px;
+  font-size:11px;
+  white-space:nowrap;
+}
+body[data-page="project-detail"] .pd-tab i{margin-right:3px;}
+body[data-page="project-detail"] .pd-tab.active{color:#15803d;box-shadow:0 2px 7px rgba(15,23,42,.08);}
+
+/* 조건·설계 정보는 2열 비교 카드 */
+body[data-page="project-detail"] .pd-info-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  margin-bottom:8px;
+}
+body[data-page="project-detail"] .pd-info-item{
+  min-width:0;
+  padding:13px 11px;
+  border:1px solid #edf1ef;
+  border-left:1px solid #edf1ef;
+  border-radius:13px;
+  background:#f8faf9;
+  box-shadow:none;
+}
+body[data-page="project-detail"] .pd-info-item:hover{transform:none;box-shadow:none;}
+body[data-page="project-detail"] .pd-info-label{
+  margin-bottom:7px;
+  font-size:10px;
+  line-height:1.35;
+  letter-spacing:0;
+  text-transform:none;
+  color:#82938a;
+}
+body[data-page="project-detail"] .pd-info-label i{color:#16a34a;}
+body[data-page="project-detail"] .pd-info-text{font-size:12px;line-height:1.5;}
+body[data-page="project-detail"] .pd-info-value-strong{font-size:13px;}
+body[data-page="project-detail"] .pd-info-list li{padding-left:8px;font-size:11px;line-height:1.5;word-break:keep-all;}
+body[data-page="project-detail"] .pd-tag-row{gap:5px;}
+body[data-page="project-detail"] .pd-chip{padding:5px 7px;font-size:9px;}
+body[data-page="project-detail"] .pd-diagram{margin-top:5px;padding:9px;font-size:10px;}
+body[data-page="project-detail"] .pd-diagram-cell{font-size:9px;padding:7px 2px;}
+
+/* 진행 이력 탭 */
+body[data-page="project-detail"] #pdTabProgress .pd-timeline{margin-top:4px;padding-left:18px;}
+body[data-page="project-detail"] #pdTabProgress .pd-timeline::before{left:5px;}
+body[data-page="project-detail"] #pdTabProgress .pd-timeline-group{margin-bottom:20px;}
+body[data-page="project-detail"] #pdTabProgress .pd-timeline-heading{left:-24px;margin-bottom:9px;font-size:13px;}
+body[data-page="project-detail"] #pdTabProgress .pd-timeline-item{margin-bottom:8px;padding:11px 12px;background:#f8faf9;}
+body[data-page="project-detail"] #pdTabProgress .pd-timeline-item::after{left:-17px;top:17px;}
+body[data-page="project-detail"] #pdTabProgress .pd-timeline-label{font-size:12px;}
+body[data-page="project-detail"] #pdTabProgress .pd-timeline-item>div:not(.pd-timeline-meta){font-size:11px;line-height:1.5;color:#64748b;}
+
+/* 메모 탭 */
+body[data-page="project-detail"] #pdTabMemo .pd-memo{margin:0;padding:4px 0 0;border:0;}
+body[data-page="project-detail"] .pd-memo-title{margin:0 0 6px;font-size:15px;}
+body[data-page="project-detail"] .pd-memo-hint{margin:0 0 12px;font-size:11px;color:#64748b;line-height:1.55;}
+body[data-page="project-detail"] .pd-memo-textarea{
+  min-height:220px;
+  padding:14px;
+  background:#fffcf0;
+  border-color:#e7dfbf;
+  font-size:12px;
+  resize:vertical;
+}
+
+@media(max-width:360px){
+  body[data-page="project-detail"] .pd-summary-meta{grid-template-columns:1fr;}
+  body[data-page="project-detail"] .pd-info-grid{grid-template-columns:1fr;}
+}
+
+/* ===== 설계안 탭: 핵심→배치→설비→옵션 정보 위계 ===== */
+body[data-page="project-detail"] #pdTabDesign{display:none;}
+body[data-page="project-detail"] #pdTabDesign.active{display:block;}
+body[data-page="project-detail"] .pd-design-hero{
+  padding:17px 15px;
+  margin-bottom:10px;
+  border:1px solid #bbf7d0;
+  border-radius:16px;
+  background:linear-gradient(135deg,#f0fdf4,#f8fffa);
+}
+body[data-page="project-detail"] .pd-design-kicker{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-bottom:7px;
+  color:#15803d;
+  font-size:10px;
+  font-weight:800;
+}
+body[data-page="project-detail"] .pd-design-hero h3{
+  margin:0 0 5px;
+  color:#17211b;
+  font-size:17px;
+  line-height:1.35;
+}
+body[data-page="project-detail"] .pd-design-hero>p{
+  margin:0 0 11px;
+  color:#64748b;
+  font-size:11px;
+}
+body[data-page="project-detail"] .pd-design-tags{display:flex;flex-wrap:wrap;gap:5px;}
+body[data-page="project-detail"] .pd-design-tag{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:6px 8px;
+  border:1px solid #d7eadc;
+  border-radius:8px;
+  background:#fff;
+  color:#376146;
+  font-size:9px;
+  font-weight:700;
+}
+body[data-page="project-detail"] .pd-design-block{
+  padding:15px;
+  margin-top:10px;
+  border:1px solid #e8eeea;
+  border-radius:16px;
+  background:#fff;
+}
+body[data-page="project-detail"] .pd-design-heading{
+  display:flex;
+  align-items:flex-start;
+  gap:9px;
+  margin-bottom:13px;
+}
+body[data-page="project-detail"] .pd-design-heading>i{
+  width:29px;
+  height:29px;
+  display:grid;
+  place-items:center;
+  flex:0 0 29px;
+  border-radius:9px;
+  background:#ecfdf5;
+  color:#16a34a;
+  font-size:12px;
+}
+body[data-page="project-detail"] .pd-design-heading strong{display:block;color:#26352c;font-size:12px;}
+body[data-page="project-detail"] .pd-design-heading small{display:block;margin-top:2px;color:#94a3b8;font-size:9px;line-height:1.4;}
+
+/* 공간 흐름 */
+body[data-page="project-detail"] .pd-layout-flow{display:flex;align-items:center;gap:5px;}
+body[data-page="project-detail"] .pd-layout-flow>i{flex:0 0 auto;color:#b6c6bc;font-size:8px;}
+body[data-page="project-detail"] .pd-layout-zone{
+  flex:1;
+  min-width:0;
+  padding:11px 4px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  border:1px solid #dbeafe;
+  border-radius:10px;
+  background:#f8fbff;
+  color:#526477;
+  text-align:center;
+  font-size:9px;
+  font-weight:750;
+}
+body[data-page="project-detail"] .pd-layout-zone i{font-size:12px;color:#7aa0ca;}
+body[data-page="project-detail"] .pd-layout-zone.primary{border-color:#86efac;background:#f0fdf4;color:#166534;}
+body[data-page="project-detail"] .pd-layout-zone.primary i{color:#16a34a;}
+body[data-page="project-detail"] .pd-layout-caption{margin:9px 0 0;color:#64748b;font-size:9px;line-height:1.5;text-align:center;}
+
+/* 핵심 설비 아코디언 */
+body[data-page="project-detail"] .pd-equipment-list{display:grid;gap:6px;}
+body[data-page="project-detail"] .pd-equipment-item{
+  border:1px solid #edf1ef;
+  border-radius:11px;
+  background:#f8faf9;
+  overflow:hidden;
+}
+body[data-page="project-detail"] .pd-equipment-item summary{
+  padding:10px;
+  display:grid;
+  grid-template-columns:31px 1fr auto;
+  align-items:center;
+  gap:8px;
+  cursor:pointer;
+  list-style:none;
+}
+body[data-page="project-detail"] .pd-equipment-item summary::-webkit-details-marker{display:none;}
+body[data-page="project-detail"] .pd-equipment-icon{
+  width:31px;
+  height:31px;
+  display:grid;
+  place-items:center;
+  border-radius:9px;
+  background:#fff;
+  color:#16a34a;
+  box-shadow:0 1px 3px rgba(15,23,42,.06);
+}
+body[data-page="project-detail"] .pd-equipment-item summary strong{display:block;color:#334155;font-size:11px;}
+body[data-page="project-detail"] .pd-equipment-item summary small{display:block;margin-top:2px;color:#94a3b8;font-size:9px;}
+body[data-page="project-detail"] .pd-equipment-item summary>i{color:#94a3b8;font-size:9px;transition:.2s;}
+body[data-page="project-detail"] .pd-equipment-item[open] summary>i{transform:rotate(180deg);}
+body[data-page="project-detail"] .pd-equipment-item p{
+  margin:0;
+  padding:0 12px 12px 49px;
+  color:#64748b;
+  font-size:10px;
+  line-height:1.55;
+}
+
+/* 변경 옵션 */
+body[data-page="project-detail"] .pd-option-list{border-top:1px solid #f1f5f9;}
+body[data-page="project-detail"] .pd-option-row{
+  display:grid;
+  grid-template-columns:72px 1fr;
+  gap:9px;
+  padding:10px 0;
+  border-bottom:1px solid #f1f5f9;
+}
+body[data-page="project-detail"] .pd-option-row>span{color:#82938a;font-size:9px;font-weight:700;}
+body[data-page="project-detail"] .pd-option-row>strong{color:#475569;font-size:10px;font-weight:600;line-height:1.5;}
+body[data-page="project-detail"] .pd-design-notes{display:flex;flex-wrap:wrap;gap:5px;margin-top:11px;}
+body[data-page="project-detail"] .pd-design-notes span{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:5px 7px;
+  border-radius:7px;
+  background:#f1f5f9;
+  color:#64748b;
+  font-size:8px;
+  font-weight:700;
+}

@@ -265,32 +265,6 @@
     font-family: "Font Awesome 6 Free"; font-weight: 900;
     color: #94a3b8;
   }
-
-  body[data-page="recipe"] .recipe-result-summary {
-    margin: 14px 0 16px;
-    padding: 14px 16px;
-    border: 1px solid #bbf7d0;
-    border-radius: 14px;
-    background: linear-gradient(135deg,#f0fdf4,#f8fafc);
-  }
-  body[data-page="recipe"] .recipe-result-summary strong {
-    display:block; color:#166534; font-size:14px; margin-bottom:4px;
-  }
-  body[data-page="recipe"] .recipe-result-summary span {
-    color:#64748b; font-size:12px; line-height:1.5;
-  }
-  body[data-page="recipe"] .match-badge {
-    position:absolute; top:14px; right:14px;
-    display:inline-flex; align-items:center; gap:4px;
-    padding:5px 9px; border-radius:999px;
-    background:#ecfdf5; color:#15803d; border:1px solid #86efac;
-    font-size:11px; font-weight:800;
-  }
-  body[data-page="recipe"] .match-badge.is-best { background:#16a34a; color:#fff; border-color:#16a34a; }
-  body[data-page="recipe"] .recipe-card { padding-top:48px; }
-  body[data-page="recipe"] .recipe-card.is-best {
-    border-color:#4ade80; box-shadow:0 10px 24px rgba(22,163,74,.13);
-  }
   </style>
 </head>
 
@@ -570,71 +544,39 @@
     //  설비 레시피 필터링 로직
     // ============================
     var filterInputs=document.querySelectorAll('input[name="f_space"], input[name="f_purpose"], input[name="f_crop"]');
-    var recipeList=document.querySelector('.recipe-list');
-
-    var labels={
-      space:{biz_center:'지식산업센터',retail:'상가',panel:'샌드위치 판넬 창고',etc:'기타 실내'},
-      purpose:{production:'생산 위주',nursery:'육묘 위주',landscape:'체험·조경 위주',mixed:'복합 운영'},
-      crop:{leafy:'엽채류',herb:'허브',foliage:'관엽',strawberry:'딸기'}
-    };
-
-    var recipes=[
-      {space:'biz_center',purpose:'production',crop:'leafy',icon:'fa-city',title:'도심형 엽채 수직재배 A형',desc:'제한된 면적에서 회전율과 생산량을 확보하는 다단 NFT 생산 패턴입니다.',spec:['4단 재배랙·90cm 작업 통로','NFT 순환식·1.5톤 양액 탱크','냉난방·제습 2대와 CO₂ 연동'],note:'초기 창업과 납품형 엽채 생산에 적합합니다.'},
-      {space:'biz_center',purpose:'nursery',crop:'herb',icon:'fa-seedling',title:'도심 허브 육묘·순화 B형',desc:'허브 플러그묘를 균일하게 키우고 출하 전 순화까지 처리하는 소형 육묘 패턴입니다.',spec:['저단 고밀도 육묘랙 4열','미스트 관수·배수 회수','발아존과 순화존 온습도 분리'],note:'카페·로컬 매장 납품용 허브 모종에 알맞습니다.'},
-      {space:'biz_center',purpose:'mixed',crop:'strawberry',icon:'fa-building',title:'도심 딸기 생산·체험 복합 C형',desc:'생산 구역과 소규모 방문 체험 동선을 분리한 도심형 딸기 패턴입니다.',spec:['고설베드 2열·체험 통로 분리','점적관수·배액 EC 모니터링','보광 LED·수분용 송풍 제어'],note:'예약 체험과 프리미엄 소매를 함께 운영할 때 적합합니다.'},
-      {space:'biz_center',purpose:'landscape',crop:'foliage',icon:'fa-leaf',title:'오피스 바이오필릭 쇼룸 D형',desc:'업무 공간의 휴식과 브랜드 전시를 결합한 관엽 조경형 패턴입니다.',spec:['모듈형 플랜트월·이동식 화분존','저조도 관엽용 보광 조명','누수 감지·자동 점적관수'],note:'로비·공용 라운지의 인테리어 개선에 적합합니다.'},
-      {space:'retail',purpose:'landscape',crop:'foliage',icon:'fa-store',title:'상가 쇼룸형 관엽 스마트가든 A형',desc:'고객 시야와 체류 경험을 중심으로 구성한 전시·조경 패턴입니다.',spec:['쇼윈도 플랜트월·아일랜드 2조','간접조명과 관엽 보광등 분리','안전 커버·미끄럼 방지 바닥'],note:'카페·매장·브랜드 쇼룸에 잘 맞습니다.'},
-      {space:'retail',purpose:'production',crop:'herb',icon:'fa-mug-hot',title:'매장 연계 신선 허브 생산 B형',desc:'주방과 판매 공간에서 바로 사용할 허브를 소량 다품종으로 생산합니다.',spec:['벽면 3단 랙·이동식 재배대','소형 DWC·독립 양액통','저소음 팬·영업시간 조명 제어'],note:'카페와 레스토랑의 팜투테이블 운영에 적합합니다.'},
-      {space:'retail',purpose:'mixed',crop:'leafy',icon:'fa-basket-shopping',title:'판매·체험형 엽채 마이크로팜 C형',desc:'재배 모습을 보여주면서 수확 상품을 판매할 수 있는 전면 개방형 패턴입니다.',spec:['전시랙과 생산랙 구역 분리','NFT 3단·세척 작업대 연계','고객 동선용 투명 안전 가드'],note:'체험 수확과 소포장 판매를 결합하기 좋습니다.'},
-      {space:'retail',purpose:'nursery',crop:'strawberry',icon:'fa-seedling',title:'딸기 모종 전시·육묘 D형',desc:'건전묘 육성과 품종 전시를 함께 운영하는 소규모 육묘 패턴입니다.',spec:['육묘벤치·모주존 구분','저면관수·병해 확산 방지 구획','순화 조도 단계 자동 조절'],note:'교육 매장과 도시농업 체험장에 적합합니다.'},
-      {space:'panel',purpose:'production',crop:'leafy',icon:'fa-warehouse',title:'창고형 대량 엽채 생산 A형',desc:'단열 창고의 층고를 활용해 생산성과 작업 효율을 높인 표준 생산 패턴입니다.',spec:['5단 랙·중앙 물류 통로','대용량 NFT·양액 이중화','덕트 공조·구역별 순환팬'],note:'정기 납품과 중규모 생산 확장에 유리합니다.'},
-      {space:'panel',purpose:'nursery',crop:'strawberry',icon:'fa-warehouse',title:'창고형 딸기 전문 육묘 B형',desc:'모주 관리부터 자묘 발근·순화까지 구역별로 관리하는 전문 육묘 패턴입니다.',spec:['모주·발근·순화 3개 존','포그 관수·살균수 라인','구역별 차압·위생 동선'],note:'균일한 딸기 묘 생산과 병해 관리에 적합합니다.'},
-      {space:'panel',purpose:'mixed',crop:'herb',icon:'fa-industry',title:'허브 육묘·생산 복합 C형',desc:'육묘와 본 재배를 연속 동선으로 연결한 다품종 허브 생산 패턴입니다.',spec:['육묘 2단+생산 4단 랙','작물별 양액 채널 분리','수확·포장실 냉방 독립'],note:'여러 허브 품종을 주 단위로 출하하기 좋습니다.'},
-      {space:'panel',purpose:'landscape',crop:'foliage',icon:'fa-tree-city',title:'대형 실내정원·행사 D형',desc:'창고의 넓은 면적을 활용한 체험형 실내정원과 이벤트 공간 패턴입니다.',spec:['대형 플랜터·가변형 행사 동선','천장 보광·관람 조명 분리','관수 회수와 바닥 배수 강화'],note:'팝업 전시와 복합문화공간 운영에 적합합니다.'},
-      {space:'etc',purpose:'production',crop:'strawberry',icon:'fa-apple-whole',title:'유휴공간 딸기 고설재배 A형',desc:'지하·공장 유휴실 등 다양한 실내에 적용 가능한 모듈형 딸기 생산 패턴입니다.',spec:['독립형 고설베드 모듈','점적관수·배액 재활용','제습 우선 공조·보광 제어'],note:'기존 공간의 단계적 전환에 유리합니다.'},
-      {space:'etc',purpose:'nursery',crop:'leafy',icon:'fa-seedling',title:'모듈형 엽채 육묘 B형',desc:'공간 형태에 맞춰 육묘 선반 수를 조절할 수 있는 범용 패턴입니다.',spec:['이동식 육묘랙·트레이 규격화','저면관수·발아 돔','일령별 조명 스케줄'],note:'본 재배 시설에 공급할 균일묘 생산에 적합합니다.'},
-      {space:'etc',purpose:'landscape',crop:'herb',icon:'fa-spa',title:'향기정원 체험 C형',desc:'향과 촉감을 활용한 허브 체험 프로그램 중심의 실내정원 패턴입니다.',spec:['높이별 체험 베드·무장애 동선','저압 점적·수동 체험 관수','환기·향기 확산 구역 조절'],note:'교육·치유·커뮤니티 프로그램에 잘 맞습니다.'},
-      {space:'etc',purpose:'mixed',crop:'foliage',icon:'fa-layer-group',title:'관엽 재배·판매 복합 D형',desc:'관엽 식물의 순화, 전시, 판매를 하나의 흐름으로 연결한 범용 패턴입니다.',spec:['입고 순화존·전시존 분리','품종별 점적 주기 그룹 제어','이동식 진열대·포장 작업대'],note:'식물 편집숍과 소규모 유통 거점에 적합합니다.'}
-    ];
+    var cards=document.querySelectorAll('.recipe-card');
 
     function getCheckedValue(name){
       var el=document.querySelector('input[name="'+name+'"]:checked');
       return el ? el.value : null;
     }
 
-    function scoreRecipe(recipe,space,purpose,crop){
-      var score=0, matches=[];
-      if(recipe.space===space){score+=35;matches.push('공간');}
-      if(recipe.purpose===purpose){score+=35;matches.push('용도');}
-      if(recipe.crop===crop){score+=30;matches.push('작물');}
-      return {score:score,matches:matches};
-    }
+function applyRecipeFilter(){
+  var visibleCount = 0;
 
-    function renderRecipe(recipe,result,index){
-      var exact=result.score===100;
-      var badge=exact ? '조건 완전 일치 · 100%' : result.matches.length+'개 조건 일치 · '+result.score+'%';
-      return '<article class="recipe-card'+(index===0?' is-best':'')+'">'+
-        '<span class="match-badge'+(index===0?' is-best':'')+'"><i class="fa-solid fa-chart-simple"></i> '+badge+'</span>'+
-        '<div class="recipe-icon"><i class="fa-solid '+recipe.icon+'"></i></div>'+
-        '<div class="recipe-body"><h4>'+recipe.title+'</h4><p>'+recipe.desc+'</p>'+
-        '<ul class="recipe-meta">'+recipe.spec.map(function(item){return '<li><i class="fa-solid fa-check"></i>'+item+'</li>';}).join('')+'</ul>'+
-        '<div class="recipe-tags"><span class="badge badge-green">'+labels.purpose[recipe.purpose]+'</span><span class="badge badge-gray">'+labels.crop[recipe.crop]+'</span><span class="badge badge-gray">'+labels.space[recipe.space]+'</span></div>'+
-        '<div class="recipe-footer">'+recipe.note+'</div></div></article>';
-    }
+  var space=getCheckedValue('f_space');
+  var purpose=getCheckedValue('f_purpose');
+  var crop=getCheckedValue('f_crop');
 
-    function applyRecipeFilter(){
-      var space=getCheckedValue('f_space');
-      var purpose=getCheckedValue('f_purpose');
-      var crop=getCheckedValue('f_crop');
-      var ranked=recipes.map(function(recipe,order){
-        return {recipe:recipe,result:scoreRecipe(recipe,space,purpose,crop),order:order};
-      }).sort(function(a,b){return b.result.score-a.result.score || a.order-b.order;});
+  cards.forEach(function(card){
+    var okSpace=!space || card.dataset.space===space;
+    var okPurpose=!purpose || card.dataset.purpose===purpose;
+    var okCrop=!crop || card.dataset.crop===crop;
 
-      var best=ranked[0].result.score;
-      var exactCount=ranked.filter(function(item){return item.result.score===100;}).length;
-      var summary='<div class="recipe-result-summary"><strong><i class="fa-solid fa-wand-magic-sparkles"></i> '+labels.space[space]+' · '+labels.purpose[purpose]+' · '+labels.crop[crop]+'</strong><span>'+(exactCount ? '조건에 완전히 일치하는 패턴을 우선 표시했습니다.' : '완전 일치 패턴이 없어 가장 가까운 설비 구성부터 추천합니다. 최고 적합도 '+best+'%')+'</span></div>';
-      recipeList.innerHTML=summary+ranked.slice(0,5).map(function(item,index){return renderRecipe(item.recipe,item.result,index);}).join('');
+    if(okSpace && okPurpose && okCrop){
+      card.style.display='';
+      visibleCount++;   // 🔥 이 줄 꼭 필요
+    }else{
+      card.style.display='none';
     }
+  });
+
+  if(visibleCount === 0){
+    cards.forEach(function(card){
+      card.style.display='';
+    });
+  }
+}
 
 
 
