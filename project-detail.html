@@ -7,7 +7,6 @@
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="project-detail.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <title>이피랑 - 프로젝트 상세</title>
 </head>
 
@@ -26,7 +25,7 @@
       <section class="pd-section">
         <div class="pd-summary-card">
           <div class="pd-summary-chip">
-            <i class="fa-solid fa-leaf"></i>
+            <i data-lucide="leaf"></i>
             <span>프로젝트 상세</span>
           </div>
           <h1 class="pd-summary-title" id="pdProjectTitle">프로젝트 제목</h1>
@@ -65,15 +64,14 @@
         <div class="pd-card">
           <div class="pd-card-header">
             <h2 class="pd-card-title">
-              <i class="fa-solid fa-clipboard-list"></i>
+              <i data-lucide="clipboard-list"></i>
               <span>프로젝트 상세정보</span>
             </h2>
           </div>
-          <p class="pd-card-sub">필요한 정보만 탭으로 나누어 확인할 수 있어요.</p>
 
           <!-- 탭 -->
           <div class="pd-tabs">
-            <button type="button" class="pd-tab active" data-tab="needs"><i class="fa-solid fa-sliders"></i><span>조건</span></button>
+            <button type="button" class="pd-tab active" data-tab="needs"><i data-lucide="sliders-horizontal"></i><span>조건</span></button>
             <button type="button" class="pd-tab" data-tab="design">설계안</button>
             <button type="button" class="pd-tab" data-tab="progress">진행</button>
             <button type="button" class="pd-tab" data-tab="memo">메모</button>
@@ -85,7 +83,7 @@
               <div class="pd-info-grid">
                 <div class="pd-info-item">
                   <div class="pd-info-label">
-                    <i class="fa-solid fa-user"></i>
+                    <i data-lucide="user-round"></i>
                     <span>사용자 유형 · 정책자금</span>
                   </div>
                   <div class="pd-info-text">
@@ -100,7 +98,7 @@
 
                 <div class="pd-info-item">
                   <div class="pd-info-label">
-                    <i class="fa-solid fa-map-location-dot"></i>
+                    <i data-lucide="map-pinned"></i>
                     <span>지역 · 공간 유형</span>
                   </div>
                   <div class="pd-info-text">
@@ -117,7 +115,7 @@
               <div class="pd-info-grid">
                 <div class="pd-info-item">
                   <div class="pd-info-label">
-                    <i class="fa-solid fa-plug-circle-bolt"></i>
+                    <i data-lucide="plug-zap"></i>
                     <span>전기 · 급배수 · 환기</span>
                   </div>
                   <div class="pd-info-text">
@@ -131,7 +129,7 @@
 
                 <div class="pd-info-item">
                   <div class="pd-info-label">
-                    <i class="fa-solid fa-route"></i>
+                    <i data-lucide="route"></i>
                     <span>동선 · 기둥 · 출입</span>
                   </div>
                   <div class="pd-info-text">
@@ -146,7 +144,7 @@
               <div class="pd-info-grid">
                 <div class="pd-info-item">
                   <div class="pd-info-label">
-                    <i class="fa-solid fa-users-line"></i>
+                    <i data-lucide="users"></i>
                     <span>근무 시간 · 인력 구성</span>
                   </div>
                   <div class="pd-info-text">
@@ -160,7 +158,7 @@
 
                 <div class="pd-info-item">
                   <div class="pd-info-label">
-                    <i class="fa-solid fa-scale-balanced"></i>
+                    <i data-lucide="scale"></i>
                     <span>리스크 선호 · 유통 방향</span>
                   </div>
                   <div class="pd-info-text">
@@ -176,60 +174,59 @@
             <!-- 탭 2: 설계안 -->
             <div class="pd-tab-panel" id="pdTabDesign">
               <section class="pd-design-hero">
-                <div class="pd-design-kicker"><i class="fa-solid fa-seedling"></i> 선택한 추천 설계안</div>
+                <div class="pd-design-kicker"><i data-lucide="sprout"></i> 선택한 추천 설계안</div>
                 <h3 id="pdCropCombo">설계안 정보를 불러오고 있습니다.</h3>
                 <p id="pdMainCrops">-</p>
                 <div class="pd-design-tags">
                   <span class="pd-design-tag" id="pdFacilityCombo">-</span>
-                  <span class="pd-design-tag" id="pdChipAutomation"><i class="fa-solid fa-microchip"></i><span>자동화 수준</span></span>
-                  <span class="pd-design-tag" id="pdChipStrategy"><i class="fa-solid fa-arrows-rotate"></i><span>운영 전략</span></span>
+                  <span class="pd-design-tag" id="pdChipAutomation"><i data-lucide="cpu"></i><span>자동화 수준</span></span>
+                  <span class="pd-design-tag" id="pdChipStrategy"><i data-lucide="refresh-cw"></i><span>운영 전략</span></span>
                 </div>
               </section>
 
               <section class="pd-design-block">
-                <div class="pd-design-heading"><i class="fa-solid fa-object-group"></i><div><strong>공간 배치</strong></div></div>
+                <div class="pd-design-heading"><i data-lucide="panels-top-left"></i><div><strong>공간 배치</strong></div></div>
                 <div class="pd-layout-flow">
-                  <div class="pd-layout-zone"><i class="fa-solid fa-box-open"></i><span>출입·포장</span></div>
-                  <i class="fa-solid fa-chevron-right"></i>
-                  <div class="pd-layout-zone primary"><i class="fa-solid fa-seedling"></i><span>재배 구역</span></div>
-                  <i class="fa-solid fa-chevron-right"></i>
-                  <div class="pd-layout-zone"><i class="fa-solid fa-flask"></i><span>양액·기계실</span></div>
+                  <div class="pd-layout-zone"><i data-lucide="package-open"></i><span>출입·포장</span></div>
+                  <i data-lucide="chevron-right"></i>
+                  <div class="pd-layout-zone primary"><i data-lucide="sprout"></i><span>재배 구역</span></div>
+                  <i data-lucide="chevron-right"></i>
+                  <div class="pd-layout-zone"><i data-lucide="flask-conical"></i><span>양액·기계실</span></div>
                 </div>
                 <p class="pd-layout-caption" id="pdDiagramText">출입구 기준 좌측은 작업·포장, 중앙은 재배랙, 우측은 양액·기계실로 구성합니다.</p>
               </section>
 
               <section class="pd-design-block">
-                <div class="pd-design-heading"><i class="fa-solid fa-gears"></i><div><strong>핵심 설비</strong><small>항목을 누르면 상세 기준을 볼 수 있어요.</small></div></div>
+                <div class="pd-design-heading"><i data-lucide="settings"></i><div><strong>핵심 설비</strong></div></div>
                 <div class="pd-equipment-list">
                   <details class="pd-equipment-item">
-                    <summary><span class="pd-equipment-icon"><i class="fa-solid fa-lightbulb"></i></span><span><strong>재배 LED</strong><small>작물별 조도·점등 설정</small></span><i class="fa-solid fa-chevron-down"></i></summary>
+                    <summary><span class="pd-equipment-icon"><i data-lucide="lightbulb"></i></span><span><strong>재배 LED</strong><small>작물별 조도·점등 설정</small></span><i data-lucide="chevron-down"></i></summary>
                     <p id="pdLed">-</p>
                   </details>
                   <details class="pd-equipment-item">
-                    <summary><span class="pd-equipment-icon"><i class="fa-solid fa-droplet"></i></span><span><strong>양액 시스템</strong><small>순환식 양액·탱크 산정</small></span><i class="fa-solid fa-chevron-down"></i></summary>
+                    <summary><span class="pd-equipment-icon"><i data-lucide="droplet"></i></span><span><strong>양액 시스템</strong><small>순환식 양액·탱크 산정</small></span><i data-lucide="chevron-down"></i></summary>
                     <p id="pdNutrient">-</p>
                   </details>
                   <details class="pd-equipment-item">
-                    <summary><span class="pd-equipment-icon"><i class="fa-solid fa-wind"></i></span><span><strong>공조 환경</strong><small>냉난방·제습·CO₂ 제어</small></span><i class="fa-solid fa-chevron-down"></i></summary>
+                    <summary><span class="pd-equipment-icon"><i data-lucide="wind"></i></span><span><strong>공조 환경</strong><small>냉난방·제습·CO₂ 제어</small></span><i data-lucide="chevron-down"></i></summary>
                     <p id="pdHvac">-</p>
                   </details>
                   <details class="pd-equipment-item">
-                    <summary><span class="pd-equipment-icon"><i class="fa-solid fa-microchip"></i></span><span><strong>통합 관제</strong><small>환경 모니터링·원격 알림</small></span><i class="fa-solid fa-chevron-down"></i></summary>
+                    <summary><span class="pd-equipment-icon"><i data-lucide="cpu"></i></span><span><strong>통합 관제</strong><small>환경 모니터링·원격 알림</small></span><i data-lucide="chevron-down"></i></summary>
                     <p id="pdControl">-</p>
                   </details>
                 </div>
               </section>
 
               <section class="pd-design-block">
-                <div class="pd-design-heading"><i class="fa-solid fa-sliders"></i><div><strong>변경 가능한 옵션</strong><small>예산과 현장 조건에 따라 조정할 수 있어요.</small></div></div>
+                <div class="pd-design-heading"><i data-lucide="sliders-horizontal"></i><div><strong>변경 가능한 옵션</strong><small>예산과 현장 조건에 따라 조정할 수 있어요.</small></div></div>
                 <div class="pd-option-list">
                   <div class="pd-option-row"><span>자동화 수준</span><strong id="pdAutomation">-</strong></div>
                   <div class="pd-option-row"><span>확장 설계</span><strong id="pdExpansion">-</strong></div>
                   <div class="pd-option-row"><span>변경 기록</span><strong id="pdChangeLog">-</strong></div>
                 </div>
                 <div class="pd-design-notes">
-                  <span><i class="fa-solid fa-pen"></i> 현장 협의 후 수정 가능</span>
-                  <!--<span><i class="fa-solid fa-file-contract"></i> (주)그린 상세 설계 연동</span>-->
+                  <span><i data-lucide="pencil"></i> 현장 협의 후 수정 가능</span>
                 </div>
               </section>
             </div><!-- /pdTabDesign -->
@@ -244,7 +241,7 @@
         <div class="pd-card">
           <div class="pd-card-header">
             <h2 class="pd-card-title">
-              <i class="fa-solid fa-timeline"></i>
+              <i data-lucide="history"></i>
               <span>견적 · 계약 · 시공 이력</span>
             </h2>
           </div>
@@ -254,7 +251,7 @@
             <!-- 견적 -->
             <div class="pd-timeline-group">
               <div class="pd-timeline-heading">
-                <i class="fa-solid fa-file-invoice-dollar"></i>
+                <i data-lucide="receipt-text"></i>
                 <span>견적</span>
               </div>
               <div class="pd-timeline-list">
@@ -267,13 +264,13 @@
                   </div>
                 </div>
                 <div class="pd-timeline-item">
-                  <span class="pd-timeline-label">(주)그린 1차 견적</span>
-                  <div id="pdQuoteSummary">예상 총 투자 및 옵션은 (주)그린 견적서 기준으로 입력합니다.</div>
+                  <span class="pd-timeline-label"><!--(주)그린 -->1차 견적</span>
+                  <!--<div id="pdQuoteSummary">예상 총 투자 및 옵션은 (주)그린 견적서 기준으로 입력합니다.</div>-->
                   <div class="pd-timeline-meta">
                     <span>유효기간: 직접 입력</span>
                   </div>
                   <button type="button" class="pd-link-btn">
-                    <i class="fa-solid fa-link"></i>
+                    <i data-lucide="link"></i>
                     <span>견적서 파일 / 링크</span>
                   </button>
                 </div>
@@ -283,7 +280,7 @@
             <!-- 계약 -->
             <div class="pd-timeline-group">
               <div class="pd-timeline-heading">
-                <i class="fa-solid fa-file-signature"></i>
+                <i data-lucide="file-signature"></i>
                 <span>계약</span>
               </div>
               <div class="pd-timeline-list">
@@ -298,7 +295,7 @@
                   <span class="pd-timeline-label">결제 마일스톤</span>
                   <div>계약금 / 중도금 / 잔금 비율과 지급 시점을 정리해 둡니다.</div>
                   <button type="button" class="pd-link-btn">
-                    <i class="fa-solid fa-file-lines"></i>
+                    <i data-lucide="file-text"></i>
                     <span>계약서 요약 / 파일</span>
                   </button>
                 </div>
@@ -308,7 +305,7 @@
             <!-- 시공 -->
             <div class="pd-timeline-group">
               <div class="pd-timeline-heading">
-                <i class="fa-solid fa-screwdriver-wrench"></i>
+                <i data-lucide="wrench"></i>
                 <span>시공</span>
               </div>
               <div class="pd-timeline-list">
@@ -343,7 +340,7 @@
             <!-- 향후 확장 -->
             <div class="pd-timeline-group">
               <div class="pd-timeline-heading">
-                <i class="fa-solid fa-chart-line"></i>
+                <i data-lucide="chart-line"></i>
                 <span>향후 확장</span>
               </div>
               <div class="pd-timeline-list">
@@ -362,7 +359,7 @@
           <div class="pd-memo">
             <div class="pd-memo-header">
               <h3 class="pd-memo-title">
-                <i class="fa-solid fa-pen-to-square"></i>
+                <i data-lucide="square-pen"></i>
                 <span>향후 확장 · 운영 메모</span>
               </h3>
             </div>

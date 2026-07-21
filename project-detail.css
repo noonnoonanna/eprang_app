@@ -51,7 +51,7 @@
       margin: 0 0 3px; font-size: 18px; font-weight: 800; color: #1e293b; 
       display: flex; align-items: center; gap: 8px; 
     }
-    body[data-page="project-detail"] .pd-card-title i { color: #16a34a; }
+    body[data-page="project-detail"] .pd-card-title .lucide { width:18px; height:18px; color:#16a34a; }
     body[data-page="project-detail"] .pd-card-sub { 
       margin: 0; font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom:20px;
     }
@@ -244,6 +244,7 @@ body[data-page="project-detail"] .pd-summary-chip{
   color:#15803d;
   font-size:15px;
 }
+body[data-page="project-detail"] .pd-summary-chip .lucide{width:16px;height:16px;stroke-width:2;}
 body[data-page="project-detail"] .pd-summary-title{
   position:relative;
   z-index:1;
@@ -272,10 +273,26 @@ body[data-page="project-detail"] .pd-summary-pill{
   background:rgba(255,255,255,.85);
   border:1px solid #e3ece6;
   align-items:flex-start;
+  justify-content:flex-start;
   text-align:left;
 }
-body[data-page="project-detail"] .pd-summary-pill-label{font-size:11px;color:#94a3b8;}
-body[data-page="project-detail"] .pd-summary-pill-value{width:100%;font-size:11px;color:#334155;overflow:hidden;text-overflow:ellipsis;}
+body[data-page="project-detail"] .pd-summary-pill-label{
+  display:block;
+  width:100%;
+  margin:0 0 7px;
+  font-size:11px;
+  line-height:1.35;
+  color:#94a3b8;
+}
+body[data-page="project-detail"] .pd-summary-pill-value{
+  display:block;
+  width:100%;
+  font-size:11px;
+  line-height:1.4;
+  color:#334155;
+  overflow:visible;
+  text-overflow:clip;
+}
 
 /* 진행 단계 */
 body[data-page="project-detail"] .pd-progress-wrap{
@@ -341,7 +358,8 @@ body[data-page="project-detail"] .pd-tabs{
   background:#f1f5f9;
   position:sticky;
   top:0;
-  z-index:5;
+  z-index:20;
+  box-shadow:0 0 0 14px #fff,0 8px 14px rgba(15,23,42,.08);
 }
 body[data-page="project-detail"] .pd-tab{
   min-width:0;
@@ -349,7 +367,7 @@ body[data-page="project-detail"] .pd-tab{
   font-size:14px;
   white-space:nowrap;
 }
-body[data-page="project-detail"] .pd-tab i{margin-right:8px;}
+body[data-page="project-detail"] .pd-tab .lucide{width:15px;height:15px;margin-right:8px;stroke-width:2;}
 body[data-page="project-detail"] .pd-tab.active{color:#15803d;box-shadow:0 2px 7px rgba(15,23,42,.08);}
 
 /* 조건·설계 정보는 2열 비교 카드 */
@@ -375,8 +393,21 @@ body[data-page="project-detail"] .pd-info-label{
   letter-spacing:0;
   text-transform:none;
   color:#82938a;
+  min-height:38px;
+  align-items:flex-start;
 }
-body[data-page="project-detail"] .pd-info-label i{color:#16a34a;}
+body[data-page="project-detail"] .pd-info-label .lucide{
+  flex:0 0 16px;
+  width:16px;
+  margin-top:2px;
+  text-align:center;
+  color:#16a34a;
+}
+body[data-page="project-detail"] .pd-info-label span{
+  display:block;
+  min-width:0;
+  word-break:keep-all;
+}
 body[data-page="project-detail"] .pd-info-text{font-size:12px;line-height:1.5;}
 body[data-page="project-detail"] .pd-info-value-strong{font-size:15px;}
 body[data-page="project-detail"] .pd-info-list li{padding-left:8px;font-size:12px;line-height:1.5;word-break:keep-all;}
@@ -389,16 +420,16 @@ body[data-page="project-detail"] .pd-diagram-cell{font-size:9px;padding:7px 2px;
 body[data-page="project-detail"] #pdTabProgress .pd-timeline{margin-top:4px;padding-left:18px;}
 body[data-page="project-detail"] #pdTabProgress .pd-timeline::before{left:5px;}
 body[data-page="project-detail"] #pdTabProgress .pd-timeline-group{margin-bottom:20px;}
-body[data-page="project-detail"] #pdTabProgress .pd-timeline-heading{left:-24px;margin-bottom:9px;font-size:13px;}
+body[data-page="project-detail"] #pdTabProgress .pd-timeline-heading{left:-17px;margin-bottom:9px;font-size:15px;}
 body[data-page="project-detail"] #pdTabProgress .pd-timeline-item{margin-bottom:8px;padding:11px 12px;background:#f8faf9;}
-body[data-page="project-detail"] #pdTabProgress .pd-timeline-item::after{left:-17px;top:17px;}
-body[data-page="project-detail"] #pdTabProgress .pd-timeline-label{font-size:12px;}
-body[data-page="project-detail"] #pdTabProgress .pd-timeline-item>div:not(.pd-timeline-meta){font-size:11px;line-height:1.5;color:#64748b;}
+body[data-page="project-detail"] #pdTabProgress .pd-timeline-item::after{left:-19px;top:17px;}
+body[data-page="project-detail"] #pdTabProgress .pd-timeline-label{font-size:14px;}
+body[data-page="project-detail"] #pdTabProgress .pd-timeline-item>div:not(.pd-timeline-meta){font-size:13px;line-height:1.5;color:#64748b;}
 
 /* 메모 탭 */
 body[data-page="project-detail"] #pdTabMemo .pd-memo{margin:0;padding:4px 0 0;border:0;}
 body[data-page="project-detail"] .pd-memo-title{margin:0 0 6px;font-size:15px;}
-body[data-page="project-detail"] .pd-memo-hint{margin:0 0 12px;font-size:11px;color:#64748b;line-height:1.55;}
+body[data-page="project-detail"] .pd-memo-hint{margin:0 0 12px;font-size:12px;color:#64748b;line-height:1.55;}
 body[data-page="project-detail"] .pd-memo-textarea{
   min-height:220px;
   padding:14px;
@@ -432,6 +463,7 @@ body[data-page="project-detail"] .pd-design-kicker{
   font-size:14px;
   font-weight:800;
 }
+body[data-page="project-detail"] .pd-design-kicker .lucide{width:16px;height:16px;stroke-width:2;}
 body[data-page="project-detail"] .pd-design-hero h3{
   margin:0 0 5px;
   color:#17211b;
@@ -441,7 +473,7 @@ body[data-page="project-detail"] .pd-design-hero h3{
 body[data-page="project-detail"] .pd-design-hero>p{
   margin:0 0 11px;
   color:#64748b;
-  font-size:11px;
+  font-size:13px;
 }
 body[data-page="project-detail"] .pd-design-tags{display:flex;flex-wrap:wrap;gap:5px;}
 body[data-page="project-detail"] .pd-design-tag{
@@ -456,6 +488,7 @@ body[data-page="project-detail"] .pd-design-tag{
   font-size:12px;
   font-weight:700;
 }
+body[data-page="project-detail"] .pd-design-tag .lucide{width:13px;height:13px;stroke-width:2;}
 body[data-page="project-detail"] .pd-design-block{
   padding:15px;
   margin-top:10px;
@@ -469,7 +502,7 @@ body[data-page="project-detail"] .pd-design-heading{
   gap:9px;
   margin-bottom:13px;
 }
-body[data-page="project-detail"] .pd-design-heading>i{
+body[data-page="project-detail"] .pd-design-heading>.lucide{
   width:29px;
   height:29px;
   display:grid;
@@ -478,14 +511,15 @@ body[data-page="project-detail"] .pd-design-heading>i{
   border-radius:9px;
   background:#ecfdf5;
   color:#16a34a;
-  font-size:12px;
+  padding:6px;
+  stroke-width:2;
 }
 body[data-page="project-detail"] .pd-design-heading strong{display:block;color:#26352c;font-size:14px;}
 body[data-page="project-detail"] .pd-design-heading small{display:block;margin-top:2px;color:#94a3b8;font-size:9px;line-height:1.4;}
 
 /* 공간 흐름 */
 body[data-page="project-detail"] .pd-layout-flow{display:flex;align-items:center;gap:5px;}
-body[data-page="project-detail"] .pd-layout-flow>i{flex:0 0 auto;color:#b6c6bc;font-size:8px;}
+body[data-page="project-detail"] .pd-layout-flow>.lucide{width:11px;height:11px;flex:0 0 auto;color:#b6c6bc;}
 body[data-page="project-detail"] .pd-layout-zone{
   flex:1;
   min-width:0;
@@ -502,9 +536,9 @@ body[data-page="project-detail"] .pd-layout-zone{
   font-size:13px;
   font-weight:750;
 }
-body[data-page="project-detail"] .pd-layout-zone i{font-size:18px;color:#7aa0ca;}
+body[data-page="project-detail"] .pd-layout-zone .lucide{width:18px;height:18px;color:#7aa0ca;}
 body[data-page="project-detail"] .pd-layout-zone.primary{border-color:#86efac;background:#f0fdf4;color:#166534;}
-body[data-page="project-detail"] .pd-layout-zone.primary i{color:#16a34a;}
+body[data-page="project-detail"] .pd-layout-zone.primary .lucide{color:#16a34a;}
 body[data-page="project-detail"] .pd-layout-caption{margin:9px 0 0;color:#64748b;font-size:9px;line-height:1.5;text-align:center;}
 
 /* 핵심 설비 아코디언 */
@@ -535,15 +569,16 @@ body[data-page="project-detail"] .pd-equipment-icon{
   color:#16a34a;
   box-shadow:0 1px 3px rgba(15,23,42,.06);
 }
+body[data-page="project-detail"] .pd-equipment-icon .lucide{width:16px;height:16px;stroke-width:2;}
 body[data-page="project-detail"] .pd-equipment-item summary strong{display:block;color:#334155;font-size:13px;}
 body[data-page="project-detail"] .pd-equipment-item summary small{display:block;margin-top:2px;color:#94a3b8;font-size:13px;}
-body[data-page="project-detail"] .pd-equipment-item summary>i{color:#94a3b8;font-size:9px;transition:.2s;}
-body[data-page="project-detail"] .pd-equipment-item[open] summary>i{transform:rotate(180deg);}
+body[data-page="project-detail"] .pd-equipment-item summary>.lucide{width:13px;height:13px;color:#94a3b8;transition:.2s;}
+body[data-page="project-detail"] .pd-equipment-item[open] summary>.lucide{transform:rotate(180deg);}
 body[data-page="project-detail"] .pd-equipment-item p{
   margin:0;
   padding:0 12px 12px 49px;
   color:#64748b;
-  font-size:10px;
+  font-size:12px;
   line-height:1.55;
 }
 
@@ -570,3 +605,9 @@ body[data-page="project-detail"] .pd-design-notes span{
   font-size:11px;
   font-weight:700;
 }
+body[data-page="project-detail"] .pd-design-notes .lucide{width:12px;height:12px;stroke-width:2;}
+
+/* 이력·메모 영역 Lucide 아이콘 */
+body[data-page="project-detail"] .pd-timeline-heading>.lucide{width:18px;height:18px;flex:0 0 18px;color:#16a34a;stroke-width:1.9;}
+body[data-page="project-detail"] .pd-link-btn .lucide{width:13px;height:13px;stroke-width:2;}
+body[data-page="project-detail"] .pd-memo-title .lucide{width:16px;height:16px;color:#16a34a;stroke-width:1.9;}
