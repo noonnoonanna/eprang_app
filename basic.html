@@ -13,6 +13,16 @@ body[data-page="intro"] .btn-auth{padding:0 14px;height:40px;border-radius:999px
 body[data-page="intro"] .btn-auth:hover{background:#d4f5e8;border-color:#0f9b62;}
 body[data-page="intro"] .btn-auth:active{background:#bdebd9;border-color:#0a7b4c;transform:translateY(1px);}
 body[data-page="intro"] .btn-auth:disabled{background:#f3f3f3;border-color:#d0d0d0;color:#a0a0a0;cursor:default;}
+body[data-page="intro"] .bottom-bar .btn-prev{
+	background:#f3f4f6;
+	color:#6b7280;
+	flex:0 0 30%;
+}
+body[data-page="intro"] .bottom-bar .btn-next{
+	background:#16a34a;
+	color:#fff;
+	box-shadow:0 4px 14px rgba(22,163,74,.3);
+}
 </style>
 <body data-page="intro">
 	<div class="app">
@@ -106,8 +116,8 @@ body[data-page="intro"] .btn-auth:disabled{background:#f3f3f3;border-color:#d0d0
     </div>
 
 	<div class="bottom-bar">
-        <button class="btn ghost" onclick="window.location.assign('intro.html')">이전</button>
-        <button class="btn acc" onclick="saveBasic()">완료</button>
+        <button type="button" class="btn btn-prev" onclick="window.location.assign('intro.html')">이전</button>
+        <button type="button" class="btn btn-next" onclick="saveBasic()">완료</button>
     </div>
 
   </div>
