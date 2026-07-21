@@ -220,7 +220,7 @@ body[data-page="dashboard"] .notice-tag {
   background:var(--badge-bg) !important; color:var(--badge-text) !important;
   border:0 !important;
   box-shadow:0 3px 0 rgba(15,23,42,.18),0 5px 8px rgba(15,23,42,.14);
-  font-size:11px; line-height:1; font-weight:750; letter-spacing:-.015em;
+  font-size:13px; line-height:1; font-weight:750; letter-spacing:-.015em;
   white-space:nowrap; backdrop-filter:none; text-shadow:0 1px 0 rgba(0,0,0,.08);
   transition:transform .16s ease,box-shadow .16s ease;
 }
@@ -273,7 +273,7 @@ body[data-page="dashboard"] main.home-main{display:block;padding:18px 16px 104px
 .home-section{margin:0 0 28px}
 .home-section-head{display:flex;align-items:center;justify-content:space-between;margin:0 2px 12px}
 .home-section-title{margin:0;color:#1f2937;font-size:17px;font-weight:850;letter-spacing:-.025em}
-.home-more{border:0;background:none;padding:4px;color:#64748b;font-size:12px;font-weight:700}
+.home-more{border:0;background:none;padding:4px;color:#64748b;font-size:14px;font-weight:700}
 .focus-card{position:relative;padding:20px;border:1px solid #dce7df;border-radius:22px;background:#fff;box-shadow:0 10px 28px rgba(27,67,43,.08);overflow:hidden}
 .focus-card::after{content:"";position:absolute;right:-55px;top:-60px;width:140px;height:140px;border-radius:50%;background:#dcfce7;opacity:.7}
 .focus-card-top{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}
@@ -298,23 +298,21 @@ body[data-page="dashboard"] main.home-main{display:block;padding:18px 16px 104px
 .quick-card:active{transform:scale(.98)}
 .quick-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .quick-icon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:16px}
-.quick-arrow{color:#a3aea8;font-size:11px}.quick-title{margin:0 0 5px;color:#1f2937;font-size:14px;font-weight:850;letter-spacing:-.025em}
-.quick-desc{margin:0;color:#7a8980;font-size:11px;line-height:1.45;font-weight:600;word-break:keep-all}
+.quick-arrow{color:#a3aea8;font-size:11px}.quick-title{margin:0 0 5px;color:#1f2937;font-size:17px;font-weight:850;letter-spacing:-.025em}
+.quick-desc{margin:0;color:#7a8980;font-size:13px;line-height:1.45;font-weight:600;word-break:keep-all}
 .quick-card.recipe .quick-icon{background:#dcfce7;color:#15803d}.quick-card.reminder .quick-icon{background:#fff3d6;color:#c56b05}.quick-card.deal .quick-icon{background:#dbeafe;color:#2563eb}.quick-card.brief .quick-icon{background:#ede9fe;color:#7c3aed}
-.quick-mini{align-self:flex-start;margin-top:auto;padding-top:9px;font-size:10px;font-weight:800}.recipe .quick-mini{color:#15803d}.reminder .quick-mini{color:#b45309}.deal .quick-mini{color:#1d4ed8}.brief .quick-mini{color:#6d28d9}
+.quick-mini{align-self:flex-start;margin-top:auto;padding-top:9px;font-size:14px;font-weight:800}.recipe .quick-mini{color:#15803d}.reminder .quick-mini{color:#b45309}.deal .quick-mini{color:#1d4ed8}.brief .quick-mini{color:#6d28d9}
 .compact-notices{overflow:hidden;border:1px solid #e1e8e4;border-radius:19px;background:#fff;box-shadow:0 4px 13px rgba(15,23,42,.04)}
 .compact-notice{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:14px;border-bottom:1px solid #edf1ef}
 .compact-notice:last-child{border-bottom:0}.compact-notice .notice-tag{min-height:25px;padding:5px 8px;font-size:9px;box-shadow:0 2px 0 rgba(15,23,42,.14),0 3px 5px rgba(15,23,42,.1)}
-.compact-notice-text{min-width:0}.compact-notice-title{margin:0 0 3px;color:#27332b;font-size:12px;line-height:1.35;font-weight:750;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.compact-notice-date{color:#94a3b8;font-size:10px;font-weight:600}
+.compact-notice-text{min-width:0}.compact-notice-title{margin:0 0 3px;color:#27332b;font-size:15px;line-height:1.35;font-weight:750;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.compact-notice-date{color:#94a3b8;font-size:12px;font-weight:600}
 .compact-notice>a{color:#a3aea8;padding:6px}
-.home-tip{display:flex;align-items:center;gap:10px;margin-top:12px;padding:12px 14px;border-radius:15px;background:#eaf7ee;color:#21633a;font-size:11px;font-weight:700;line-height:1.45}
-.home-tip i{font-size:16px;color:#16a34a}
 @media(max-width:350px){.quick-grid{grid-template-columns:1fr}.focus-card{padding:17px}.progress-steps{font-size:9px}}
 
 /* Lucide icon + lighter typography refinement */
 body[data-page="dashboard"]{font-weight:400;color:#26332b}
 .home-heading,.home-section-title,.focus-title{font-weight:740}
-.focus-meta,.next-box p,.home-tip{font-weight:500}
+.focus-meta,.next-box p {font-weight:500}
 .progress-label,.compact-notice-title{font-weight:600}
 .progress-label strong,.progress-steps .current,.next-box small,.sticker-button,.quick-title{font-weight:700}
 .progress-steps,.quick-desc{font-weight:450}
@@ -328,7 +326,6 @@ body[data-page="dashboard"] .badge::before,body[data-page="dashboard"] .notice-t
 .badge .lucide,.notice-tag .lucide{width:12px;height:12px;stroke-width:2.2}
 .next-box-icon .lucide{width:15px;height:15px}
 .sticker-button .lucide{width:16px;height:16px}
-.home-tip .lucide{width:18px;height:18px;flex:0 0 18px}
 .tabs .lucide{width:20px;height:20px;stroke-width:1.8}
 
 
@@ -347,11 +344,11 @@ body[data-page="dashboard"] .live-project-list .project-card::after{content:"";p
 body[data-page="dashboard"] .live-project-list .project-main{position:relative;z-index:1;margin:0}
 body[data-page="dashboard"] .live-project-list .project-name{max-width:82%;margin:0 0 10px;color:#17221b;font-size:17px;line-height:1.45;font-weight:740;letter-spacing:-.03em;word-break:keep-all}
 body[data-page="dashboard"] .live-project-list .project-meta{gap:7px 14px;margin:0 0 14px}
-body[data-page="dashboard"] .live-project-list .project-meta span{font-size:11px;font-weight:500;color:#64748b}
+body[data-page="dashboard"] .live-project-list .project-meta span{font-size:13px;font-weight:500;color:#64748b}
 body[data-page="dashboard"] .live-project-list .project-meta .lucide{width:13px;height:13px;color:#16a34a}
-body[data-page="dashboard"] .live-project-list .project-next{padding:11px 12px;border-radius:12px;background:#f3f8f5;border:1px solid #e0ebe4;color:#326044;font-size:11px;font-weight:600}
+body[data-page="dashboard"] .live-project-list .project-next{padding:11px 12px;border-radius:12px;background:#f3f8f5;border:1px solid #e0ebe4;color:#326044;font-size:14px;font-weight:600}
 body[data-page="dashboard"] .live-project-list .project-tags{position:relative;z-index:1;padding-top:13px;margin-top:13px;gap:7px}
-body[data-page="dashboard"] .live-project-list .project-tags .badge{font-size:10px;font-weight:650;min-height:27px}
+body[data-page="dashboard"] .live-project-list .project-tags .badge{font-size:12px;font-weight:650;min-height:27px}
 .live-project-list>p{margin:0!important;padding:28px 0!important;color:#7b8b81!important;font-size:12px!important}
 .project-empty{padding:24px 18px;border:1px dashed #b9ccbf;border-radius:18px;background:#fbfdfb;text-align:center;color:#64748b;font-size:12px;line-height:1.55}
 .project-empty strong{display:block;margin-bottom:6px;color:#27332b;font-size:14px;font-weight:700}
@@ -408,7 +405,6 @@ body[data-page="dashboard"] .live-project-list .project-tags .badge{font-size:10
           <article class="compact-notice"><span class="notice-tag tag-green"><i data-lucide="graduation-cap"></i>교육</span><div class="compact-notice-text"><h3 class="compact-notice-title">청년농업인 교육·지원사업 일정 확인</h3><span class="compact-notice-date">9월 1일 확인</span></div><a href="reminder.html?event=education-young-farmer" aria-label="자세히 보기"><i data-lucide="chevron-right"></i></a></article>
           <article class="compact-notice"><span class="notice-tag tag-blue"><i data-lucide="presentation"></i>세미나</span><div class="compact-notice-text"><h3 class="compact-notice-title">스마트팜 교육·세미나 정보 확인</h3><span class="compact-notice-date">11월 12일 확인</span></div><a href="reminder.html?event=education-smartfarm-seminar" aria-label="자세히 보기"><i data-lucide="chevron-right"></i></a></article>
         </div>
-        <div class="home-tip"><i data-lucide="lightbulb"></i><span>현재 조건에 맞는 정책자금 준비 일정을 리마인더에서 확인할 수 있어요.</span></div>
       </section>
     </main>
 
