@@ -6,6 +6,37 @@ const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const state = { members:[], projects:[], surveys:[], templates:[], admin:null };
 
+const LUCIDE_ICON_MAP = {
+  'fa-chart-pie':'chart-pie','fa-users':'users','fa-diagram-project':'panels-top-left',
+  'fa-clipboard-list':'clipboard-list','fa-wand-magic-sparkles':'sparkles','fa-chart-column':'chart-no-axes-column-increasing',
+  'fa-gear':'settings','fa-arrow-up-right-from-square':'external-link','fa-user-gear':'user-cog',
+  'fa-right-from-bracket':'log-out','fa-bars':'menu','fa-magnifying-glass':'search','fa-rotate-right':'refresh-cw',
+  'fa-user-plus':'user-plus','fa-file-invoice-dollar':'receipt-text','fa-helmet-safety':'hard-hat',
+  'fa-seedling':'sprout','fa-pen':'pencil','fa-eye':'eye','fa-folder-open':'folder-open',
+  'fa-plus':'plus','fa-xmark':'x','fa-key':'key-round','fa-shield-halved':'shield-check',
+  'fa-user-lock':'user-round-check','fa-envelope':'mail','fa-lock':'lock-keyhole','fa-spinner':'loader-circle'
+};
+let lucideRefreshPending = false;
+function refreshLucideIcons(){
+  if(lucideRefreshPending) return;
+  lucideRefreshPending = true;
+  requestAnimationFrame(()=>{
+    lucideRefreshPending = false;
+    document.querySelectorAll('i[class*="fa-"]').forEach(icon=>{
+      const match = [...icon.classList].find(cls=>LUCIDE_ICON_MAP[cls]);
+      if(!match) return;
+      icon.dataset.lucide = LUCIDE_ICON_MAP[match];
+      if(icon.classList.contains('fa-spin')) icon.dataset.spin = 'true';
+      icon.removeAttribute('class');
+    });
+    if(window.lucide) window.lucide.createIcons({attrs:{'aria-hidden':'true'}});
+  });
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  refreshLucideIcons();
+  new MutationObserver(refreshLucideIcons).observe(document.body,{childList:true,subtree:true});
+});
+
 function escapeHtml(value=''){
   return String(value).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 }
@@ -75,6 +106,8 @@ async function guard(){
   return admin;
 }
 function initLayout(page){
+  const navLabels = ['운영 현황','데이터 관리','분석 · 설정'];
+  $$('.nav-label').forEach((label,index)=>{ if(navLabels[index]) label.textContent = navLabels[index]; });
   $$('.hub-nav a').forEach(a=>a.classList.toggle('active',a.dataset.page===page));
   $('#mobileMenu')?.addEventListener('click',()=>{
     $('#hubSidebar')?.classList.add('open');
@@ -93,6 +126,7 @@ function initLayout(page){
   $$('.modal-backdrop').forEach(modal=>modal.addEventListener('click',e=>{
     if(e.target===modal) modal.classList.remove('show');
   }));
+  refreshLucideIcons();
 }
 async function bootstrap(page){
   const admin = await guard();
@@ -107,7 +141,7 @@ async function login(event){
   const password = event.target.password.value;
   const button = event.target.querySelector('button[type="submit"]');
   button.disabled = true;
-  button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 확인 중';
+  button.innerHTML = '<i data-lucide="loader-circle" data-spin="true"></i> 확인 중';
   const {error} = await db.auth.signInWithPassword({email,password});
   if(error){
     button.disabled = false;
@@ -161,7 +195,7 @@ async function dashboard(){
 
   $('#recentProjects').innerHTML = state.projects.slice(0,7).map(p=>`
     <div class="activity-item">
-      <div class="activity-icon"><i class="fa-solid fa-seedling"></i></div>
+      <div class="activity-icon"><i data-lucide="sprout"></i></div>
       <div class="activity-main">
         <div class="activity-title">${escapeHtml(p.name)}</div>
         <div class="activity-meta">${escapeHtml(p.profiles?.name || maskEmail(p.profiles?.email || ''))} · ${formatDate(p.created_at,true)}</div>
@@ -186,18 +220,6 @@ async function dashboard(){
       <div class="progress-track"><div class="progress-bar" style="width:${percentage(count,state.projects.length)}%"></div></div>
     </div>`;
   }).join('');
-
-  const regions = {};
-  state.surveys.forEach(s=>{
-    const region = (s.region_si || '미입력').split(' ').slice(0,2).join(' ');
-    regions[region] = (regions[region] || 0) + 1;
-  });
-  $('#regionList').innerHTML = Object.entries(regions).sort((a,b)=>b[1]-a[1]).slice(0,7).map(([region,count])=>`
-    <div class="activity-item">
-      <div class="activity-icon"><i class="fa-solid fa-location-dot"></i></div>
-      <div class="activity-main"><div class="activity-title">${escapeHtml(region)}</div><div class="activity-meta">전체 설문 중 ${percentage(count,total)}%</div></div>
-      <strong>${count}건</strong>
-    </div>`).join('') || '<div class="empty">지역 데이터가 없습니다.</div>';
 
   const today = new Date();
   const thisMonth = state.members.filter(m=>{
@@ -248,9 +270,9 @@ function renderMembers(){
       <td>${roleBadge(m.role)}</td>
       <td>${m.is_active===false?'<span class="badge badge-red">비활성</span>':'<span class="badge badge-green">활성</span>'}</td>
       <td>${formatDate(m.created_at)}</td>
-      <td><button class="btn btn-ghost btn-sm" data-member-id="${m.id}"><i class="fa-solid fa-pen"></i> 상세</button></td>
+      <td><button class="btn btn-ghost btn-sm" data-member-id="${m.id}"><i data-lucide="pencil"></i> 상세</button></td>
     </tr>`;
-  }).join('') || '<tr><td colspan="9" class="empty"><i class="fa-regular fa-folder-open"></i>조건에 맞는 회원이 없습니다.</td></tr>';
+  }).join('') || '<tr><td colspan="9" class="empty"><i data-lucide="folder-open"></i>조건에 맞는 회원이 없습니다.</td></tr>';
 }
 function openMember(id){
   const m = state.members.find(x=>x.id===id);
@@ -323,9 +345,9 @@ function renderProjects(){
       <td>${s.floor_area ? `${s.floor_area}㎡` : '-'}</td>
       <td>${statusBadge(p.status)}</td>
       <td>${formatDate(p.created_at)}</td>
-      <td><button class="btn btn-ghost btn-sm" data-project-id="${p.id}"><i class="fa-solid fa-pen"></i> 관리</button></td>
+      <td><button class="btn btn-ghost btn-sm" data-project-id="${p.id}"><i data-lucide="pencil"></i> 관리</button></td>
     </tr>`;
-  }).join('') || '<tr><td colspan="8" class="empty"><i class="fa-regular fa-folder-open"></i>조건에 맞는 프로젝트가 없습니다.</td></tr>';
+  }).join('') || '<tr><td colspan="8" class="empty"><i data-lucide="folder-open"></i>조건에 맞는 프로젝트가 없습니다.</td></tr>';
 }
 function openProject(id){
   const p = state.projects.find(x=>x.id===id);
@@ -395,9 +417,9 @@ function renderSurveys(){
       <td>${s.floor_area ? `${s.floor_area}㎡` : '-'}</td>
       <td>${s.ceil_height ? `${s.ceil_height}m` : '-'}</td>
       <td>${s.electric_power ? `${s.electric_power}kW` : '모름'}</td>
-      <td><button class="btn btn-ghost btn-sm" data-survey-id="${s.project_id}"><i class="fa-solid fa-eye"></i> 보기</button></td>
+      <td><button class="btn btn-ghost btn-sm" data-survey-id="${s.project_id}"><i data-lucide="eye"></i> 보기</button></td>
     </tr>`;
-  }).join('') || '<tr><td colspan="8" class="empty"><i class="fa-regular fa-folder-open"></i>조건에 맞는 설문이 없습니다.</td></tr>';
+  }).join('') || '<tr><td colspan="8" class="empty"><i data-lucide="folder-open"></i>조건에 맞는 설문이 없습니다.</td></tr>';
 }
 function openSurvey(projectId){
   const s = state.surveys.find(x=>x.project_id===projectId);
@@ -446,8 +468,8 @@ function renderTemplates(){
     <td>${escapeHtml(t.staff || '-')}</td>
     <td>${t.ai_score_base ?? '-'}</td>
     <td>${t.estimatable===false?'<span class="badge badge-orange">상담 필요</span>':'<span class="badge badge-green">견적 가능</span>'}</td>
-    <td><button class="btn btn-ghost btn-sm" data-template-id="${t.id}"><i class="fa-solid fa-pen"></i> 수정</button></td>
-  </tr>`).join('') || '<tr><td colspan="8" class="empty"><i class="fa-regular fa-folder-open"></i>추천안이 없습니다.</td></tr>';
+    <td><button class="btn btn-ghost btn-sm" data-template-id="${t.id}"><i data-lucide="pencil"></i> 수정</button></td>
+  </tr>`).join('') || '<tr><td colspan="8" class="empty"><i data-lucide="folder-open"></i>추천안이 없습니다.</td></tr>';
 }
 function openTemplate(id=''){
   const t = state.templates.find(x=>x.id===id) || {};
@@ -507,6 +529,21 @@ async function analytics(){
   $('#analyticsAvgArea').textContent = `${Math.round(state.surveys.reduce((a,s)=>a+(Number(s.floor_area)||0),0)/(total||1))}㎡`;
   $('#analyticsQuote').textContent = `${state.projects.filter(p=>['quote_requested','quote_review','contracted'].includes(p.status)).length}건`;
 
+  const metricResult = await db.rpc('get_hub_service_metrics',{p_days:30});
+  const metrics = metricResult.data || null;
+  if(!metricResult.error && metrics){
+    const setMetric = (id,value,suffix='')=>{ const el=$('#'+id); if(el) el.textContent=value===null || value===undefined ? '수집 전' : `${value}${suffix}`; };
+    setMetric('metricRecoRevisit',metrics.recommendation_revisit_rate,'%');
+    setMetric('metricTimelineViews',metrics.timeline_avg_views,'회');
+    setMetric('metricRecipeConversion',metrics.recipe_conversion_rate,'%');
+    setMetric('metricReminderOpen',metrics.reminder_open_rate,'%');
+    setMetric('metricBriefingRead',metrics.briefing_weekly_read_rate,'%');
+    $('#serviceMetricState').textContent = `실사용자 ${metrics.sample_users || 0}명`;
+    $('#serviceMetricState').classList.add('live');
+  }else{
+    $('#serviceMetricState').textContent = '이벤트 수집 전';
+  }
+
   $('#analyticsTypeBars').innerHTML = Object.entries(typeCounts).map(([key,count])=>`
     <div>
       <div class="kpi-row-head"><span>${userTypeLabel(key)}</span><strong>${count}건 · ${percentage(count,total)}%</strong></div>
@@ -535,7 +572,7 @@ async function analytics(){
   });
   $('#topTemplates').innerHTML = Object.entries(topTemplates).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([title,count])=>`
     <div class="activity-item">
-      <div class="activity-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+      <div class="activity-icon"><i data-lucide="sparkles"></i></div>
       <div class="activity-main"><div class="activity-title">${escapeHtml(title)}</div><div class="activity-meta">프로젝트 선택 비중 ${percentage(count,state.projects.length)}%</div></div>
       <strong>${count}건</strong>
     </div>`).join('') || '<div class="empty">추천 데이터가 없습니다.</div>';

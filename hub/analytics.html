@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>통계·리포트 · 이피랑 운영센터</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
 <link rel="stylesheet" href="css/hub.css">
 </head>
 <body>
@@ -74,6 +74,16 @@
   <div class="stat-card"><div class="stat-label">평균 공간면적</div><div class="stat-value" id="analyticsAvgArea">-</div><div class="stat-note">설문 floor_area 기준</div></div>
   <div class="stat-card"><div class="stat-label">견적·계약 단계</div><div class="stat-value" id="analyticsQuote">-</div><div class="stat-note">견적요청 이상 프로젝트</div></div>
 </div>
+<section class="panel service-metrics-panel">
+  <div class="panel-head"><div><h2>서비스 핵심 지표</h2><p>최근 30일 실제 사용자 이벤트 기준 · 테스트 데이터 제외</p></div><span class="data-state" id="serviceMetricState">데이터 확인 중</span></div>
+  <div class="service-metrics-grid">
+    <article class="service-metric"><span class="service-icon"><i data-lucide="repeat-2"></i></span><div><small>설계 추천</small><strong id="metricRecoRevisit">수집 전</strong><p>추천 페이지 재방문율</p></div></article>
+    <article class="service-metric"><span class="service-icon"><i data-lucide="history"></i></span><div><small>프로젝트 기록</small><strong id="metricTimelineViews">수집 전</strong><p>사용자당 평균 조회</p></div></article>
+    <article class="service-metric"><span class="service-icon"><i data-lucide="layers-3"></i></span><div><small>설비 레시피</small><strong id="metricRecipeConversion">수집 전</strong><p>조합 선택 전환율</p></div></article>
+    <article class="service-metric"><span class="service-icon"><i data-lucide="bell-ring"></i></span><div><small>리마인더</small><strong id="metricReminderOpen">수집 전</strong><p>핵심 일정 열람률</p></div></article>
+    <article class="service-metric"><span class="service-icon"><i data-lucide="chart-no-axes-column-increasing"></i></span><div><small>데이터 브리핑</small><strong id="metricBriefingRead">수집 전</strong><p>주간 열람률</p></div></article>
+  </div>
+</section>
 <div class="grid-2">
   <section class="panel"><div class="panel-head"><div><h2>회원 유형 분석</h2><p>청년농·후계농·귀농·일반창업 비중</p></div></div><div class="kpi-bars" id="analyticsTypeBars"></div></section>
   <section class="panel"><div class="panel-head"><div><h2>면적 구간 분석</h2><p>㎡ 데이터를 평 단위 구간으로 환산</p></div></div><div class="kpi-bars" id="areaBars"></div></section>
