@@ -48,7 +48,7 @@
       padding: 24px 20px; 
     }
     body[data-page="project-detail"] .pd-card-title { 
-      margin: 0 0 3px; font-size: 18px; font-weight: 800; color: #1e293b; 
+      margin: 0 0 14px; font-size: 18px; font-weight: 800; color: #1e293b; 
       display: flex; align-items: center; gap: 8px; 
     }
     body[data-page="project-detail"] .pd-card-title .lucide { width:18px; height:18px; color:#16a34a; }
@@ -102,7 +102,7 @@
     
     body[data-page="project-detail"] .pd-info-text { font-size: 14px; color: #334155; line-height: 1.6; }
     body[data-page="project-detail"] .pd-info-value-strong { 
-      font-weight: 800; color: #0f172a; font-size: 15px; display: block; margin-bottom: 4px;
+      font-weight: 800; color: #0f172a; font-size: 13px; display: block; margin-bottom: 4px;
     }
     body[data-page="project-detail"] .pd-info-list { 
       margin: 4px 0 0; padding-left: 0; list-style: none;
@@ -515,7 +515,7 @@ body[data-page="project-detail"] .pd-design-heading>.lucide{
   stroke-width:2;
 }
 body[data-page="project-detail"] .pd-design-heading strong{display:block;color:#26352c;font-size:14px;}
-body[data-page="project-detail"] .pd-design-heading small{display:block;margin-top:2px;color:#94a3b8;font-size:9px;line-height:1.4;}
+body[data-page="project-detail"] .pd-design-heading small{display:block;margin-top:2px;color:#94a3b8;font-size:10px;line-height:1.4;}
 
 /* 공간 흐름 */
 body[data-page="project-detail"] .pd-layout-flow{display:flex;align-items:center;gap:5px;}
