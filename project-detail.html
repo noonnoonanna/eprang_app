@@ -4,23 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="project-detail.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <title>이피랑 - 프로젝트 상세</title>
-  <style>
-    .pd-quote-action{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:18px;padding:15px;border:1px solid #cce9d5;border-radius:16px;background:linear-gradient(135deg,#f2fcf5 0%,#eaf8ef 100%)}
-    .pd-quote-action-copy{display:flex;align-items:flex-start;gap:10px;min-width:0}
-    .pd-quote-action-icon{width:36px;height:36px;flex:0 0 36px;border-radius:11px;background:#fff;color:#16a34a;display:grid;place-items:center;box-shadow:0 2px 8px rgba(22,163,74,.10)}
-    .pd-quote-action-icon .lucide{width:18px;height:18px}
-    .pd-quote-action-copy strong{display:block;margin:1px 0 4px;color:#193525;font-size:14px;line-height:1.35}
-    .pd-quote-action-copy p{margin:0;color:#627268;font-size:12px;line-height:1.5;word-break:keep-all}
-    .pd-quote-action-btn{min-width:132px;height:42px;padding:0 14px;border:0;border-radius:11px;background:#16a34a;color:#fff;display:flex;align-items:center;justify-content:center;gap:7px;font-size:13px;font-weight:750;white-space:nowrap;box-shadow:0 3px 0 #0f7a35,0 6px 12px rgba(22,163,74,.16)}
-    .pd-quote-action-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #0f7a35}
-    .pd-quote-action-btn:disabled{cursor:wait;opacity:.65}
-    .pd-quote-action-btn .lucide{width:16px;height:16px}
-    @media(max-width:420px){.pd-quote-action{align-items:stretch;flex-direction:column}.pd-quote-action-btn{width:100%}}
-  </style>
 </head>
 
 <body data-page="project-detail">
@@ -38,7 +25,7 @@
       <section class="pd-section">
         <div class="pd-summary-card">
           <div class="pd-summary-chip">
-            <i data-lucide="leaf"></i>
+            <i class="fa-solid fa-leaf"></i>
             <span>프로젝트 상세</span>
           </div>
           <h1 class="pd-summary-title" id="pdProjectTitle">프로젝트 제목</h1>
@@ -69,18 +56,6 @@
               <div class="pd-progress-step"><span>4</span><small>시공</small></div>
             </div>
           </div>
-          <div class="pd-quote-action" id="pdQuoteAction">
-            <div class="pd-quote-action-copy">
-              <span class="pd-quote-action-icon"><i data-lucide="calculator"></i></span>
-              <div>
-                <strong id="pdQuoteActionTitle">이 설계안으로 견적을 받아보세요</strong>
-                <p id="pdQuoteActionDesc">현재 프로젝트의 조건과 선택한 설계안을 기준으로 요청합니다.</p>
-              </div>
-            </div>
-            <button type="button" class="pd-quote-action-btn" id="pdBtnQuoteRequest">
-              <i data-lucide="send"></i><span>견적 요청하기</span>
-            </button>
-          </div>
         </div>
       </section>
 
@@ -89,14 +64,15 @@
         <div class="pd-card">
           <div class="pd-card-header">
             <h2 class="pd-card-title">
-              <i data-lucide="clipboard-list"></i>
+              <i class="fa-solid fa-clipboard-list"></i>
               <span>프로젝트 상세정보</span>
             </h2>
           </div>
+          <p class="pd-card-sub">필요한 정보만 탭으로 나누어 확인할 수 있어요.</p>
 
           <!-- 탭 -->
           <div class="pd-tabs">
-            <button type="button" class="pd-tab active" data-tab="needs"><i data-lucide="sliders-horizontal"></i><span>조건</span></button>
+            <button type="button" class="pd-tab active" data-tab="needs"><i class="fa-solid fa-sliders"></i><span>조건</span></button>
             <button type="button" class="pd-tab" data-tab="design">설계안</button>
             <button type="button" class="pd-tab" data-tab="progress">진행</button>
             <button type="button" class="pd-tab" data-tab="memo">메모</button>
@@ -108,7 +84,7 @@
               <div class="pd-info-grid">
                 <div class="pd-info-item">
                   <div class="pd-info-label">
-                    <i data-lucide="user-round"></i>
+                    <i class="fa-solid fa-user"></i>
                     <span>사용자 유형 · 정책자금</span>
                   </div>
                   <div class="pd-info-text">
@@ -123,7 +99,7 @@
 
                 <div class="pd-info-item">
                   <div class="pd-info-label">
-                    <i data-lucide="map-pinned"></i>
+                    <i class="fa-solid fa-map-location-dot"></i>
                     <span>지역 · 공간 유형</span>
                   </div>
                   <div class="pd-info-text">
@@ -140,7 +116,7 @@
               <div class="pd-info-grid">
                 <div class="pd-info-item">
                   <div class="pd-info-label">
-                    <i data-lucide="plug-zap"></i>
+                    <i class="fa-solid fa-plug-circle-bolt"></i>
                     <span>전기 · 급배수 · 환기</span>
                   </div>
                   <div class="pd-info-text">
@@ -154,7 +130,7 @@
 
                 <div class="pd-info-item">
                   <div class="pd-info-label">
-                    <i data-lucide="route"></i>
+                    <i class="fa-solid fa-route"></i>
                     <span>동선 · 기둥 · 출입</span>
                   </div>
                   <div class="pd-info-text">
@@ -169,7 +145,7 @@
               <div class="pd-info-grid">
                 <div class="pd-info-item">
                   <div class="pd-info-label">
-                    <i data-lucide="users"></i>
+                    <i class="fa-solid fa-users-line"></i>
                     <span>근무 시간 · 인력 구성</span>
                   </div>
                   <div class="pd-info-text">
@@ -183,7 +159,7 @@
 
                 <div class="pd-info-item">
                   <div class="pd-info-label">
-                    <i data-lucide="scale"></i>
+                    <i class="fa-solid fa-scale-balanced"></i>
                     <span>리스크 선호 · 유통 방향</span>
                   </div>
                   <div class="pd-info-text">
@@ -199,59 +175,60 @@
             <!-- 탭 2: 설계안 -->
             <div class="pd-tab-panel" id="pdTabDesign">
               <section class="pd-design-hero">
-                <div class="pd-design-kicker"><i data-lucide="sprout"></i> 선택한 추천 설계안</div>
+                <div class="pd-design-kicker"><i class="fa-solid fa-seedling"></i> 선택한 추천 설계안</div>
                 <h3 id="pdCropCombo">설계안 정보를 불러오고 있습니다.</h3>
                 <p id="pdMainCrops">-</p>
                 <div class="pd-design-tags">
                   <span class="pd-design-tag" id="pdFacilityCombo">-</span>
-                  <span class="pd-design-tag" id="pdChipAutomation"><i data-lucide="cpu"></i><span>자동화 수준</span></span>
-                  <span class="pd-design-tag" id="pdChipStrategy"><i data-lucide="refresh-cw"></i><span>운영 전략</span></span>
+                  <span class="pd-design-tag" id="pdChipAutomation"><i class="fa-solid fa-microchip"></i><span>자동화 수준</span></span>
+                  <span class="pd-design-tag" id="pdChipStrategy"><i class="fa-solid fa-arrows-rotate"></i><span>운영 전략</span></span>
                 </div>
               </section>
 
               <section class="pd-design-block">
-                <div class="pd-design-heading"><i data-lucide="panels-top-left"></i><div><strong>공간 배치</strong></div></div>
+                <div class="pd-design-heading"><i class="fa-solid fa-object-group"></i><div><strong>공간 배치</strong><small>작업 흐름을 기준으로 구역을 나눴어요.</small></div></div>
                 <div class="pd-layout-flow">
-                  <div class="pd-layout-zone"><i data-lucide="package-open"></i><span>출입·포장</span></div>
-                  <i data-lucide="chevron-right"></i>
-                  <div class="pd-layout-zone primary"><i data-lucide="sprout"></i><span>재배 구역</span></div>
-                  <i data-lucide="chevron-right"></i>
-                  <div class="pd-layout-zone"><i data-lucide="flask-conical"></i><span>양액·기계실</span></div>
+                  <div class="pd-layout-zone"><i class="fa-solid fa-box-open"></i><span>출입·포장</span></div>
+                  <i class="fa-solid fa-chevron-right"></i>
+                  <div class="pd-layout-zone primary"><i class="fa-solid fa-seedling"></i><span>재배 구역</span></div>
+                  <i class="fa-solid fa-chevron-right"></i>
+                  <div class="pd-layout-zone"><i class="fa-solid fa-flask"></i><span>양액·기계실</span></div>
                 </div>
                 <p class="pd-layout-caption" id="pdDiagramText">출입구 기준 좌측은 작업·포장, 중앙은 재배랙, 우측은 양액·기계실로 구성합니다.</p>
               </section>
 
               <section class="pd-design-block">
-                <div class="pd-design-heading"><i data-lucide="settings"></i><div><strong>핵심 설비</strong></div></div>
+                <div class="pd-design-heading"><i class="fa-solid fa-gears"></i><div><strong>핵심 설비</strong><small>항목을 누르면 상세 기준을 볼 수 있어요.</small></div></div>
                 <div class="pd-equipment-list">
                   <details class="pd-equipment-item">
-                    <summary><span class="pd-equipment-icon"><i data-lucide="lightbulb"></i></span><span><strong>재배 LED</strong><small>작물별 조도·점등 설정</small></span><i data-lucide="chevron-down"></i></summary>
+                    <summary><span class="pd-equipment-icon"><i class="fa-solid fa-lightbulb"></i></span><span><strong>재배 LED</strong><small>작물별 조도·점등 설정</small></span><i class="fa-solid fa-chevron-down"></i></summary>
                     <p id="pdLed">-</p>
                   </details>
                   <details class="pd-equipment-item">
-                    <summary><span class="pd-equipment-icon"><i data-lucide="droplet"></i></span><span><strong>양액 시스템</strong><small>순환식 양액·탱크 산정</small></span><i data-lucide="chevron-down"></i></summary>
+                    <summary><span class="pd-equipment-icon"><i class="fa-solid fa-droplet"></i></span><span><strong>양액 시스템</strong><small>순환식 양액·탱크 산정</small></span><i class="fa-solid fa-chevron-down"></i></summary>
                     <p id="pdNutrient">-</p>
                   </details>
                   <details class="pd-equipment-item">
-                    <summary><span class="pd-equipment-icon"><i data-lucide="wind"></i></span><span><strong>공조 환경</strong><small>냉난방·제습·CO₂ 제어</small></span><i data-lucide="chevron-down"></i></summary>
+                    <summary><span class="pd-equipment-icon"><i class="fa-solid fa-wind"></i></span><span><strong>공조 환경</strong><small>냉난방·제습·CO₂ 제어</small></span><i class="fa-solid fa-chevron-down"></i></summary>
                     <p id="pdHvac">-</p>
                   </details>
                   <details class="pd-equipment-item">
-                    <summary><span class="pd-equipment-icon"><i data-lucide="cpu"></i></span><span><strong>통합 관제</strong><small>환경 모니터링·원격 알림</small></span><i data-lucide="chevron-down"></i></summary>
+                    <summary><span class="pd-equipment-icon"><i class="fa-solid fa-microchip"></i></span><span><strong>통합 관제</strong><small>환경 모니터링·원격 알림</small></span><i class="fa-solid fa-chevron-down"></i></summary>
                     <p id="pdControl">-</p>
                   </details>
                 </div>
               </section>
 
               <section class="pd-design-block">
-                <div class="pd-design-heading"><i data-lucide="sliders-horizontal"></i><div><strong>변경 가능한 옵션</strong><small>예산과 현장 조건에 따라 조정할 수 있어요.</small></div></div>
+                <div class="pd-design-heading"><i class="fa-solid fa-sliders"></i><div><strong>변경 가능한 옵션</strong><small>예산과 현장 조건에 따라 조정할 수 있어요.</small></div></div>
                 <div class="pd-option-list">
                   <div class="pd-option-row"><span>자동화 수준</span><strong id="pdAutomation">-</strong></div>
                   <div class="pd-option-row"><span>확장 설계</span><strong id="pdExpansion">-</strong></div>
                   <div class="pd-option-row"><span>변경 기록</span><strong id="pdChangeLog">-</strong></div>
                 </div>
                 <div class="pd-design-notes">
-                  <span><i data-lucide="pencil"></i> 현장 협의 후 수정 가능</span>
+                  <span><i class="fa-solid fa-pen"></i> 현장 협의 후 수정 가능</span>
+                  <span><i class="fa-solid fa-file-contract"></i> (주)그린 상세 설계 연동</span>
                 </div>
               </section>
             </div><!-- /pdTabDesign -->
@@ -266,7 +243,7 @@
         <div class="pd-card">
           <div class="pd-card-header">
             <h2 class="pd-card-title">
-              <i data-lucide="history"></i>
+              <i class="fa-solid fa-timeline"></i>
               <span>견적 · 계약 · 시공 이력</span>
             </h2>
           </div>
@@ -276,7 +253,7 @@
             <!-- 견적 -->
             <div class="pd-timeline-group">
               <div class="pd-timeline-heading">
-                <i data-lucide="receipt-text"></i>
+                <i class="fa-solid fa-file-invoice-dollar"></i>
                 <span>견적</span>
               </div>
               <div class="pd-timeline-list">
@@ -289,13 +266,13 @@
                   </div>
                 </div>
                 <div class="pd-timeline-item">
-                  <span class="pd-timeline-label"><!--(주)그린 -->1차 견적</span>
-                  <!--<div id="pdQuoteSummary">예상 총 투자 및 옵션은 (주)그린 견적서 기준으로 입력합니다.</div>-->
+                  <span class="pd-timeline-label">(주)그린 1차 견적</span>
+                  <div id="pdQuoteSummary">예상 총 투자 및 옵션은 (주)그린 견적서 기준으로 입력합니다.</div>
                   <div class="pd-timeline-meta">
                     <span>유효기간: 직접 입력</span>
                   </div>
                   <button type="button" class="pd-link-btn">
-                    <i data-lucide="link"></i>
+                    <i class="fa-solid fa-link"></i>
                     <span>견적서 파일 / 링크</span>
                   </button>
                 </div>
@@ -305,7 +282,7 @@
             <!-- 계약 -->
             <div class="pd-timeline-group">
               <div class="pd-timeline-heading">
-                <i data-lucide="file-signature"></i>
+                <i class="fa-solid fa-file-signature"></i>
                 <span>계약</span>
               </div>
               <div class="pd-timeline-list">
@@ -320,7 +297,7 @@
                   <span class="pd-timeline-label">결제 마일스톤</span>
                   <div>계약금 / 중도금 / 잔금 비율과 지급 시점을 정리해 둡니다.</div>
                   <button type="button" class="pd-link-btn">
-                    <i data-lucide="file-text"></i>
+                    <i class="fa-solid fa-file-lines"></i>
                     <span>계약서 요약 / 파일</span>
                   </button>
                 </div>
@@ -330,7 +307,7 @@
             <!-- 시공 -->
             <div class="pd-timeline-group">
               <div class="pd-timeline-heading">
-                <i data-lucide="wrench"></i>
+                <i class="fa-solid fa-screwdriver-wrench"></i>
                 <span>시공</span>
               </div>
               <div class="pd-timeline-list">
@@ -365,7 +342,7 @@
             <!-- 향후 확장 -->
             <div class="pd-timeline-group">
               <div class="pd-timeline-heading">
-                <i data-lucide="chart-line"></i>
+                <i class="fa-solid fa-chart-line"></i>
                 <span>향후 확장</span>
               </div>
               <div class="pd-timeline-list">
@@ -384,7 +361,7 @@
           <div class="pd-memo">
             <div class="pd-memo-header">
               <h3 class="pd-memo-title">
-                <i data-lucide="square-pen"></i>
+                <i class="fa-solid fa-pen-to-square"></i>
                 <span>향후 확장 · 운영 메모</span>
               </h3>
             </div>
@@ -402,10 +379,10 @@
     </div>-->
 <nav class="tabs">
       <ul>
-        <li><button id="tab-home" onclick="window.location.assign('home.html')"><i data-lucide="house"></i><small>홈</small></button></li>
-        <li><button id="tab-records" onclick="window.location.assign('records.html')" class="active"><i data-lucide="list-checks"></i><small>기록</small></button></li>
-        <li><button id="tab-reco" onclick="window.location.assign('deals.html')"><i data-lucide="file-signature"></i><small>견적</small></button></li>
-        <li><button id="tab-my" onclick="window.location.assign('settings.html')"><i data-lucide="user"></i><small>마이</small></button></li>
+        <li><button id="tab-home" onclick="window.location.assign('home.html')"><i class="fa-solid fa-house"></i><small>홈</small></button></li>
+        <li><button id="tab-records" onclick="window.location.assign('records.html')" class="active"><i class="fas fa-list-check"></i><small>기록</small></button></li>
+        <li><button id="tab-reco" onclick="window.location.assign('deals.html')"><i class="fas fa-file-signature"></i><small>견적</small></button></li>
+        <li><button id="tab-my" onclick="window.location.assign('settings.html')"><i class="fa-solid fa-user"></i><small>마이</small></button></li>
       </ul>
     </nav>
   </div>
@@ -416,7 +393,6 @@
   <div id="toast" class="toast">처리되었습니다</div>
 
   <script src="app.js" defer></script>
-  <script>document.addEventListener('DOMContentLoaded',function(){if(window.lucide)window.lucide.createIcons();});</script>
  <script>
     document.addEventListener('DOMContentLoaded', async function () {
       // 긴 진행 이력과 메모를 각각 전용 탭으로 이동
@@ -548,54 +524,6 @@
           line.classList.toggle('active',index+1<currentStageIndex);
         });
 
-        // 프로젝트 상태에 따라 견적 CTA의 역할과 문구를 변경
-        var quoteActionTitle=document.getElementById('pdQuoteActionTitle');
-        var quoteActionDesc=document.getElementById('pdQuoteActionDesc');
-        var quoteActionBtn=document.getElementById('pdBtnQuoteRequest');
-        var quoteActionBtnText=quoteActionBtn ? quoteActionBtn.querySelector('span') : null;
-        var quoteStatus=project.status || 'draft';
-        var quoteCopy={
-          draft:['이 설계안으로 견적을 받아보세요','현재 프로젝트의 조건과 선택한 설계안을 기준으로 요청합니다.','견적 요청하기','send'],
-          quote_requested:['견적 요청이 접수되었어요','견적·계약 페이지에서 요청 상태와 다음 할 일을 확인할 수 있어요.','요청 현황 보기','arrow-right'],
-          quote_review:['검토할 견적이 있어요','포함 범위와 별도 공사 항목을 확인하고 비교해 보세요.','견적 검토하기','file-search'],
-          contracted:['계약이 진행 중이에요','최종 금액과 지급 일정, 계약 조건을 확인할 수 있어요.','계약 현황 보기','handshake'],
-          construction:['시공이 진행 중이에요','계약 및 시공 진행 상태를 견적·계약 페이지에서 확인하세요.','진행 현황 보기','hard-hat'],
-          operating:['프로젝트가 운영 단계예요','완료된 견적과 계약 내용을 다시 확인할 수 있어요.','계약 내역 보기','folder-check'],
-          complete:['프로젝트가 완료되었어요','완료된 견적과 계약 내용을 다시 확인할 수 있어요.','계약 내역 보기','folder-check'],
-          done:['프로젝트가 완료되었어요','완료된 견적과 계약 내용을 다시 확인할 수 있어요.','계약 내역 보기','folder-check']
-        };
-        var currentQuoteCopy=quoteCopy[quoteStatus] || quoteCopy.draft;
-        if(quoteActionTitle)quoteActionTitle.textContent=currentQuoteCopy[0];
-        if(quoteActionDesc)quoteActionDesc.textContent=currentQuoteCopy[1];
-        if(quoteActionBtnText)quoteActionBtnText.textContent=currentQuoteCopy[2];
-        if(quoteActionBtn){
-          var quoteIcon=quoteActionBtn.querySelector('i');
-          if(quoteIcon)quoteIcon.setAttribute('data-lucide',currentQuoteCopy[3]);
-          quoteActionBtn.addEventListener('click',async function(){
-            if(quoteStatus==='draft'){
-              if(!window.confirm('현재 프로젝트의 조건과 선택한 설계안으로 견적을 요청할까요?'))return;
-              quoteActionBtn.disabled=true;
-              if(quoteActionBtnText)quoteActionBtnText.textContent='요청 중...';
-              const {error:quoteRequestError}=await supabaseClient
-                .from('projects')
-                .update({status:'quote_requested'})
-                .eq('id',project.id);
-              if(quoteRequestError){
-                console.error('견적 요청 오류:',quoteRequestError);
-                quoteActionBtn.disabled=false;
-                if(quoteActionBtnText)quoteActionBtnText.textContent='견적 요청하기';
-                if(typeof toast==='function')toast('견적 요청에 실패했습니다. 잠시 후 다시 시도해 주세요.');
-                else alert('견적 요청에 실패했습니다. 잠시 후 다시 시도해 주세요.');
-                return;
-              }
-              quoteStatus='quote_requested';
-            }
-            localStorage.setItem('ep-current-project-id',String(project.id));
-            window.location.assign('deals.html?project='+encodeURIComponent(project.id));
-          });
-        }
-        if(window.lucide)window.lucide.createIcons();
-
 
         // 요구사항 탭 - 사용자/정책/자금
 		var userTypeLabel=userTypeMap[survey.user_type] || '미선택';
@@ -710,11 +638,10 @@
 		setText('pdExpansion','전기·배관 라인은 향후 랙/존 확장을 고려해 1.5배 수준까지 확장 가능하도록 설계할 수 있습니다.');
 		setText('pdChangeLog','현장 협의 및 시운전 이후 변경된 내용은 이 영역에 메모해 둘 수 있습니다.');
 		
-		// 생성일을 견적 요청일로 잘못 표시하지 않도록 상태 기반으로 안내
-		if(project.status==='draft'){
-			setText('pdQuoteRequestDate','아직 견적을 요청하지 않았습니다.');
-		}else{
-			setText('pdQuoteRequestDate','견적 요청 접수 완료');
+		// 타임라인 일부에 실제 데이터 반영 (견적 요청일 = 프로젝트 생성일)
+		var createdDate=formatDate(project.createdAt);
+		if(createdDate){
+			setText('pdQuoteRequestDate','요청일: '+createdDate);
 		}
 		// 하자 보증 기본값
 		setText('pdWarranty','하자 보증 기간: 1년 (설비 별도 약정 가능)');
