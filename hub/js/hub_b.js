@@ -72,55 +72,6 @@ function statusBadge(v){
   const cls = ({draft:'gray',quote_requested:'blue',quote_review:'orange',contracted:'purple',construction:'orange',operating:'green',complete:'green',done:'green'})[v] || 'gray';
   return `<span class="badge badge-${cls}">${escapeHtml(statusLabel(v))}</span>`;
 }
-function projectReco(project={}){
-  if(project.reco && typeof project.reco === 'object') return project.reco;
-  if(typeof project.reco === 'string'){
-    try{return JSON.parse(project.reco) || {}}catch(error){return {}}
-  }
-  return {};
-}
-function adminQuote(project={}){return projectReco(project).admin_quote || {}}
-function formatMoney(value){
-  const n=Number(value);
-  return Number.isFinite(n) && n>0 ? `${n.toLocaleString('ko-KR')}원` : '-';
-}
-function formatCompactMoney(value){
-  const n=Number(value);
-  if(!Number.isFinite(n)||n<=0) return '-';
-  const eok=Math.floor(n/100000000);
-  const man=Math.round((n%100000000)/10000);
-  if(eok&&man) return `약 ${eok}억 ${man.toLocaleString('ko-KR')}만 원`;
-  if(eok) return `약 ${eok}억 원`;
-  return `약 ${man.toLocaleString('ko-KR')}만 원`;
-}
-function isExpansionReco(reco={}){
-  const tags=Array.isArray(reco.tags)?reco.tags:[];
-  const source=[reco.code,reco.title,reco.facility_label,reco.badge,tags.join(' ')].filter(Boolean).join(' ').toLowerCase();
-  return Number(reco.difficulty)>=4 ||
-    tags.some(tag=>['high_power','high_ceiling','high_density','growth','scaleup'].includes(String(tag).toLowerCase())) ||
-    /(high_density|growth|scaleup|고밀도|성장형|확장형|고생산)/i.test(source);
-}
-function calculateProjectEstimate(project={}){
-  const survey=project.project_surveys?.[0] || {};
-  const areaSqm=Number(survey.usable_area || survey.floor_area || 0);
-  if(!(areaSqm>0)) return null;
-  const areaPyeong=areaSqm/3.305785;
-  const expansion=isExpansionReco(projectReco(project));
-  const base=expansion
-    ? {model:'확장형',plants:4100,towers:320,modulePrice:27000000}
-    : {model:'표준형',plants:3300,towers:256,modulePrice:25000000};
-  const towers=Math.max(1,Math.round(areaPyeong*(base.towers/60)));
-  const modules=Math.max(1,Math.ceil(towers/32));
-  return {
-    model:base.model,areaPyeong,modules,towers,
-    plants:Math.max(1,Math.round(areaPyeong*(base.plants/60)/10)*10),
-    price:modules*base.modulePrice
-  };
-}
-function quoteReviewLabel(project={}){
-  const state=adminQuote(project).review_state;
-  return ({reviewing:'검토 중',info_requested:'추가 정보 요청',ready:'작성 완료',rejected:'진행 어려움'})[state] || '';
-}
 function roleLabel(v){return ({user:'회원',manager:'매니저',admin:'관리자',super_admin:'최고관리자'})[v] || v || '-'}
 function roleBadge(v){
   const cls = v === 'super_admin' ? 'purple' : v === 'admin' ? 'green' : v === 'manager' ? 'blue' : 'gray';
@@ -373,7 +324,6 @@ async function projects(){
     if(button) openProject(button.dataset.projectId);
   });
   $('#projectForm')?.addEventListener('submit',saveProject);
-  $('#btnSendQuote')?.addEventListener('click',sendProjectQuote);
 }
 function renderProjects(){
   const q = ($('#projectSearch')?.value || '').trim().toLowerCase();
@@ -384,25 +334,18 @@ function renderProjects(){
     const matchesQ = !q || [p.name,p.profiles?.name,p.profiles?.email,s.region_si,p.reco?.title].join(' ').toLowerCase().includes(q);
     return matchesQ && (!status || p.status===status) && (!facility || s.facility===facility);
   });
-  const quoteRequested=state.projects.filter(p=>p.status==='quote_requested');
-  $('#quoteNewCount') && ($('#quoteNewCount').textContent=`${quoteRequested.filter(p=>adminQuote(p).review_state!=='info_requested').length}건`);
-  $('#quoteInfoCount') && ($('#quoteInfoCount').textContent=`${quoteRequested.filter(p=>adminQuote(p).review_state==='info_requested').length}건`);
-  $('#quoteReviewCount') && ($('#quoteReviewCount').textContent=`${state.projects.filter(p=>p.status==='quote_review').length}건`);
-  $('#quoteActiveCount') && ($('#quoteActiveCount').textContent=`${state.projects.filter(p=>['contracted','construction'].includes(p.status)).length}건`);
   $('#projectCount').textContent = `${rows.length}건`;
   $('#projectRows').innerHTML = rows.map(p=>{
     const s = p.project_surveys?.[0] || {};
-    const reviewLabel=quoteReviewLabel(p);
-    const reco=projectReco(p);
     return `<tr>
-      <td><div class="cell-title">${p.status==='quote_requested'?'<span class="quote-request-dot"></span>':''}${escapeHtml(p.name)}</div><div class="cell-sub">${escapeHtml(reco.title || '추천안 미지정')}</div></td>
-      <td><div class="project-member"><span class="project-avatar">${escapeHtml((p.profiles?.name||p.profiles?.email||'?').slice(0,1).toUpperCase())}</span><div><div class="cell-title">${escapeHtml(p.profiles?.name || '-')}</div><div class="cell-sub">${escapeHtml(maskEmail(p.profiles?.email || ''))}</div></div></div></td>
+      <td><div class="cell-title">${escapeHtml(p.name)}</div><div class="cell-sub">${escapeHtml(p.reco?.title || '추천안 미지정')}</div></td>
+      <td><div class="cell-title">${escapeHtml(p.profiles?.name || '-')}</div><div class="cell-sub">${escapeHtml(maskEmail(p.profiles?.email || ''))}</div></td>
       <td>${escapeHtml(s.region_si || '-')}</td>
       <td>${facilityLabel(s.facility)}</td>
-      <td>${s.usable_area||s.floor_area ? `${escapeHtml(s.usable_area||s.floor_area)}㎡` : '-'}</td>
-      <td>${statusBadge(p.status)}${reviewLabel?`<div style="margin-top:6px"><span class="review-chip">${escapeHtml(reviewLabel)}</span></div>`:''}</td>
+      <td>${s.floor_area ? `${s.floor_area}㎡` : '-'}</td>
+      <td>${statusBadge(p.status)}</td>
       <td>${formatDate(p.created_at)}</td>
-      <td><button class="btn ${p.status==='quote_requested'?'btn-primary':'btn-ghost'} btn-sm" data-project-id="${p.id}"><i data-lucide="${p.status==='quote_requested'?'clipboard-check':'pencil'}"></i> ${p.status==='quote_requested'?'견적 검토':'관리'}</button></td>
+      <td><button class="btn btn-ghost btn-sm" data-project-id="${p.id}"><i data-lucide="pencil"></i> 관리</button></td>
     </tr>`;
   }).join('') || '<tr><td colspan="8" class="empty"><i data-lucide="folder-open"></i>조건에 맞는 프로젝트가 없습니다.</td></tr>';
 }
@@ -410,24 +353,10 @@ function openProject(id){
   const p = state.projects.find(x=>x.id===id);
   if(!p) return;
   const s = p.project_surveys?.[0] || {};
-  const reco = projectReco(p);
-  const quote = adminQuote(p);
-  const estimate = calculateProjectEstimate(p);
   $('#editProjectId').value = p.id;
   $('#editProjectName').value = p.name || '';
   $('#editProjectStatus').value = p.status || 'draft';
   $('#editProjectMemo').value = p.memo || '';
-  $('#editQuoteReviewState').value = quote.review_state || 'reviewing';
-  $('#editQuoteSiteVisit').value = quote.site_visit || 'required';
-  $('#editQuoteAmount').value = quote.amount || estimate?.price || '';
-  $('#editQuoteValidUntil').value = quote.valid_until || '';
-  $('#editQuoteMessage').value = quote.message || '';
-  $('#editQuoteExclusions').value = quote.exclusions || '';
-  $('#adminPreEstimate').textContent = estimate ? formatCompactMoney(estimate.price) : '면적 확인 필요';
-  $('#adminEstimateModel').textContent = estimate?.model || '-';
-  $('#adminEstimateArea').textContent = estimate ? `${(Math.round(estimate.areaPyeong*10)/10).toLocaleString('ko-KR')}평` : '-';
-  $('#adminEstimateModules').textContent = estimate ? `${estimate.modules.toLocaleString('ko-KR')}개` : '-';
-  $('#adminEstimateTowers').textContent = estimate ? `${estimate.towers.toLocaleString('ko-KR')}개` : '-';
   $('#projectModalTitle').textContent = p.name;
   $('#projectDetail').innerHTML = `
     <div class="detail-box"><div class="detail-label">회원</div><div class="detail-value">${escapeHtml(p.profiles?.name || '-')}</div></div>
@@ -436,35 +365,16 @@ function openProject(id){
     <div class="detail-box"><div class="detail-label">시설 유형</div><div class="detail-value">${facilityLabel(s.facility)}</div></div>
     <div class="detail-box"><div class="detail-label">면적 / 층고</div><div class="detail-value">${s.floor_area || '-'}㎡ / ${s.ceil_height || '-'}m</div></div>
     <div class="detail-box"><div class="detail-label">전력</div><div class="detail-value">${s.electric_power || s.electric_power_known || '-'}${s.electric_power ? 'kW' : ''}</div></div>
-    <div class="detail-box full"><div class="detail-label">추천안</div><div class="detail-value">${escapeHtml(reco.title || '-')} · ${escapeHtml(reco.cropType || reco.crop_type || '-')}</div></div>`;
+    <div class="detail-box full"><div class="detail-label">추천안</div><div class="detail-value">${escapeHtml(p.reco?.title || '-')} · ${escapeHtml(p.reco?.cropType || p.reco?.crop_type || '-')}</div></div>`;
   openModal('projectModal');
-}
-function quoteFormData(project){
-  const old=adminQuote(project);
-  return {
-    ...old,
-    review_state:$('#editQuoteReviewState').value,
-    site_visit:$('#editQuoteSiteVisit').value,
-    amount:Number($('#editQuoteAmount').value || 0) || null,
-    valid_until:$('#editQuoteValidUntil').value || null,
-    message:$('#editQuoteMessage').value.trim() || null,
-    exclusions:$('#editQuoteExclusions').value.trim() || null,
-    vat_excluded:true,
-    updated_at:new Date().toISOString(),
-    updated_by:state.admin?.id || null
-  };
 }
 async function saveProject(event){
   event.preventDefault();
   const id = $('#editProjectId').value;
-  const current=state.projects.find(x=>x.id===id);
-  if(!current) return toast('프로젝트를 찾을 수 없습니다.');
-  const reco={...projectReco(current),admin_quote:quoteFormData(current)};
   const payload = {
     name: $('#editProjectName').value.trim(),
     status: $('#editProjectStatus').value,
     memo: $('#editProjectMemo').value.trim() || null,
-    reco,
     updated_at: new Date().toISOString()
   };
   const {data,error} = await db.from('projects').update(payload).eq('id',id).select().single();
@@ -474,27 +384,6 @@ async function saveProject(event){
   closeModal('projectModal');
   renderProjects();
   toast('프로젝트를 수정했습니다.');
-}
-async function sendProjectQuote(){
-  const id=$('#editProjectId').value;
-  const current=state.projects.find(x=>x.id===id);
-  if(!current) return toast('프로젝트를 찾을 수 없습니다.');
-  const quote=quoteFormData(current);
-  if(!(quote.amount>0)) return toast('사용자에게 보낼 1차 견적금액을 입력해 주세요.');
-  if(!quote.valid_until) return toast('견적 유효기간을 선택해 주세요.');
-  if(!confirm(`${formatMoney(quote.amount)}의 1차 견적을 사용자에게 보낼까요?`)) return;
-  quote.review_state='ready';
-  quote.sent_at=new Date().toISOString();
-  const reco={...projectReco(current),admin_quote:quote};
-  const {data,error}=await db.from('projects')
-    .update({status:'quote_review',reco,updated_at:new Date().toISOString()})
-    .eq('id',id).select().single();
-  if(error) return toast(`견적 전송 실패: ${error.message}`);
-  const idx=state.projects.findIndex(x=>x.id===id);
-  state.projects[idx]={...state.projects[idx],...data};
-  closeModal('projectModal');
-  renderProjects();
-  toast('1차 견적을 사용자에게 전달했습니다.');
 }
 
 async function surveys(){
