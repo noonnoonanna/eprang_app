@@ -57,16 +57,47 @@
     const labels={request:'견적 요청',quote:'견적 검토',contract:'계약 진행',done:'완료'};
     const stageIndex={request:0,quote:1,contract:2,done:3};
     function stageOf(status){if(['quote_review','quote_received'].includes(status))return'quote';if(['contracted','construction'].includes(status))return'contract';if(['operating','done','complete'].includes(status))return'done';return'request'}
-    function nextFor(stage){return stage==='request'?'현장 조건을 확인한 뒤 공급사의 견적 회신을 기다려 주세요.':stage==='quote'?'포함 범위와 별도 공사를 비교하고 수정 여부를 결정해 주세요.':stage==='contract'?'최종 금액, 지급 일정과 하자보수 조건을 확인해 주세요.':'최종 문서와 운영 인수인계 내용을 확인해 주세요.'}
+    function nextFor(stage,status){if(status==='draft')return'프로젝트 조건을 확인한 뒤 견적 요청을 시작해 주세요.';return stage==='request'?'견적 요청이 접수되었습니다. 공급사의 검토와 회신을 기다려 주세요.':stage==='quote'?'포함 범위와 별도 공사를 비교하고 수정 여부를 결정해 주세요.':stage==='contract'?'최종 금액, 지급 일정과 하자보수 조건을 확인해 주세요.':'최종 문서와 운영 인수인계 내용을 확인해 주세요.'}
     function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
     function money(project){const raw=project.quote_total??project.quote_amount??null;if(raw===null||raw==='')return null;const n=Number(raw);return Number.isFinite(n)?n.toLocaleString('ko-KR')+'원':String(raw)}
     let projects=[];try{const {data:{session}}=await supabaseClient.auth.getSession();if(session){const {data,error}=await supabaseClient.from('projects').select('*').eq('user_id',session.user.id).order('created_at',{ascending:false});if(error)throw error;projects=data||[]}}catch(error){console.error('견적 프로젝트 조회 오류',error)}
     let current='request';const requested=new URLSearchParams(location.search).get('project');if(requested){const p=projects.find(x=>String(x.id)===requested);if(p)current=stageOf(p.status)}
     function icons(){if(window.lucide)window.lucide.createIcons({attrs:{'aria-hidden':'true'}})}
     function steps(stage){const names=['요청','검토','계약','완료'],now=stageIndex[stage];return '<div class="deal-steps">'+names.map((n,i)=>'<span class="deal-step '+(i<now?'done':i===now?'current':'')+'">'+n+'</span>').join('')+'</div>'}
-    function card(p){const stage=stageOf(p.status),amount=money(p),valid=p.quote_valid_until||'-',idx=stageIndex[stage];return '<article class="deal-card" data-id="'+esc(p.id)+'"><div class="deal-top"><div class="deal-title-wrap"><div class="deal-kicker"><i data-lucide="folder-kanban"></i>스마트팜 프로젝트</div><h3 class="deal-title">'+esc(p.name||'이름 없는 프로젝트')+'</h3></div><span class="stage-badge">'+labels[stage]+'</span></div>'+steps(stage)+'<div class="next-action"><span class="next-icon"><i data-lucide="arrow-right"></i></span><div><small>다음 할 일</small><p>'+nextFor(stage)+'</p></div></div>'+(amount?'<div class="quote-box"><div class="quote-label"><span><i data-lucide="receipt-text"></i>현재 견적</span><span>유효기간 '+esc(valid)+'</span></div><div class="quote-value">'+esc(amount)+'</div><div class="quote-sub">부가세 및 별도 공사 포함 여부를 확인해 주세요.</div></div>':'<div class="quote-box pending"><div class="quote-label"><span><i data-lucide="calculator"></i>견적 현황</span></div><div class="quote-value">견적 산출 중</div><div class="quote-sub">공간 조건과 설비 수량을 확인하고 있습니다.</div></div>')+'<div class="scope-grid"><section class="scope-box"><div class="scope-head"><i data-lucide="list-checks"></i>포함 범위 확인</div><ul class="scope-list"><li><i data-lucide="circle"></i>재배랙·LED·양액설비</li><li><i data-lucide="circle"></i>설치·시운전·운영교육</li><li><i data-lucide="circle"></i>무상관리 기간</li></ul></section><section class="scope-box caution"><div class="scope-head"><i data-lucide="triangle-alert"></i>별도 협의 확인</div><ul class="scope-list"><li><i data-lucide="circle"></i>전기 증설·소방 공사</li><li><i data-lucide="circle"></i>방수·배수·냉난방</li><li><i data-lucide="circle"></i>인허가와 부가세</li></ul></section></div><div class="check-card"><div class="check-title"><span><i data-lucide="clipboard-check"></i>계약 전 체크리스트</span><span class="check-progress">'+(idx>=2?'검토 필요':'견적 도착 후 확인')+'</span></div><div class="check-items"><span class="check-item"><i data-lucide="square"></i>최종 금액</span><span class="check-item"><i data-lucide="square"></i>공사 기간</span><span class="check-item"><i data-lucide="square"></i>지급 일정</span><span class="check-item"><i data-lucide="square"></i>하자보수</span></div></div><div class="deal-actions"><button class="btn-project" data-action="project"><i data-lucide="folder-open"></i>프로젝트 정보</button><button class="btn-primary" data-action="consult"><i data-lucide="messages-square"></i>'+(stage==='quote'?'견적 검토하기':'상담 요청')+'</button></div></article>'}
+    function card(p){const stage=stageOf(p.status),amount=money(p),valid=p.quote_valid_until||'-',idx=stageIndex[stage],isDraft=(p.status||'draft')==='draft';const actionLabel=isDraft?'견적 요청하기':stage==='request'?'요청 현황 보기':stage==='quote'?'견적 검토하기':stage==='contract'?'계약 현황 보기':'계약 내역 보기';const actionIcon=isDraft?'send':stage==='quote'?'file-search':'arrow-right';return '<article class="deal-card" data-id="'+esc(p.id)+'"><div class="deal-top"><div class="deal-title-wrap"><div class="deal-kicker"><i data-lucide="folder-kanban"></i>스마트팜 프로젝트</div><h3 class="deal-title">'+esc(p.name||'이름 없는 프로젝트')+'</h3></div><span class="stage-badge">'+(isDraft?'요청 전':labels[stage])+'</span></div>'+steps(stage)+'<div class="next-action"><span class="next-icon"><i data-lucide="arrow-right"></i></span><div><small>다음 할 일</small><p>'+nextFor(stage,p.status)+'</p></div></div>'+(amount?'<div class="quote-box"><div class="quote-label"><span><i data-lucide="receipt-text"></i>현재 견적</span><span>유효기간 '+esc(valid)+'</span></div><div class="quote-value">'+esc(amount)+'</div><div class="quote-sub">부가세 및 별도 공사 포함 여부를 확인해 주세요.</div></div>':isDraft?'<div class="quote-box pending"><div class="quote-label"><span><i data-lucide="calculator"></i>견적 현황</span></div><div class="quote-value">아직 요청하지 않았어요</div><div class="quote-sub">프로젝트 조건을 확인하고 견적 요청을 시작할 수 있습니다.</div></div>':'<div class="quote-box pending"><div class="quote-label"><span><i data-lucide="calculator"></i>견적 현황</span></div><div class="quote-value">견적 산출 중</div><div class="quote-sub">공간 조건과 설비 수량을 확인하고 있습니다.</div></div>')+'<div class="scope-grid"><section class="scope-box"><div class="scope-head"><i data-lucide="list-checks"></i>포함 범위 확인</div><ul class="scope-list"><li><i data-lucide="circle"></i>재배랙·LED·양액설비</li><li><i data-lucide="circle"></i>설치·시운전·운영교육</li><li><i data-lucide="circle"></i>무상관리 기간</li></ul></section><section class="scope-box caution"><div class="scope-head"><i data-lucide="triangle-alert"></i>별도 협의 확인</div><ul class="scope-list"><li><i data-lucide="circle"></i>전기 증설·소방 공사</li><li><i data-lucide="circle"></i>방수·배수·냉난방</li><li><i data-lucide="circle"></i>인허가와 부가세</li></ul></section></div><div class="check-card"><div class="check-title"><span><i data-lucide="clipboard-check"></i>계약 전 체크리스트</span><span class="check-progress">'+(idx>=2?'검토 필요':'견적 도착 후 확인')+'</span></div><div class="check-items"><span class="check-item"><i data-lucide="square"></i>최종 금액</span><span class="check-item"><i data-lucide="square"></i>공사 기간</span><span class="check-item"><i data-lucide="square"></i>지급 일정</span><span class="check-item"><i data-lucide="square"></i>하자보수</span></div></div><div class="deal-actions"><button class="btn-project" data-action="project"><i data-lucide="folder-open"></i>프로젝트 정보</button><button class="btn-primary" data-action="quote"><i data-lucide="'+actionIcon+'"></i>'+actionLabel+'</button></div></article>'}
     function render(){document.querySelectorAll('.dl-tab').forEach(b=>b.classList.toggle('active',b.dataset.stage===current));const rows=projects.filter(p=>stageOf(p.status)===current);document.getElementById('dlTitle').textContent=labels[current];document.getElementById('dlCount').textContent=rows.length+'건';document.getElementById('dlList').innerHTML=rows.length?rows.map(card).join(''):'<div class="dl-empty"><i data-lucide="inbox"></i>'+labels[current]+' 단계의 프로젝트가 없습니다.</div>';icons()}
-    document.getElementById('dlTabs').onclick=e=>{const b=e.target.closest('[data-stage]');if(!b)return;current=b.dataset.stage;render()};document.getElementById('dlList').onclick=e=>{const card=e.target.closest('[data-id]'),btn=e.target.closest('[data-action]');if(!card||!btn)return;const id=card.dataset.id;if(btn.dataset.action==='project'){localStorage.setItem('ep-current-project-id',id);window.location.assign('project-detail.html')}else toast('상담 요청 기능은 공급사 연결 단계에서 활성화됩니다.')};document.getElementById('dlHelp').onclick=()=>toast('견적이 도착하면 포함 범위와 별도 공사를 먼저 확인해 주세요.');render();
+    document.getElementById('dlTabs').onclick=e=>{const b=e.target.closest('[data-stage]');if(!b)return;current=b.dataset.stage;render()};
+    document.getElementById('dlList').onclick=async e=>{
+      const card=e.target.closest('[data-id]'),btn=e.target.closest('[data-action]');
+      if(!card||!btn)return;
+      const id=card.dataset.id;
+      const project=projects.find(p=>String(p.id)===String(id));
+      if(btn.dataset.action==='project'){
+        localStorage.setItem('ep-current-project-id',id);
+        window.location.assign('project-detail.html');
+        return;
+      }
+      if(!project)return;
+      if((project.status||'draft')==='draft'){
+        if(!window.confirm('이 프로젝트의 조건과 선택한 설계안으로 견적을 요청할까요?'))return;
+        btn.disabled=true;
+        const {error}=await supabaseClient.from('projects').update({status:'quote_requested'}).eq('id',id);
+        if(error){
+          console.error('견적 요청 오류',error);
+          btn.disabled=false;
+          toast('견적 요청에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+          return;
+        }
+        project.status='quote_requested';
+        toast('견적 요청이 접수되었습니다.');
+        render();
+        return;
+      }
+      localStorage.setItem('ep-current-project-id',id);
+      toast(stageOf(project.status)==='quote'?'받은 견적의 세부 검토 기능은 공급사 견적 등록 후 활성화됩니다.':'현재 견적·계약 진행 상태입니다.');
+    };
+    document.getElementById('dlHelp').onclick=()=>toast('프로젝트 상세 또는 이 페이지에서 견적 요청을 시작할 수 있어요.');
+    render();
   });
   </script>
 </body>

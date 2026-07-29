@@ -8,6 +8,19 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="project-detail.css" />
   <title>이피랑 - 프로젝트 상세</title>
+  <style>
+    .pd-quote-action{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:18px;padding:15px;border:1px solid #cce9d5;border-radius:16px;background:linear-gradient(135deg,#f2fcf5 0%,#eaf8ef 100%)}
+    .pd-quote-action-copy{display:flex;align-items:flex-start;gap:10px;min-width:0}
+    .pd-quote-action-icon{width:36px;height:36px;flex:0 0 36px;border-radius:11px;background:#fff;color:#16a34a;display:grid;place-items:center;box-shadow:0 2px 8px rgba(22,163,74,.10)}
+    .pd-quote-action-icon .lucide{width:18px;height:18px}
+    .pd-quote-action-copy strong{display:block;margin:1px 0 4px;color:#193525;font-size:14px;line-height:1.35}
+    .pd-quote-action-copy p{margin:0;color:#627268;font-size:12px;line-height:1.5;word-break:keep-all}
+    .pd-quote-action-btn{min-width:132px;height:42px;padding:0 14px;border:0;border-radius:11px;background:#16a34a;color:#fff;display:flex;align-items:center;justify-content:center;gap:7px;font-size:13px;font-weight:750;white-space:nowrap;box-shadow:0 3px 0 #0f7a35,0 6px 12px rgba(22,163,74,.16)}
+    .pd-quote-action-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #0f7a35}
+    .pd-quote-action-btn:disabled{cursor:wait;opacity:.65}
+    .pd-quote-action-btn .lucide{width:16px;height:16px}
+    @media(max-width:420px){.pd-quote-action{align-items:stretch;flex-direction:column}.pd-quote-action-btn{width:100%}}
+  </style>
 </head>
 
 <body data-page="project-detail">
@@ -55,6 +68,18 @@
               <div class="pd-progress-line"></div>
               <div class="pd-progress-step"><span>4</span><small>시공</small></div>
             </div>
+          </div>
+          <div class="pd-quote-action" id="pdQuoteAction">
+            <div class="pd-quote-action-copy">
+              <span class="pd-quote-action-icon"><i data-lucide="calculator"></i></span>
+              <div>
+                <strong id="pdQuoteActionTitle">이 설계안으로 견적을 받아보세요</strong>
+                <p id="pdQuoteActionDesc">현재 프로젝트의 조건과 선택한 설계안을 기준으로 요청합니다.</p>
+              </div>
+            </div>
+            <button type="button" class="pd-quote-action-btn" id="pdBtnQuoteRequest">
+              <i data-lucide="send"></i><span>견적 요청하기</span>
+            </button>
           </div>
         </div>
       </section>
@@ -523,6 +548,54 @@
           line.classList.toggle('active',index+1<currentStageIndex);
         });
 
+        // 프로젝트 상태에 따라 견적 CTA의 역할과 문구를 변경
+        var quoteActionTitle=document.getElementById('pdQuoteActionTitle');
+        var quoteActionDesc=document.getElementById('pdQuoteActionDesc');
+        var quoteActionBtn=document.getElementById('pdBtnQuoteRequest');
+        var quoteActionBtnText=quoteActionBtn ? quoteActionBtn.querySelector('span') : null;
+        var quoteStatus=project.status || 'draft';
+        var quoteCopy={
+          draft:['이 설계안으로 견적을 받아보세요','현재 프로젝트의 조건과 선택한 설계안을 기준으로 요청합니다.','견적 요청하기','send'],
+          quote_requested:['견적 요청이 접수되었어요','견적·계약 페이지에서 요청 상태와 다음 할 일을 확인할 수 있어요.','요청 현황 보기','arrow-right'],
+          quote_review:['검토할 견적이 있어요','포함 범위와 별도 공사 항목을 확인하고 비교해 보세요.','견적 검토하기','file-search'],
+          contracted:['계약이 진행 중이에요','최종 금액과 지급 일정, 계약 조건을 확인할 수 있어요.','계약 현황 보기','handshake'],
+          construction:['시공이 진행 중이에요','계약 및 시공 진행 상태를 견적·계약 페이지에서 확인하세요.','진행 현황 보기','hard-hat'],
+          operating:['프로젝트가 운영 단계예요','완료된 견적과 계약 내용을 다시 확인할 수 있어요.','계약 내역 보기','folder-check'],
+          complete:['프로젝트가 완료되었어요','완료된 견적과 계약 내용을 다시 확인할 수 있어요.','계약 내역 보기','folder-check'],
+          done:['프로젝트가 완료되었어요','완료된 견적과 계약 내용을 다시 확인할 수 있어요.','계약 내역 보기','folder-check']
+        };
+        var currentQuoteCopy=quoteCopy[quoteStatus] || quoteCopy.draft;
+        if(quoteActionTitle)quoteActionTitle.textContent=currentQuoteCopy[0];
+        if(quoteActionDesc)quoteActionDesc.textContent=currentQuoteCopy[1];
+        if(quoteActionBtnText)quoteActionBtnText.textContent=currentQuoteCopy[2];
+        if(quoteActionBtn){
+          var quoteIcon=quoteActionBtn.querySelector('i');
+          if(quoteIcon)quoteIcon.setAttribute('data-lucide',currentQuoteCopy[3]);
+          quoteActionBtn.addEventListener('click',async function(){
+            if(quoteStatus==='draft'){
+              if(!window.confirm('현재 프로젝트의 조건과 선택한 설계안으로 견적을 요청할까요?'))return;
+              quoteActionBtn.disabled=true;
+              if(quoteActionBtnText)quoteActionBtnText.textContent='요청 중...';
+              const {error:quoteRequestError}=await supabaseClient
+                .from('projects')
+                .update({status:'quote_requested'})
+                .eq('id',project.id);
+              if(quoteRequestError){
+                console.error('견적 요청 오류:',quoteRequestError);
+                quoteActionBtn.disabled=false;
+                if(quoteActionBtnText)quoteActionBtnText.textContent='견적 요청하기';
+                if(typeof toast==='function')toast('견적 요청에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+                else alert('견적 요청에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+                return;
+              }
+              quoteStatus='quote_requested';
+            }
+            localStorage.setItem('ep-current-project-id',String(project.id));
+            window.location.assign('deals.html?project='+encodeURIComponent(project.id));
+          });
+        }
+        if(window.lucide)window.lucide.createIcons();
+
 
         // 요구사항 탭 - 사용자/정책/자금
 		var userTypeLabel=userTypeMap[survey.user_type] || '미선택';
@@ -637,10 +710,11 @@
 		setText('pdExpansion','전기·배관 라인은 향후 랙/존 확장을 고려해 1.5배 수준까지 확장 가능하도록 설계할 수 있습니다.');
 		setText('pdChangeLog','현장 협의 및 시운전 이후 변경된 내용은 이 영역에 메모해 둘 수 있습니다.');
 		
-		// 타임라인 일부에 실제 데이터 반영 (견적 요청일 = 프로젝트 생성일)
-		var createdDate=formatDate(project.createdAt);
-		if(createdDate){
-			setText('pdQuoteRequestDate','요청일: '+createdDate);
+		// 생성일을 견적 요청일로 잘못 표시하지 않도록 상태 기반으로 안내
+		if(project.status==='draft'){
+			setText('pdQuoteRequestDate','아직 견적을 요청하지 않았습니다.');
+		}else{
+			setText('pdQuoteRequestDate','견적 요청 접수 완료');
 		}
 		// 하자 보증 기본값
 		setText('pdWarranty','하자 보증 기간: 1년 (설비 별도 약정 가능)');
