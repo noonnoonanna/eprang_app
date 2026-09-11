@@ -356,21 +356,6 @@ body[data-page="dashboard"] .live-project-list .project-tags .badge{font-size:12
 .home-counts{display:none}
 @media(max-width:355px){.project-heading-row{align-items:flex-start}.project-heading-actions{gap:6px}.new-project-btn{padding:0 9px}.new-project-btn span{display:none}}
 
-/* ===== 진행 프로젝트 모바일 캐러셀 ===== */
-.project-carousel-count{display:none;align-items:center;justify-content:center;min-width:39px;height:28px;padding:0 9px;border-radius:999px;background:#f0f7f2;color:#52705d;font-size:13px;font-weight:700;letter-spacing:.01em;white-space:nowrap}
-.project-carousel-count.is-visible{display:inline-flex}
-.live-project-list.is-carousel{display:grid;grid-auto-flow:column;grid-auto-columns:calc(100% - 18px);gap:10px;overflow-x:auto;overflow-y:hidden;margin-right:-2px;padding:0 2px 10px 0;scroll-snap-type:x mandatory;scroll-padding-left:0;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none;touch-action:pan-x pan-y}
-.live-project-list.is-carousel{cursor:grab;user-select:none}
-.live-project-list.is-carousel.is-dragging{cursor:grabbing;scroll-snap-type:none}
-.live-project-list.is-carousel.is-dragging .project-card{pointer-events:none}
-.live-project-list.is-carousel::-webkit-scrollbar{display:none}
-body[data-page="dashboard"] .live-project-list.is-carousel .project-card{width:100%;scroll-snap-align:start;scroll-snap-stop:always}
-.project-carousel-dots{display:none;align-items:center;justify-content:center;gap:7px;min-height:14px;margin-top:1px}
-.project-carousel-dots.is-visible{display:flex}
-.project-carousel-dot{width:6px;height:6px;padding:0;border:0;border-radius:999px;background:#d2dcd5;transition:width .2s ease,background-color .2s ease;cursor:pointer}
-.project-carousel-dot.is-active{width:18px;background:#16a34a}
-.project-carousel-dot:focus-visible{outline:2px solid #15803d;outline-offset:3px}
-
 </style>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <title>이피랑 - 홈</title>
@@ -390,14 +375,12 @@ body[data-page="dashboard"] .live-project-list.is-carousel .project-card{width:1
         <div class="project-heading-row">
           <h1 class="home-section-title">진행 중인 프로젝트</h1>
           <div class="project-heading-actions">
-            <span class="project-carousel-count" id="projectCarouselCount" aria-live="polite"></span>
             <a class="home-alert-link" href="reminder.html" aria-label="알림 보기"><i data-lucide="bell"></i></a>
             <button type="button" class="new-project-btn" id="btnNewProject"><i data-lucide="plus"></i><span>새 프로젝트</span></button>
           </div>
         </div>
         <div class="home-counts" aria-hidden="true"><span id="statInProgress">0건</span><span id="statCompleted">0건</span></div>
         <div class="live-project-list" id="projectList"></div>
-        <div class="project-carousel-dots" id="projectCarouselDots" aria-label="프로젝트 카드 선택"></div>
         <div class="project-empty" id="projectEmptyState">
           <strong>아직 저장된 프로젝트가 없어요.</strong>
           설문을 통해 나만의 실내 스마트팜 설계안을 만들어 보세요.
@@ -450,150 +433,6 @@ body[data-page="dashboard"] .live-project-list.is-carousel .project-card{width:1
       if (window.lucide) {
         window.lucide.createIcons({ attrs: { 'aria-hidden': 'true' } });
       }
-
-      const list = document.getElementById('projectList');
-      const count = document.getElementById('projectCarouselCount');
-      const dots = document.getElementById('projectCarouselDots');
-      if (!list || !count || !dots) return;
-
-      let cards = [];
-      let activeIndex = 0;
-      let scrollFrame = 0;
-      let isMouseDragging = false;
-      let dragStartX = 0;
-      let dragStartScrollLeft = 0;
-      let dragMoved = false;
-
-      function updateCarousel(index) {
-        if (cards.length < 2) return;
-        activeIndex = Math.max(0, Math.min(index, cards.length - 1));
-        count.textContent = `${activeIndex + 1} / ${cards.length}`;
-        dots.querySelectorAll('.project-carousel-dot').forEach(function (dot, dotIndex) {
-          const isActive = dotIndex === activeIndex;
-          dot.classList.toggle('is-active', isActive);
-          dot.setAttribute('aria-current', isActive ? 'true' : 'false');
-        });
-      }
-
-      function nearestCardIndex() {
-        let nearest = 0;
-        let distance = Infinity;
-        const firstOffset = cards[0] ? cards[0].offsetLeft : 0;
-        cards.forEach(function (card, index) {
-          const nextDistance = Math.abs((card.offsetLeft - firstOffset) - list.scrollLeft);
-          if (nextDistance < distance) {
-            distance = nextDistance;
-            nearest = index;
-          }
-        });
-        return nearest;
-      }
-
-      function configureCarousel() {
-        cards = Array.from(list.children).filter(function (child) {
-          return child.classList.contains('project-card');
-        });
-
-        const enabled = cards.length > 1;
-        list.classList.toggle('is-carousel', enabled);
-        count.classList.toggle('is-visible', enabled);
-        dots.classList.toggle('is-visible', enabled);
-        dots.innerHTML = '';
-
-        if (!enabled) {
-          count.textContent = '';
-          list.scrollLeft = 0;
-          activeIndex = 0;
-          return;
-        }
-
-        cards.forEach(function (_, index) {
-          const dot = document.createElement('button');
-          dot.type = 'button';
-          dot.className = 'project-carousel-dot';
-          dot.setAttribute('aria-label', `${index + 1}번째 프로젝트 보기`);
-          dot.addEventListener('click', function () {
-            cards[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
-          });
-          dots.appendChild(dot);
-        });
-        updateCarousel(Math.min(activeIndex, cards.length - 1));
-      }
-
-      list.addEventListener('scroll', function () {
-        if (cards.length < 2) return;
-        cancelAnimationFrame(scrollFrame);
-        scrollFrame = requestAnimationFrame(function () {
-          updateCarousel(nearestCardIndex());
-        });
-      }, { passive: true });
-
-      // 데스크톱에서는 마우스로 카드를 잡아 좌우로 끌 수 있게 합니다.
-      list.addEventListener('pointerdown', function (event) {
-  if (
-    event.pointerType !== 'mouse' ||
-    cards.length < 2 ||
-    event.button !== 0
-  ) return;
-
-  isMouseDragging = true;
-  dragMoved = false;
-  dragStartX = event.clientX;
-  dragStartScrollLeft = list.scrollLeft;
-
-  // 누르기만 했을 때는 카드 클릭을 그대로 허용
-});
-
-list.addEventListener('pointermove', function (event) {
-  if (!isMouseDragging || event.pointerType !== 'mouse') return;
-
-  if (event.buttons !== 1) {
-    finishMouseDrag(event);
-    return;
-  }
-
-  const distance = event.clientX - dragStartX;
-
-  // 5px 넘게 움직였을 때만 드래그로 전환
-  if (!dragMoved) {
-    if (Math.abs(distance) <= 5) return;
-
-    dragMoved = true;
-    list.classList.add('is-dragging');
-    list.setPointerCapture(event.pointerId);
-  }
-
-  list.scrollLeft = dragStartScrollLeft - distance;
-  event.preventDefault();
-});
-
-      function finishMouseDrag(event) {
-        if (!isMouseDragging) return;
-        isMouseDragging = false;
-        list.classList.remove('is-dragging');
-        if (list.hasPointerCapture && list.hasPointerCapture(event.pointerId)) {
-          list.releasePointerCapture(event.pointerId);
-        }
-        if (dragMoved && cards.length > 1) {
-          const targetIndex = nearestCardIndex();
-          cards[targetIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
-          updateCarousel(targetIndex);
-        }
-      }
-
-      list.addEventListener('pointerup', finishMouseDrag);
-      list.addEventListener('pointercancel', finishMouseDrag);
-
-      // 드래그 직후 프로젝트 카드가 클릭되는 것을 막습니다.
-      list.addEventListener('click', function (event) {
-        if (!dragMoved) return;
-        event.preventDefault();
-        event.stopPropagation();
-        dragMoved = false;
-      }, true);
-
-      new MutationObserver(configureCarousel).observe(list, { childList: true });
-      configureCarousel();
     });
   </script>
 </body>

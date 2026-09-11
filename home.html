@@ -362,7 +362,7 @@ body[data-page="dashboard"] .live-project-list .project-tags .badge{font-size:12
 .live-project-list.is-carousel{display:grid;grid-auto-flow:column;grid-auto-columns:calc(100% - 18px);gap:10px;overflow-x:auto;overflow-y:hidden;margin-right:-2px;padding:0 2px 10px 0;scroll-snap-type:x mandatory;scroll-padding-left:0;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none;touch-action:pan-x pan-y}
 .live-project-list.is-carousel{cursor:grab;user-select:none}
 .live-project-list.is-carousel.is-dragging{cursor:grabbing;scroll-snap-type:none}
-.live-project-list.is-carousel.is-dragging .project-card{pointer-events:none}
+.live-project-list.is-carousel.is-dragging .project-card{cursor:grabbing!important;user-select:none}
 .live-project-list.is-carousel::-webkit-scrollbar{display:none}
 body[data-page="dashboard"] .live-project-list.is-carousel .project-card{width:100%;scroll-snap-align:start;scroll-snap-stop:always}
 .project-carousel-dots{display:none;align-items:center;justify-content:center;gap:7px;min-height:14px;margin-top:1px}
@@ -459,10 +459,8 @@ body[data-page="dashboard"] .live-project-list.is-carousel .project-card{width:1
       let cards = [];
       let activeIndex = 0;
       let scrollFrame = 0;
-      let isMouseDragging = false;
-      let dragStartX = 0;
-      let dragStartScrollLeft = 0;
-      let dragMoved = false;
+      let mouseGesture = null;
+      let suppressClickUntil = 0;
 
       function updateCarousel(index) {
         if (cards.length < 2) return;
@@ -528,68 +526,71 @@ body[data-page="dashboard"] .live-project-list.is-carousel .project-card{width:1
         });
       }, { passive: true });
 
-      // 데스크톱에서는 마우스로 카드를 잡아 좌우로 끌 수 있게 합니다.
+      // 마우스만 보완합니다. 터치 스크롤과 app.js의 카드 클릭은 유지합니다.
       list.addEventListener('pointerdown', function (event) {
-  if (
-    event.pointerType !== 'mouse' ||
-    cards.length < 2 ||
-    event.button !== 0
-  ) return;
+        suppressClickUntil = 0;
+        if (event.pointerType !== 'mouse' || event.button !== 0 || cards.length < 2) return;
+        if (event.target.closest('input, textarea, select, [contenteditable="true"]')) return;
+        mouseGesture = {
+          id: event.pointerId,
+          x: event.clientX,
+          y: event.clientY,
+          scrollLeft: list.scrollLeft,
+          dragging: false
+        };
+        // 여기서는 preventDefault / pointer capture / 클릭 대상 변경을 하지 않습니다.
+      });
 
-  isMouseDragging = true;
-  dragMoved = false;
-  dragStartX = event.clientX;
-  dragStartScrollLeft = list.scrollLeft;
-
-  // 누르기만 했을 때는 카드 클릭을 그대로 허용
-});
-
-list.addEventListener('pointermove', function (event) {
-  if (!isMouseDragging || event.pointerType !== 'mouse') return;
-
-  if (event.buttons !== 1) {
-    finishMouseDrag(event);
-    return;
-  }
-
-  const distance = event.clientX - dragStartX;
-
-  // 5px 넘게 움직였을 때만 드래그로 전환
-  if (!dragMoved) {
-    if (Math.abs(distance) <= 5) return;
-
-    dragMoved = true;
-    list.classList.add('is-dragging');
-    list.setPointerCapture(event.pointerId);
-  }
-
-  list.scrollLeft = dragStartScrollLeft - distance;
-  event.preventDefault();
-});
-
-      function finishMouseDrag(event) {
-        if (!isMouseDragging) return;
-        isMouseDragging = false;
-        list.classList.remove('is-dragging');
-        if (list.hasPointerCapture && list.hasPointerCapture(event.pointerId)) {
-          list.releasePointerCapture(event.pointerId);
+      window.addEventListener('pointermove', function (event) {
+        const gesture = mouseGesture;
+        if (!gesture || event.pointerId !== gesture.id) return;
+        if (!(event.buttons & 1)) {
+          finishMouseGesture();
+          return;
         }
-        if (dragMoved && cards.length > 1) {
-          const targetIndex = nearestCardIndex();
-          cards[targetIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
-          updateCarousel(targetIndex);
+        const dx = event.clientX - gesture.x;
+        const dy = event.clientY - gesture.y;
+        if (!gesture.dragging) {
+          if (Math.abs(dx) < 10 || Math.abs(dx) <= Math.abs(dy)) return;
+          gesture.dragging = true;
+          list.classList.add('is-dragging');
+        }
+        event.preventDefault();
+        list.scrollLeft = gesture.scrollLeft - dx;
+      }, { passive: false });
+
+      function finishMouseGesture() {
+        const gesture = mouseGesture;
+        if (!gesture) return;
+        mouseGesture = null;
+        const targetIndex = nearestCardIndex();
+        list.classList.remove('is-dragging');
+        if (gesture.dragging) {
+          suppressClickUntil = performance.now() + 500;
+          if (cards[targetIndex]) {
+            cards[targetIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+            updateCarousel(targetIndex);
+          }
         }
       }
 
-      list.addEventListener('pointerup', finishMouseDrag);
-      list.addEventListener('pointercancel', finishMouseDrag);
-
-      // 드래그 직후 프로젝트 카드가 클릭되는 것을 막습니다.
+      // 카드 영역 밖에서 놓아도 드래그 상태를 해제합니다.
+      window.addEventListener('pointerup', function (event) {
+        if (mouseGesture && event.pointerId === mouseGesture.id) finishMouseGesture();
+      }, true);
+      window.addEventListener('pointercancel', function (event) {
+        if (mouseGesture && event.pointerId === mouseGesture.id) finishMouseGesture();
+      }, true);
+      window.addEventListener('blur', finishMouseGesture);
+      list.addEventListener('dragstart', function (event) {
+        if (mouseGesture) event.preventDefault();
+      });
       list.addEventListener('click', function (event) {
-        if (!dragMoved) return;
+        // 키보드 클릭이나 다음 독립적인 클릭은 막지 않습니다.
+        if (event.detail === 0 || performance.now() >= suppressClickUntil) return;
+        suppressClickUntil = 0;
         event.preventDefault();
-        event.stopPropagation();
-        dragMoved = false;
+        event.stopImmediatePropagation();
       }, true);
 
       new MutationObserver(configureCarousel).observe(list, { childList: true });
