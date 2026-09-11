@@ -530,22 +530,42 @@ body[data-page="dashboard"] .live-project-list.is-carousel .project-card{width:1
 
       // 데스크톱에서는 마우스로 카드를 잡아 좌우로 끌 수 있게 합니다.
       list.addEventListener('pointerdown', function (event) {
-        if (event.pointerType !== 'mouse' || cards.length < 2 || event.button !== 0) return;
-        isMouseDragging = true;
-        dragMoved = false;
-        dragStartX = event.clientX;
-        dragStartScrollLeft = list.scrollLeft;
-        list.classList.add('is-dragging');
-        list.setPointerCapture(event.pointerId);
-      });
+  if (
+    event.pointerType !== 'mouse' ||
+    cards.length < 2 ||
+    event.button !== 0
+  ) return;
 
-      list.addEventListener('pointermove', function (event) {
-        if (!isMouseDragging) return;
-        const distance = event.clientX - dragStartX;
-        if (Math.abs(distance) > 5) dragMoved = true;
-        list.scrollLeft = dragStartScrollLeft - distance;
-        if (dragMoved) event.preventDefault();
-      });
+  isMouseDragging = true;
+  dragMoved = false;
+  dragStartX = event.clientX;
+  dragStartScrollLeft = list.scrollLeft;
+
+  // 누르기만 했을 때는 카드 클릭을 그대로 허용
+});
+
+list.addEventListener('pointermove', function (event) {
+  if (!isMouseDragging || event.pointerType !== 'mouse') return;
+
+  if (event.buttons !== 1) {
+    finishMouseDrag(event);
+    return;
+  }
+
+  const distance = event.clientX - dragStartX;
+
+  // 5px 넘게 움직였을 때만 드래그로 전환
+  if (!dragMoved) {
+    if (Math.abs(distance) <= 5) return;
+
+    dragMoved = true;
+    list.classList.add('is-dragging');
+    list.setPointerCapture(event.pointerId);
+  }
+
+  list.scrollLeft = dragStartScrollLeft - distance;
+  event.preventDefault();
+});
 
       function finishMouseDrag(event) {
         if (!isMouseDragging) return;
