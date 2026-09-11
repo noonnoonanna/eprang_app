@@ -329,16 +329,28 @@ async function buildRecoList() {
     }
 	
 	// 면적
-const area = Number(s2.usable_area || s2.floor_area || 0);
+// 설문 면적은 ㎡입니다. 기존 문구의 30평/100평 기준을 ㎡로 환산합니다.
+const areaInput = s2.usable_area == null || String(s2.usable_area).trim() === ''
+  ? s2.floor_area
+  : s2.usable_area;
+const areaM2 = Number(areaInput);
+const hasArea = Number.isFinite(areaM2) && areaM2 > 0;
+const compactAreaMaxM2 = 30 * (400 / 121);
+const largeAreaMinM2 = 100 * (400 / 121);
+const isCompactArea = hasArea && areaM2 <= compactAreaMaxM2;
+const isLargeArea = hasArea && areaM2 >= largeAreaMinM2;
+const areaLabel = hasArea
+  ? areaM2.toLocaleString('ko-KR', { maximumFractionDigits: 2 }) + '㎡'
+  : '';
 
-if (area <= 30 && tags.includes('compact')) {
+if (isCompactArea && tags.includes('compact')) {
   score += 30;
-  reasons.push(`${area || 30}평 이하 컴팩트 공간 활용`);
+  reasons.push(`${areaLabel} 면적에 대한 소형 구성 추천 기준 충족`);
 }
 
-if (area >= 100 && tags.includes('large_scale')) {
+if (isLargeArea && tags.includes('large_scale')) {
   score += 30;
-  reasons.push(`${area}평 대형 공간 운영에 적합`);
+  reasons.push(`${areaLabel} 면적에 대한 대형 구성 추천 기준 충족`);
 }
 
 // 가족 운영
@@ -378,7 +390,7 @@ if (
     if (Number(s2.ceil_height) >= 4) possibleBonus += 30;
     if (s2.electric_phase === 'three') possibleBonus += 20;
     if (s3.distribution?.includes('experience_edu_landscape')) possibleBonus += 35;
-    if (area <= 30 || area >= 100) possibleBonus += 30;
+    if (isCompactArea || isLargeArea) possibleBonus += 30;
     if (Number(s2.family_staff || 0) >= 2) possibleBonus += 20;
     if (s2.facility === 'biz_center') possibleBonus += 25;
     if (s3.profit_goal === 'high') possibleBonus += 30;
@@ -498,7 +510,7 @@ async function saveProject() {
   }
 
   const selected = recoList[selectedIndex] || recoList[0];
-  const version = 'tag-score-v1';
+  const version = 'tag-score-v2-area-m2';
 
   if (button) button.disabled = true;
 
