@@ -104,18 +104,3 @@ body[data-page="dashboard"] .feature-card:hover .feature-icon { transform: scale
 body[data-page="dashboard"] .feature-title { margin: 0; font-size: 15px; font-weight: 800; letter-spacing: -0.5px; text-align: center; }
 body[data-page="dashboard"] .feature-desc, body[data-page="dashboard"] .feature-tags { display: none; }
 @media (max-width:380px){body[data-page="dashboard"] .feature-grid { grid-template-columns: repeat(2, 1fr); }}
-
-/* ===== 진행 프로젝트 모바일 캐러셀 ===== */
-.project-carousel-count{display:none;align-items:center;justify-content:center;min-width:39px;height:28px;padding:0 9px;border-radius:999px;background:#f0f7f2;color:#52705d;font-size:13px;font-weight:700;letter-spacing:.01em;white-space:nowrap}
-.project-carousel-count.is-visible{display:inline-flex}
-.live-project-list.is-carousel{display:grid;grid-auto-flow:column;grid-auto-columns:calc(100% - 18px);gap:10px;overflow-x:auto;overflow-y:hidden;margin-right:-2px;padding:0 2px 10px 0;scroll-snap-type:x mandatory;scroll-padding-left:0;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none;touch-action:pan-x pan-y}
-.live-project-list.is-carousel{cursor:grab;user-select:none}
-.live-project-list.is-carousel.is-dragging{cursor:grabbing;scroll-snap-type:none}
-.live-project-list.is-carousel.is-dragging .project-card{pointer-events:none}
-.live-project-list.is-carousel::-webkit-scrollbar{display:none}
-body[data-page="dashboard"] .live-project-list.is-carousel .project-card{width:100%;scroll-snap-align:start;scroll-snap-stop:always}
-.project-carousel-dots{display:none;align-items:center;justify-content:center;gap:7px;min-height:14px;margin-top:1px}
-.project-carousel-dots.is-visible{display:flex}
-.project-carousel-dot{width:6px;height:6px;padding:0;border:0;border-radius:999px;background:#d2dcd5;transition:width .2s ease,background-color .2s ease;cursor:pointer}
-.project-carousel-dot.is-active{width:18px;background:#16a34a}
-.project-carousel-dot:focus-visible{outline:2px solid #15803d;outline-offset:3px}
