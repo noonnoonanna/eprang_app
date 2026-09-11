@@ -124,7 +124,6 @@ body[data-page="reco-intro"] .summary-detail-value{font-size:13px;font-weight:80
 </style>
 <body data-page="reco-intro">
 <script src="app.js"></script>
-<script src="layout-package-helper.js"></script>
 <div class="app">
 	<header>
 		<div class="bar">
@@ -488,26 +487,67 @@ card.innerHTML = `
     }
 
     // ===== 3. 프로젝트 저장 =====
-    function saveProject() {
-      if (!recoList.length) {
-        alert('저장할 설계안이 없습니다.');
-        return;
-      }
-  // 유저가 선택한 설계안 가져오기 (기본값은 0번째)
+async function saveProject() {
+  const button = document.getElementById('btnSaveProject');
+
+  if (button?.disabled) return;
+
+  if (!recoList.length) {
+    alert('저장할 설계안이 없습니다.');
+    return;
+  }
+
   const selected = recoList[selectedIndex] || recoList[0];
+  const version = 'tag-score-v1';
 
-  // 💡 [핵심] 가입 완료 시점에 Supabase에 한 번에 넣기 위해 
-  // 임시 데이터 패키지('ep-temp-project-package')를 만들어 로컬스토리지에 저장합니다.
-  const tempPackage = {
-    survey: survey,      // 앞에서 로드한 설문 데이터
-    reco: selected,      // 유저가 최종 선택한 설계안
-    createdAt: new Date().toISOString()
-  };
+  if (button) button.disabled = true;
 
-  localStorage.setItem('ep-temp-project-package', JSON.stringify(tempPackage));
-addProject();
+  try {
+    let previous = null;
 
+    try {
+      previous = JSON.parse(
+        localStorage.getItem('ep-temp-project-package') || 'null'
+      );
+    } catch {
+      previous = null;
     }
+
+    // 같은 설문·추천안의 재시도는 기존 요청 ID 유지
+    const sameRequest =
+      previous?.submissionId &&
+      previous?.recommendationVersion === version &&
+      JSON.stringify(previous?.survey) === JSON.stringify(survey) &&
+      JSON.stringify(previous?.reco) === JSON.stringify(selected);
+
+    const tempPackage = {
+      submissionId: sameRequest
+        ? previous.submissionId
+        : crypto.randomUUID(),
+      recommendationVersion: version,
+      survey: survey,
+      reco: selected,
+      createdAt: sameRequest
+        ? previous.createdAt
+        : new Date().toISOString()
+    };
+
+    localStorage.setItem(
+      'ep-temp-project-package',
+      JSON.stringify(tempPackage)
+    );
+
+    // 로그인 후 프로젝트 추가 흐름 유지
+    await addProject();
+
+  } catch (error) {
+    console.error('추천안 저장 처리 실패:', error);
+    alert(`저장 처리에 실패했습니다: ${error.message || String(error)}`);
+
+  } finally {
+    if (button) button.disabled = false;
+  }
+}
 
     // ===== 4. 버튼 이벤트 =====
     document.getElementById('btnBackSurvey').addEventListener('click', () => {

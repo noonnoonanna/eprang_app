@@ -487,26 +487,56 @@ card.innerHTML = `
     }
 
     // ===== 3. 프로젝트 저장 =====
-    function saveProject() {
+function saveProject() {
   if (!recoList.length) {
     alert('저장할 설계안이 없습니다.');
     return;
   }
-  
-  // 유저가 선택한 설계안 가져오기 (기본값은 0번째)
+
   const selected = recoList[selectedIndex] || recoList[0];
+  const version = 'tag-score-v1';
 
-  // 💡 [핵심] 가입 완료 시점에 Supabase에 한 번에 넣기 위해 
-  // 임시 데이터 패키지('ep-temp-project-package')를 만들어 로컬스토리지에 저장합니다.
-  const tempPackage = {
-    survey: survey,      // 앞에서 로드한 설문 데이터
-    reco: selected,      // 유저가 최종 선택한 설계안
-    createdAt: new Date().toISOString()
-  };
+  let previous = null;
 
-  localStorage.setItem('ep-temp-project-package', JSON.stringify(tempPackage));
+  try {
+    previous = JSON.parse(
+      localStorage.getItem('ep-temp-project-package') || 'null'
+    );
+  } catch {
+    previous = null;
+  }
 
-  // 회원가입 페이지로 이동
+  // 같은 설문·추천안을 재시도하면 기존 요청 ID 유지
+  const sameRequest =
+    previous?.submissionId &&
+    previous?.recommendationVersion === version &&
+    JSON.stringify(previous?.survey) === JSON.stringify(survey) &&
+    JSON.stringify(previous?.reco) === JSON.stringify(selected);
+
+  try {
+    const tempPackage = {
+      submissionId: sameRequest
+        ? previous.submissionId
+        : crypto.randomUUID(),
+      recommendationVersion: version,
+      survey: survey,
+      reco: selected,
+      createdAt: sameRequest
+        ? previous.createdAt
+        : new Date().toISOString()
+    };
+
+    localStorage.setItem(
+      'ep-temp-project-package',
+      JSON.stringify(tempPackage)
+    );
+  } catch (error) {
+    console.error('추천안 임시 저장 실패:', error);
+    alert('추천안을 임시 저장하지 못했습니다. 브라우저 저장 설정을 확인해 주세요.');
+    return;
+  }
+
+  document.getElementById('btnSaveProject').disabled = true;
   window.location.assign('basic.html');
 }
 

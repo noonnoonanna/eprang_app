@@ -380,20 +380,72 @@ function filterPhone(el) {
   }
 }
 
+// 설문 + 선택 추천안을 DB에 함께 저장
+async function savePendingProject() {
+  const key = 'ep-temp-project-package';
+  const raw = localStorage.getItem(key);
+
+  if (!raw) {
+    throw new Error('저장할 추천안이 없습니다. 설문부터 다시 진행해 주세요.');
+  }
+
+  const data = JSON.parse(raw);
+
+  if (
+    !data.submissionId ||
+    !data.recommendationVersion ||
+    !data.survey ||
+    !data.reco?.id
+  ) {
+    throw new Error(
+      '추천안 저장 정보가 부족합니다. 추천 페이지에서 다시 선택해 주세요.'
+    );
+  }
+
+  const { data: projectId, error } = await supabaseClient.rpc(
+    'create_project_from_recommendation',
+    {
+      p_submission_id: data.submissionId,
+      p_survey: data.survey,
+      p_reco: data.reco,
+      p_recommendation_version: data.recommendationVersion
+    }
+  );
+
+  if (error) throw error;
+
+  if (!projectId) {
+    throw new Error('저장된 프로젝트 ID를 확인하지 못했습니다.');
+  }
+
+  localStorage.setItem('ep-current-project-id', projectId);
+
+  // 저장 도중 다른 추천안을 선택했다면 새 임시 데이터는 유지
+  if (localStorage.getItem(key) === raw) {
+    localStorage.removeItem(key);
+  }
+
+  return projectId;
+}
+
 // 회원가입 저장 + 로그인 상태 세팅 + 대시보드로 이동
 async function saveBasic() {
   const form = $('#form-basic');
+
   if (!form) {
     toast('폼을 찾을 수 없습니다');
     return;
   }
 
-  const f = new FormData(form);
+  // 연속 클릭 방지
+  if (form.dataset.saving === 'true') return;
 
-  // 필수 항목: 이메일(userid) + pw + pw2 + phone
+  const f = new FormData(form);
   const req = ['userid', 'pw', 'pw2', 'phone'];
+
   for (const k of req) {
     const v = f.get(k);
+
     if (!(v && String(v).trim())) {
       toast('모든 필수 항목을 입력해주세요');
       return;
@@ -404,216 +456,121 @@ async function saveBasic() {
     toast('비밀번호가 일치하지 않습니다');
     return;
   }
-  
+
   const email = String(f.get('userid')).trim();
   const password = String(f.get('pw'));
   const phone = String(f.get('phone')).trim();
-  
+
+  form.dataset.saving = 'true';
+
+  let accountCreated = false;
+
   try {
-    // 1단계: Supabase 회원가입 진행
-    const { data: authData, error: authError } = await supabaseClient.auth.signUp({
-      email: email,
-      password: password,
-      options: {
-        data: { phone: phone }
-      }
-    });
-
-    if (authError) throw authError;
-    if (!authData.user) {
-      toast('회원가입 처리에 실패했습니다.');
-      return;
-    }
-
-    // 회원가입 직후 실제 Supabase 세션을 확보해야 홈에서 프로젝트를 조회할 수 있습니다.
-    // 이메일 확인 설정 등에 따라 signUp 결과에 session이 없을 수 있어 한 번 로그인도 시도합니다.
-    let activeSession = authData.session;
-    if (!activeSession) {
-      const { data: loginData, error: loginError } = await supabaseClient.auth.signInWithPassword({
+    // 1. 회원가입
+    const { data: authData, error: authError } =
+      await supabaseClient.auth.signUp({
         email,
-        password
+        password,
+        options: {
+          data: { phone }
+        }
       });
 
+    if (authError) throw authError;
+
+    if (!authData.user) {
+      throw new Error('회원가입 처리에 실패했습니다.');
+    }
+
+    accountCreated = true;
+
+    // 2. 로그인 세션 확인
+    let activeSession = authData.session;
+
+    if (!activeSession) {
+      const { data: loginData, error: loginError } =
+        await supabaseClient.auth.signInWithPassword({
+          email,
+          password
+        });
+
       if (loginError || !loginData.session) {
-        toast('이메일 인증 후 로그인하면 선택한 설계안이 자동으로 저장됩니다.');
+        toast('이메일 인증 여부를 확인한 후 로그인해 주세요.');
         window.location.assign('login.html');
         return;
       }
+
       activeSession = loginData.session;
     }
 
-    const userId = activeSession.user.id;
+    // 3. 선택한 추천안이 있으면 프로젝트·설문과 함께 저장
+    const hasPendingProject =
+      !!localStorage.getItem('ep-temp-project-package');
 
-    // 2단계: reco-intro에서 임시 패킹해둔 [설문+설계안] 데이터 패키지 꺼내기
-    const tempPackageRaw = localStorage.getItem('ep-temp-project-package');
-
-    if (tempPackageRaw) {
-      const packageData = JSON.parse(tempPackageRaw);
-      const surveyData = packageData.survey;
-      const recoData = packageData.reco;
-      
-      const regionSi = surveyData.step1?.region_si || '';
-      // 선택한 설계안 이름이 있다면 제목에 반영 (예: "서울 스마트팜 프로젝트 (딸기 컴팩트형)")
-      const recoName = recoData?.title ? ` (${recoData.title})` : '';
-      const projectName = regionSi ? `${regionSi} 스마트팜 프로젝트${recoName}` : `신규 스마트팜 프로젝트${recoName}`;
-
-      // 3단계: projects 테이블에 마스터 행 추가 (선택한 설계안 정보인 recoData를 json 구조로 통째로 넣어 보관해도 좋습니다)
-      const { data: newProject, error: projectError } = await supabaseClient
-        .from('projects')
-        .insert([{ 
-          user_id: userId, 
-          name: projectName, 
-          status: 'draft'
-          // 만약 projects 테이블에 선택한 안을 저장하는 컬럼(예: selected_reco)을 만드셨다면 여기에 recoData를 넣으시면 됩니다.
-        }])
-        .select()
-        .single();
-
-      if (projectError) throw projectError;
-
-      // 4단계: project_surveys 테이블에 상세 설문 데이터 매핑하여 추가
-      const { error: surveyError } = await supabaseClient
-        .from('project_surveys')
-        .insert([
-          {
-            project_id: newProject.id,
-            user_type: surveyData.step1?.user_type || null,
-            region_si: surveyData.step1?.region_si || null,
-            policy: surveyData.step1?.policy || null,
-            loan_range: surveyData.step1?.loan_range || null,
-            own_capital: surveyData.step1?.own_capital || null,
-            facility: surveyData.step2?.facility || null,
-            floor_area: surveyData.step2?.floor_area ? Number(surveyData.step2.floor_area) : null,
-            usable_area: surveyData.step2?.usable_area ? Number(surveyData.step2.usable_area) : null,
-            ceil_height: surveyData.step2?.ceil_height ? Number(surveyData.step2.ceil_height) : null,
-            pillar_info: surveyData.step2?.pillar_info || null,
-            entrance_path: surveyData.step2?.entrance_path || null,
-            electric_power: surveyData.step2?.electric_power ? Number(surveyData.step2.electric_power) : null,
-            electric_power_known: surveyData.step2?.electric_power_known || null,
-            electric_phase: surveyData.step2?.electric_phase || null,
-            panel_location: surveyData.step2?.panel_location || null,
-            panel_location_known: surveyData.step2?.panel_location_known || null,
-            water_supply: surveyData.step2?.water_supply || null,
-            water_location: surveyData.step2?.water_location || null,
-            water_location_known: surveyData.step2?.water_location_known || null,
-            ventilation: surveyData.step2?.ventilation || null,
-            work_hours: surveyData.step2?.work_hours || null,
-            work_type: surveyData.step2?.work_type || null,
-            family_staff: surveyData.step2?.family_staff ? parseInt(surveyData.step2.family_staff, 10) : null,
-            profit_goal: surveyData.step3?.profit_goal || null,
-            risk: surveyData.step3?.risk || null,
-            distribution: surveyData.step3?.distribution || [],
-            distribution_etc: surveyData.step3?.distribution_etc || null
-          }
-        ]);
-
-      if (surveyError) throw surveyError;
-
-      // 깔끔하게 임시 데이터 청소 및 현재 프로젝트 ID 세팅
-      localStorage.removeItem('ep-temp-project-package');
-      localStorage.setItem('ep-current-project-id', newProject.id);
+    if (hasPendingProject) {
+      await savePendingProject();
     }
 
-    // 대시보드가 로그인 상태를 인식하도록 처리
+    // 4. 완료 후 홈으로 이동
     localStorage.setItem('AUTH', 'true');
-    toast('회원가입 및 선택하신 맞춤 설계안 저장이 완료되었습니다!');
-    
-    // 가입 완료 후 대시보드(home.html) 혹은 대시보드 인트로 페이지로 이동
+
+    toast(
+      hasPendingProject
+        ? '회원가입 및 선택하신 맞춤 설계안 저장이 완료되었습니다!'
+        : '회원가입이 완료되었습니다!'
+    );
+
     window.location.assign('home.html');
 
   } catch (err) {
-    console.error('Supabase 비회원 데이터 통합 저장 에러:', err);
-    toast(`저장 실패: ${err.message || err}`);
+    console.error('회원가입·프로젝트 저장 오류:', err);
+
+    const message = err.message || String(err);
+
+    toast(
+      accountCreated
+        ? `가입 처리는 진행됐지만 후속 저장에 실패했습니다: ${message}. 재가입하지 말고 오류 내용을 알려주세요.`
+        : `회원가입 실패: ${message}`
+    );
+
+  } finally {
+    form.dataset.saving = 'false';
   }
 }
 
 //프로젝트 추가
 async function addProject() {
- 
-  try {
-    // reco-intro_new에서 임시 패킹해둔 [설문+설계안] 데이터 패키지 꺼내기
-    const tempPackageRaw = localStorage.getItem('ep-temp-project-package');
-	
-	const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+  // 연속 클릭 방지
+  if (addProject.isSaving) return;
+  addProject.isSaving = true;
 
-    // 로그인이 안 되어 있을 때 예외 처리
-    if (authError || !user) {
+  try {
+    // 1. 로그인 확인
+    const {
+      data: { user },
+      error: authError
+    } = await supabaseClient.auth.getUser();
+
+    if (authError) throw authError;
+
+    if (!user) {
       toast('로그인이 필요한 서비스입니다.');
       return;
     }
-	
-    if (tempPackageRaw) {
-      const packageData = JSON.parse(tempPackageRaw);
-      const surveyData = packageData.survey;
-      const recoData = packageData.reco;
-      
-      const regionSi = surveyData.step1?.region_si || '';
-      // 선택한 설계안 이름이 있다면 제목에 반영 (예: "서울 스마트팜 프로젝트 (딸기 컴팩트형)")
-      const recoName = recoData?.title ? ` (${recoData.title})` : '';
-      const projectName = regionSi ? `${regionSi} 스마트팜 프로젝트${recoName}` : `신규 스마트팜 프로젝트${recoName}`;
 
-      // 3단계: projects 테이블에 마스터 행 추가 (선택한 설계안 정보인 recoData를 json 구조로 통째로 넣어 보관해도 좋습니다)
-      const { data: newProject, error: projectError } = await supabaseClient
-        .from('projects')
-        .insert([{ 
-          user_id: user.id, 
-          name: projectName, 
-          status: 'draft'
-          // 만약 projects 테이블에 선택한 안을 저장하는 컬럼(예: selected_reco)을 만드셨다면 여기에 recoData를 넣으시면 됩니다.
-        }])
-        .select()
-        .single();
+    // 2. 프로젝트·추천안·설문을 함께 저장
+    await savePendingProject();
 
-      if (projectError) throw projectError;
-
-      // 4단계: project_surveys 테이블에 상세 설문 데이터 매핑하여 추가
-      const { error: surveyError } = await supabaseClient
-        .from('project_surveys')
-        .insert([
-          {
-            project_id: newProject.id,
-            user_type: surveyData.step1?.user_type || null,
-            region_si: surveyData.step1?.region_si || null,
-            policy: surveyData.step1?.policy || null,
-            loan_range: surveyData.step1?.loan_range || null,
-            own_capital: surveyData.step1?.own_capital || null,
-            facility: surveyData.step2?.facility || null,
-            floor_area: surveyData.step2?.floor_area ? Number(surveyData.step2.floor_area) : null,
-            usable_area: surveyData.step2?.usable_area ? Number(surveyData.step2.usable_area) : null,
-            ceil_height: surveyData.step2?.ceil_height ? Number(surveyData.step2.ceil_height) : null,
-            pillar_info: surveyData.step2?.pillar_info || null,
-            entrance_path: surveyData.step2?.entrance_path || null,
-            electric_power: surveyData.step2?.electric_power ? Number(surveyData.step2.electric_power) : null,
-            electric_power_known: surveyData.step2?.electric_power_known || null,
-            electric_phase: surveyData.step2?.electric_phase || null,
-            panel_location: surveyData.step2?.panel_location || null,
-            panel_location_known: surveyData.step2?.panel_location_known || null,
-            water_supply: surveyData.step2?.water_supply || null,
-            water_location: surveyData.step2?.water_location || null,
-            water_location_known: surveyData.step2?.water_location_known || null,
-            ventilation: surveyData.step2?.ventilation || null,
-            work_hours: surveyData.step2?.work_hours || null,
-            work_type: surveyData.step2?.work_type || null,
-            family_staff: surveyData.step2?.family_staff ? parseInt(surveyData.step2.family_staff, 10) : null,
-            profit_goal: surveyData.step3?.profit_goal || null,
-            risk: surveyData.step3?.risk || null,
-            distribution: surveyData.step3?.distribution || [],
-            distribution_etc: surveyData.step3?.distribution_etc || null
-          }
-        ]);
-
-      if (surveyError) throw surveyError;
-
-      // 깔끔하게 임시 데이터 청소 및 현재 프로젝트 ID 세팅
-      localStorage.removeItem('ep-temp-project-package');
-      localStorage.setItem('ep-current-project-id', newProject.id);
-    }
-    
+    // 3. 저장 성공 후 홈으로 이동
+    toast('프로젝트가 저장되었습니다.');
     window.location.assign('home.html');
 
   } catch (err) {
-    console.error('Supabase 비회원 데이터 통합 저장 에러:', err);
-    toast(`저장 실패: ${err.message || err}`);
+    console.error('프로젝트 추가 저장 오류:', err);
+    toast(`저장 실패: ${err.message || String(err)}`);
+
+  } finally {
+    addProject.isSaving = false;
   }
 }
 
